@@ -1,0 +1,105 @@
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.9.7'
+    id 'net.researchgate.release' version '2.6.0'
+    id 'ru.vyarus.quality' version '2.3.0'
+    id 'com.jfrog.bintray' version '1.7.3'
+    id 'ru.vyarus.java-lib' version '1.0.5'
+    id 'ru.vyarus.github-info' version '1.1.0'
+    id 'com.github.ben-manes.versions' version '0.15.0'
+}
+
+sourceCompatibility = 1.7
+
+wrapper {
+    gradleVersion = '4.1'
+}
+
+repositories { jcenter(); mavenLocal() }
+dependencies {
+    compile 'ru.vyarus:gradle-use-python-plugin:1.0.0-SNAPSHOT'
+    compile 'org.ajoberstar:gradle-git-publish:0.3.2'
+
+    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+        exclude module: 'groovy-all'
+    }
+}
+
+group = 'ru.vyarus'
+description = 'Mkdocs documentation plugin'
+
+github {
+    user 'xvik'
+    license 'MIT'
+}
+
+pom {
+    developers {
+        developer {
+            id 'xvik'
+            name 'Vyacheslav Rusakov'
+            email 'vyarus@gmail.com'
+        }
+    }
+}
+
+bintray {
+    user = findProperty('bintrayUser')
+    key = findProperty('bintrayKey')
+    publications = ['maven']
+    dryRun = false
+    publish = true
+    pkg {
+        repo = 'xvik'
+        name = project.name
+        desc = project.description
+        labels = ['gradle', 'documentation', 'mkdocs']
+        publicDownloadNumbers = true
+        version {
+            gpg {
+                sign = true
+                passphrase = findProperty('gpgPassphrase')
+            }
+            mavenCentralSync {
+                sync = false
+                user = findProperty('sonatypeUser')
+                password = findProperty('sonatypePassword')
+            }
+        }
+    }
+}
+
+pluginBundle {
+    description = 'Mkdocs documentation generation and publishing plugin'
+    tags = ['documentation', 'mkdocs']
+
+    plugins {
+        mkdocsPlugin {
+            id = 'ru.vyarus.mkdocs'
+            displayName = project.description
+        }
+    }
+
+    mavenCoordinates {
+        groupId = project.group
+        artifactId = project.name
+    }
+}
+
+afterReleaseBuild {
+    dependsOn = [bintrayUpload, publishPlugins]
+    doLast {
+        logger.warn "RELEASED $project.group:$project.name:$project.version"
+    }
+}
+
+test {
+    testLogging {
+        events 'skipped', 'failed', 'standard_error'
+        exceptionFormat 'full'
+    }
+    maxHeapSize = '512m'
+}
+
+dependencyUpdates.revision = 'release'

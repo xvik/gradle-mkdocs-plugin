@@ -1,0 +1,23 @@
+{
+  "generator-gradle-plugin": {
+    "githubUser": "xvik",
+    "authorName": "Vyacheslav Rusakov",
+    "authorEmail": "vyarus@gmail.com",
+    "projectName": "gradle-mkdocs-plugin",
+    "projectGroup": "ru.vyarus",
+    "projectPackage": "ru.vyarus.gradle.plugin.mkdocs",
+    "projectVersion": "0.1.0",
+    "projectDesc": "Mkdocs documentation plugin",
+    "pluginPortalDesc": "Mkdocs documentation generation and publishing plugin",
+    "targetJava": "1.6",
+    "pluginPortalTags": "documentation, mkdocs",
+    "mirrorToJcenter": true,
+    "pluginPortalUseCustomGroup": true,
+    "bintrayUser": "vyarus",
+    "bintrayRepo": "xvik",
+    "bintrayTags": "gradle, documentation, mkdocs",
+    "bintraySignFiles": true,
+    "mavenCentralSync": true,
+    "usedGeneratorVersion": "1.5.0"
+  }
+}

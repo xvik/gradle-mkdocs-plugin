@@ -32,9 +32,9 @@ class MkdocsInitTask extends DefaultTask {
             from project.fileTree(template)
             into(dir)
             filter(ReplaceTokens, tokens: [
-                    projectName       : project.name,
+                    projectName: project.name,
                     projectDescription: project.description ?: '',
-                    docDir            : extension.sourcesDir
+                    docDir: extension.sourcesDir,
             ])
         }
     }

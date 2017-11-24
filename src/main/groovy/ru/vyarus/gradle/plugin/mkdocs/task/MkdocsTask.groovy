@@ -14,6 +14,7 @@ import ru.vyarus.gradle.plugin.python.task.PythonTask
 class MkdocsTask extends PythonTask {
 
     @Override
+    @SuppressWarnings('GetterMethodCouldBeProperty')
     String getModule() {
         // restrict commands to mkdocs module
         return 'mkdocs'

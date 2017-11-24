@@ -35,6 +35,7 @@ class MkDocsBuildTask extends MkdocsTask {
     }
 
     @InputDirectory
+    @SuppressWarnings('UnnecessaryGetter')
     File getSourcesDir() {
         return project.file(getWorkDir())
     }

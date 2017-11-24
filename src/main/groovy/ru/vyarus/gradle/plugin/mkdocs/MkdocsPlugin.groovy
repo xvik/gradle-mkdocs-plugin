@@ -36,6 +36,9 @@ import ru.vyarus.gradle.plugin.python.PythonPlugin
 @CompileStatic
 class MkdocsPlugin implements Plugin<Project> {
 
+    private static final String DOCUMENTATION_GROUP = 'documentation'
+    private static final String MKDOCS_BUILD_TASK = 'mkdocsBuild'
+
     @Override
     void apply(Project project) {
         MkdocsExtension extension = project.extensions.create('mkdocs', MkdocsExtension)
@@ -57,25 +60,27 @@ class MkdocsPlugin implements Plugin<Project> {
     @CompileStatic(TypeCheckingMode.SKIP)
     private void configureMkdocsTasks(Project project, MkdocsExtension extension) {
 
-        project.tasks.create("mkdocsBuild", MkDocsBuildTask) {
+        Closure strictConvention = { extension.strict ? ['--strict'] : null }
+
+        project.tasks.create(MKDOCS_BUILD_TASK, MkDocsBuildTask) {
             description = 'Build mkdocs documentation'
-            group = 'documentation'
+            group = DOCUMENTATION_GROUP
             conventionMapping.with {
-                it.extraArgs = { extension.strict ? ['--strict'] : null }
+                it.extraArgs = strictConvention
                 it.outputDir = { project.file("${extension.buildDir}/${extension.docVersion}") }
             }
         }
 
-        project.tasks.create("mkdocsServe", MkdocsTask) {
+        project.tasks.create('mkdocsServe', MkdocsTask) {
             description = 'Start mkdocs live reload server'
-            group = 'documentation'
+            group = DOCUMENTATION_GROUP
             command = 'serve'
-            conventionMapping.extraArgs = { extension.strict ? ['--strict'] : null }
+            conventionMapping.extraArgs = strictConvention
         }
 
-        project.tasks.create("mkdocsInit", MkdocsInitTask) {
+        project.tasks.create('mkdocsInit', MkdocsInitTask) {
             description = 'Create mkdocs documentation'
-            group = 'documentation'
+            group = DOCUMENTATION_GROUP
         }
 
         project.tasks.withType(MkdocsTask) { task ->
@@ -88,7 +93,7 @@ class MkdocsPlugin implements Plugin<Project> {
         project.plugins.apply(GitPublishPlugin)
 
         project.afterEvaluate {
-            project.configure(project, {
+            project.configure(project) {
                 gitPublish {
 
                     // by default the same repo
@@ -113,15 +118,15 @@ class MkdocsPlugin implements Plugin<Project> {
 
                     commitMessage = getComment(extension)
                 }
-            })
+            }
         }
 
         // gitPublishReset  <- mkdocsBuild <- gitPublishCopy <- gitPublishCommit <- gitPublishPush <- mkdocsPublish
-        project.tasks.gitPublishCopy.dependsOn 'mkdocsBuild'
+        project.tasks.gitPublishCopy.dependsOn MKDOCS_BUILD_TASK
 
         // create dummy task to simplify usage
         project.tasks.create('mkdocsPublish') {
-            group = 'documentation'
+            group = DOCUMENTATION_GROUP
             description = 'Publish documentation version to github pages'
             dependsOn 'gitPublishPush'
         }

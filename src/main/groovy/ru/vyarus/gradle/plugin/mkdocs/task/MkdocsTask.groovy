@@ -1,6 +1,7 @@
 package ru.vyarus.gradle.plugin.mkdocs.task
 
 import groovy.transform.CompileStatic
+import org.gradle.api.tasks.Internal
 import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 import ru.vyarus.gradle.plugin.python.task.PythonTask
 
@@ -23,8 +24,9 @@ class MkdocsTask extends PythonTask {
     /**
      * For use in specialized tasks.
      *
-     * @return mkdocs extensions object
+     * @return mkdocs extension object
      */
+    @Internal
     protected MkdocsExtension getExtension() {
         project.extensions.findByType(MkdocsExtension)
     }

@@ -4,6 +4,8 @@ import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.ajoberstar.gradle.git.publish.GitPublishPlugin
+import org.ajoberstar.grgit.Grgit
+import org.eclipse.jgit.errors.RepositoryNotFoundException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import ru.vyarus.gradle.plugin.mkdocs.task.MkDocsBuildTask
@@ -45,20 +47,22 @@ class MkdocsPlugin implements Plugin<Project> {
 
         project.plugins.apply(PythonPlugin)
 
-        project.afterEvaluate {
-            // project version by default
-            extension.docVersion = extension.docVersion ?: project.version
-        }
-
-        applyDefaultModules(project)
+        applyDefaults(project, extension)
         configureMkdocsTasks(project, extension)
         configurePublish(project, extension)
     }
 
-    private void applyDefaultModules(Project project) {
+    private void applyDefaults(Project project, MkdocsExtension extension) {
         // apply default mkdocs, material and minimal plugins
         // // user will be able to override versions, if required
         project.extensions.getByType(PythonExtension).modules.addAll(MkdocsExtension.DEFAULT_MODULES)
+
+        project.afterEvaluate {
+            // project version by default
+            extension.docVersion = extension.docVersion ?: project.version
+            // set publish repository to the current project by default
+            extension.publishRepoUri = extension.publishRepoUri ?: getProjectRepoUri(project)
+        }
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)
@@ -139,6 +143,17 @@ class MkdocsPlugin implements Plugin<Project> {
     private String getComment(MkdocsExtension extension) {
         return new GStringTemplateEngine().createTemplate(extension.publishComment)
                 .make([docVersion: extension.docVersion]).toString()
+    }
+
+    @SuppressWarnings('UnnecessaryCast')
+    private String getProjectRepoUri(Project project) {
+        try {
+            Grgit repo = Grgit.open([dir: project.rootDir] as Map<String, Object>)
+            return repo.remote.list().find { it.name == 'origin' }?.url
+        } catch (RepositoryNotFoundException ignored) {
+            // repository not initialized case - do nothing (most likely user is just playing with the plugin)
+        }
+        return null
     }
 
 }

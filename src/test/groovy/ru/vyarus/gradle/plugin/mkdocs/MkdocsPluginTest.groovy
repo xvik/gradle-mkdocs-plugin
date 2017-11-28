@@ -2,8 +2,6 @@ package ru.vyarus.gradle.plugin.mkdocs
 
 import org.ajoberstar.gradle.git.publish.GitPublishPlugin
 import org.gradle.api.Project
-import org.gradle.api.ProjectConfigurationException
-import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 import ru.vyarus.gradle.plugin.python.PythonExtension
 
@@ -26,7 +24,7 @@ class MkdocsPluginTest extends AbstractTest {
         project.extensions.findByType(PythonExtension).modules == MkdocsExtension.DEFAULT_MODULES as List
 
         then: "mkdocs tasks registered"
-        def task = {project.tasks.findByName(it)}
+        def task = { project.tasks.findByName(it) }
         task('mkdocsBuild')
         task('mkdocsServe')
         task('mkdocsInit')

@@ -42,6 +42,6 @@ class MkDocsBuildTask extends MkdocsTask {
 
     @Override
     String getCommand() {
-        return "build --clean --site-dir ${getOutputDir()}"
+        return "build -c -d \"${getOutputDir().canonicalPath}\""
     }
 }

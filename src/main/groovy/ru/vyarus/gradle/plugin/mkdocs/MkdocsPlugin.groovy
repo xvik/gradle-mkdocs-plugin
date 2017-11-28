@@ -42,9 +42,13 @@ class MkdocsPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         MkdocsExtension extension = project.extensions.create('mkdocs', MkdocsExtension)
-        extension.docVersion = project.version
 
         project.plugins.apply(PythonPlugin)
+
+        project.afterEvaluate {
+            // project version by default
+            extension.docVersion = extension.docVersion ?: project.version
+        }
 
         applyDefaultModules(project)
         configureMkdocsTasks(project, extension)
@@ -60,7 +64,7 @@ class MkdocsPlugin implements Plugin<Project> {
     @CompileStatic(TypeCheckingMode.SKIP)
     private void configureMkdocsTasks(Project project, MkdocsExtension extension) {
 
-        Closure strictConvention = { extension.strict ? ['--strict'] : null }
+        Closure strictConvention = { extension.strict ? ['-s'] : null }
 
         project.tasks.create(MKDOCS_BUILD_TASK, MkDocsBuildTask) {
             description = 'Build mkdocs documentation'
@@ -121,8 +125,8 @@ class MkdocsPlugin implements Plugin<Project> {
             }
         }
 
-        // gitPublishReset  <- mkdocsBuild <- gitPublishCopy <- gitPublishCommit <- gitPublishPush <- mkdocsPublish
-        project.tasks.gitPublishCopy.dependsOn MKDOCS_BUILD_TASK
+        // mkdocsBuild <- gitPublishReset <- gitPublishCopy <- gitPublishCommit <- gitPublishPush <- mkdocsPublish
+        project.tasks.gitPublishReset.dependsOn MKDOCS_BUILD_TASK
 
         // create dummy task to simplify usage
         project.tasks.create('mkdocsPublish') {

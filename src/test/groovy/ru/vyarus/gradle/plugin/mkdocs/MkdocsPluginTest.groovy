@@ -1,8 +1,11 @@
 package ru.vyarus.gradle.plugin.mkdocs
 
+import org.ajoberstar.gradle.git.publish.GitPublishPlugin
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
+import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
+import ru.vyarus.gradle.plugin.python.PythonExtension
 
 /**
  * @author Vyacheslav Rusakov
@@ -19,41 +22,22 @@ class MkdocsPluginTest extends AbstractTest {
         then: "extension registered"
         project.extensions.findByType(MkdocsExtension)
 
-    }
+        then: "default modules registered"
+        project.extensions.findByType(PythonExtension).modules == MkdocsExtension.DEFAULT_MODULES as List
 
-    def "Check extension validation"() {
+        then: "mkdocs tasks registered"
+        def task = {project.tasks.findByName(it)}
+        task('mkdocsBuild')
+        task('mkdocsServe')
+        task('mkdocsInit')
+        task('mkdocsPublish')
 
-        when: "plugin configured"
-        Project project = project {
-            apply plugin: "ru.vyarus.mkdocs"
+        then: "publish plugin applied"
+        project.plugins.findPlugin(GitPublishPlugin)
 
-            mkdocs {
-                foo '1'
-                bar '2'
-            }
-        }
-
-        then: "validation pass"
-        def mkdocs = project.extensions.mkdocs;
-        mkdocs.foo == '1'
-        mkdocs.bar == '2'
-    }
-
-
-    def "Check extension validation failure"() {
-
-        when: "plugin configured"
-        Project project = project {
-            apply plugin: "ru.vyarus.mkdocs"
-
-            mkdocs {
-                foo '1'
-            }
-        }
-
-        then: "validation failed"
-        def ex = thrown(ProjectConfigurationException)
-        ex.cause.message == 'mkdocs.bar configuration required'
+        then: "task graph valid"
+        task('mkdocsPublish').dependsOn.contains('gitPublishPush')
+        task('gitPublishReset').dependsOn.contains('mkdocsBuild')
     }
 
 }

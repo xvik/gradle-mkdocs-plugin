@@ -9,18 +9,29 @@ import org.gradle.testkit.runner.TaskOutcome
  */
 class MkdocsPluginKitTest extends AbstractKitTest {
 
-    def "Check plugin execution"() {
+    def "Check workflow"() {
         setup:
         build """
             plugins {
-                id 'ru.vyarus.mkdocs'
+                id 'ru.vyarus.mkdocs'                                
             }
+            
+            version = '1.0-SNAPSHOT'
         """
 
-        when: "run task"
+        when: "run init"
         BuildResult result = run('mkdocsInit')
 
-        then: "task successful"
+        then: "docs created"
         result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "build site"
+        result = run('mkdocsBuild')
+
+        then: "built"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        file('build/mkdocs/1.0-SNAPSHOT/index.html').exists()
+
     }
 }

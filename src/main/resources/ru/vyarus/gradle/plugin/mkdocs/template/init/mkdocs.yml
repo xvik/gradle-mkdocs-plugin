@@ -15,7 +15,7 @@ site_description: @projectDescription@
 
 # Meterial theme
 theme: 'material'
-extra:
+#extra:
 #  palette:
 #    primary: 'indigo'
 #    accent: 'indigo'

@@ -32,4 +32,28 @@ class MkdocksInitTaskKitTest extends AbstractKitTest {
         file('src/doc/docs/about/history.md').exists()
         file('src/doc/docs/guide/installation.md').exists()
     }
+
+    def "Check site init into different dir"() {
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'
+            }
+            
+            mkdocs.sourcesDir = 'docs'
+        """
+        file('docs/').mkdirs()
+
+        when: "run task"
+        BuildResult result = run('mkdocsInit')
+
+        then: "task successful"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('docs/mkdocs.yml').exists()
+
+        then: "all dirs generated"
+        file('docs/docs/index.md').exists()
+        file('docs/docs/about/history.md').exists()
+        file('docs/docs/guide/installation.md').exists()
+    }
 }

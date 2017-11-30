@@ -21,15 +21,16 @@ class MkDocsBuildTask extends MkdocsTask {
     void run() {
         super.run()
 
-        // add redirect index file
-        if (extension.publishAsDefaultVersion) {
+        // add redirect index file if multi-version publishing used
+        String path = extension.resolveDocPath()
+        if (path && extension.publish.rootRedirect) {
             URL template = getClass()
                     .getResource('/ru/vyarus/gradle/plugin/mkdocs/template/publish/index.html')
 
             project.copy {
                 from project.file(template)
                 into extension.buildDir
-                filter(ReplaceTokens, tokens: [docVersion: extension.docVersion])
+                filter(ReplaceTokens, tokens: [docPath: path])
             }
         }
     }

@@ -38,4 +38,77 @@ class MkdocsPluginTest extends AbstractTest {
         task('gitPublishReset').dependsOn.contains('mkdocsBuild')
     }
 
+    def "Check default resolution"() {
+
+        when: "plugin applied"
+        Project project = ProjectBuilder.builder().build()
+        project.version = '1.0'
+        project.plugins.apply "ru.vyarus.mkdocs"
+        MkdocsExtension ext = project.extensions.findByType(MkdocsExtension)
+
+        then: 'resolution correct'
+        ext.resolveDocPath() == '1.0'
+        ext.resolveComment() == 'Publish 1.0 documentation'
+
+    }
+
+    def "Check extra slashes resolution"() {
+
+        when: "plugin applied"
+        Project project = ProjectBuilder.builder().build()
+        project.version = '1.0'
+        project.plugins.apply "ru.vyarus.mkdocs"
+        MkdocsExtension ext = project.extensions.findByType(MkdocsExtension)
+        ext.publish.docPath = '/1.0/'
+
+        then: 'resolution correct'
+        ext.resolveDocPath() == '1.0'
+        ext.resolveComment() == 'Publish 1.0 documentation'
+
+    }
+
+    def "Check complex path resolution"() {
+
+        when: "plugin applied"
+        Project project = ProjectBuilder.builder().build()
+        project.version = '1.0'
+        project.plugins.apply "ru.vyarus.mkdocs"
+        MkdocsExtension ext = project.extensions.findByType(MkdocsExtension)
+        ext.publish.docPath = '/en/$version/'
+
+        then: 'resolution correct'
+        ext.resolveDocPath() == 'en/1.0'
+        ext.resolveComment() == 'Publish en/1.0 documentation'
+
+    }
+
+    def "Check no multi-version"() {
+
+        when: "plugin applied"
+        Project project = ProjectBuilder.builder().build()
+        project.version = '1.0'
+        project.plugins.apply "ru.vyarus.mkdocs"
+        MkdocsExtension ext = project.extensions.findByType(MkdocsExtension)
+        ext.publish.docPath = null
+
+        then: 'resolution correct'
+        ext.resolveDocPath() == null
+        ext.resolveComment() == 'Publish  documentation'
+
+    }
+
+    def "Check no multi-version 2"() {
+
+        when: "plugin applied"
+        Project project = ProjectBuilder.builder().build()
+        project.version = '1.0'
+        project.plugins.apply "ru.vyarus.mkdocs"
+        MkdocsExtension ext = project.extensions.findByType(MkdocsExtension)
+        ext.publish.docPath = ''
+
+        then: 'resolution correct'
+        ext.resolveDocPath() == null
+        ext.resolveComment() == 'Publish  documentation'
+
+    }
 }

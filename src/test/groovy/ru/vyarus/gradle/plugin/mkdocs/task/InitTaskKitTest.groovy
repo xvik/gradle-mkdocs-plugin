@@ -8,7 +8,7 @@ import ru.vyarus.gradle.plugin.mkdocs.AbstractKitTest
  * @author Vyacheslav Rusakov
  * @since 23.11.2017
  */
-class MkdocksInitTaskKitTest extends AbstractKitTest {
+class InitTaskKitTest extends AbstractKitTest {
 
     def "Check site init"() {
         setup:

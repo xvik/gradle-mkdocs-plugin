@@ -8,7 +8,7 @@ import ru.vyarus.gradle.plugin.mkdocs.AbstractKitTest
  * @author Vyacheslav Rusakov
  * @since 29.11.2017
  */
-class MkdocsBuildTaskKitTest extends AbstractKitTest {
+class BuildTaskKitTest extends AbstractKitTest {
 
     def "Check build"() {
         setup:
@@ -55,10 +55,10 @@ class MkdocsBuildTaskKitTest extends AbstractKitTest {
             
             version = '1.0'  
             
-            mkdocs {
+            mkdocs.publish {
                 // simulation case: updating docs for older version 
-                docVersion = '0.9'
-                publishAsDefaultVersion = false
+                docPath = '0.9'
+                rootRedirect = false
             }
         """
 

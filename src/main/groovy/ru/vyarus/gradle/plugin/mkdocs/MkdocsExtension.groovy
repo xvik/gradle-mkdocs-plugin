@@ -1,12 +1,15 @@
 package ru.vyarus.gradle.plugin.mkdocs
 
+import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
+import groovy.transform.Memoized
+import org.gradle.api.Project
 
 /**
  * Mkdocs plugin extension.
  * <p>
- * If extra python packages required, use python extension: {@code python.pip 'module:version', 'module2:version'}.
- * To override default package version: {@code python.pip 'mkdocs:17.0'} (even downgrade allowed).
+ * If extra python packages are required, use python extension: {@code python.pip 'module:version', 'module2:version'}.
+ * To override default package version: {@code python.pip 'mkdocs:17.0'} (even downgrade is allowed).
  * See <a href="https://github.com/xvik/gradle-use-python-plugin">gradle-use-python-plugin</a> for details.
  * <p>
  * Publishing to github pages is implemented with
@@ -32,6 +35,12 @@ class MkdocsExtension {
             'pymdown-extensions:4.3',
     ]
 
+    private final Project project
+
+    MkdocsExtension(Project project) {
+        this.project = project
+    }
+
     /**
      * Documentation sources folder (mkdocs sources root folder).
      */
@@ -44,51 +53,95 @@ class MkdocsExtension {
     boolean strict = true
 
     /**
-     * Current documentation version. Used to publish generated docs under that version on github pages.
-     * It will be set project version by default, but in most cases it should be manually set to the last
-     * released version because current version documentation is often updated after the release.
-     * <p>
-     * Reminder: expected github pages structure is /version/doc-site (so github pages holds documentation
-     * for all versions).
-     */
-    String docVersion
-
-    /**
-     * Root directory used for documentation building (folder structure is different from usual mkdocs because
-     * multi-version publishing is expected).
-     * Mkdocs build task will build into $buildDir/$docVersion/.
-     * If root redirect enabled (publish as default version) then index.html will be added at the root.
+     * Documentation build directory root. Folder structure is different from usual mkdocs because multi-version
+     * publishing is expected. Mkdocs build task will actually build into {@code '$buildDir/$publish.docPath/'}.
+     * If root redirect is enabled (publish as default version) then index.html (with redirect) will be
+     * automatically added at the root folder during the build.
      */
     String buildDir = 'build/mkdocs'
 
     /**
-     * Folder used for gh-pages repository checkout/update/publish. Use gradle folder to "cache" gh-pages checkout
-     * because eventually it would contain multiple versions which does not have to be loaded (checkout) on each
-     * publication.
+     * Publication configuration.
      */
-    String publishRepoDir = '.gradle/gh-pages'
+    final Publish publish = new Publish()
+
+    void setPublish(@DelegatesTo(Publish) Closure config) {
+        project.configure(publish, config)
+    }
+
+    @Memoized
+    String resolveDocPath() {
+        if (!publish.docPath) {
+            return null
+        }
+        String path = render(publish.docPath, [version: project.version])
+        String slash = '/'
+        // cut off leading slash
+        if (path.startsWith(slash)) {
+            path = path[1..path.length() - 1]
+        }
+        // cut off trailing slash
+        if (path.endsWith(slash)) {
+            path = path[0..path.length() - 2]
+        }
+        return path
+    }
+
+    @Memoized
+    String resolveComment() {
+        render(publish.comment, [docPath: resolveDocPath() ?: ''])
+    }
+
+    private String render(String template, Map args) {
+        new GStringTemplateEngine().createTemplate(template).make(args).toString()
+    }
 
     /**
-     * Publish repository url. If not set (default) then the same repository will be used (different branch).
-     * This is quite common for open source projects to publish github pages on the same repository as source.
+     * Publication configuration.
      */
-    String publishRepoUri
+    static class Publish {
+        /**
+         * Documentation publishing path (relative to github pages root). By default set to project version
+         * (to be published on as {@code '/version/'}, for example {@code '/1.0.2/').
+         * <p>
+         * If documentation needs to be updated after project release (quite often case) or simply not
+         * published with the project release, set required version manually ({@code mkdocs.publish.docPath = '1.1'}).
+         * <p>
+         * Path may represent any folder structure, for example: {@code '/en/12.1/'}. Set to null or empty
+         * to publish documentation without sub folders (in this case {@link # rootRedirect} option will be ignored.
+         */
+        String docPath = '$version'
 
-    /**
-     * Target branch name. Github pages branch name by default.
-     */
-    String publishBranch = 'gh-pages'
+        /**
+         * When enabled, publish additional index.html at the root. Index file will redirect to the published
+         * documentation sub folder (last published version).
+         * <p>
+         * Ignored if {@link #docPath} set to null or empty (multi version publishing not used).
+         */
+        boolean rootRedirect = true
 
-    /**
-     * Set redirect from github pages root to published version (index.html committed at the root with redirect).
-     * Example: if true, then root github pages url (http://something/) will redirect to published
-     * version (http://something/1.1.0/).
-     */
-    boolean publishAsDefaultVersion = true
+        /**
+         * Publish repository url. If not set, then the same repository will be used (with different branch).
+         * This is quite common for open source projects to publish github pages on the same repository as source
+         * (into gh-pages branch).
+         */
+        String repoUri
 
-    /**
-     * Commit message template.
-     */
-    String publishComment = 'Publish documentation for version $docVersion'
+        /**
+         * Target branch name. Github pages branch name by default.
+         */
+        String branch = 'gh-pages'
 
+        /**
+         * Commit message template.
+         */
+        String comment = 'Publish $docPath documentation'
+
+        /**
+         * Folder used for gh-pages repository checkout/update/publish. Use gradle folder to cache gh-pages checkout
+         * because eventually it would contain multiple versions which does not have to be loaded (checkout) on each
+         * publication.
+         */
+        String repoDir = '.gradle/gh-pages'
+    }
 }

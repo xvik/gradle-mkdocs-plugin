@@ -1,6 +1,5 @@
 package ru.vyarus.gradle.plugin.mkdocs
 
-import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.ajoberstar.gradle.git.publish.GitPublishPlugin
@@ -43,7 +42,7 @@ class MkdocsPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        MkdocsExtension extension = project.extensions.create('mkdocs', MkdocsExtension)
+        MkdocsExtension extension = project.extensions.create('mkdocs', MkdocsExtension, project)
 
         project.plugins.apply(PythonPlugin)
 
@@ -54,14 +53,12 @@ class MkdocsPlugin implements Plugin<Project> {
 
     private void applyDefaults(Project project, MkdocsExtension extension) {
         // apply default mkdocs, material and minimal plugins
-        // // user will be able to override versions, if required
+        // user will be able to override versions, if required
         project.extensions.getByType(PythonExtension).modules.addAll(MkdocsExtension.DEFAULT_MODULES)
 
         project.afterEvaluate {
-            // project version by default
-            extension.docVersion = extension.docVersion ?: project.version
             // set publish repository to the current project by default
-            extension.publishRepoUri = extension.publishRepoUri ?: getProjectRepoUri(project)
+            extension.publish.repoUri = extension.publish.repoUri ?: getProjectRepoUri(project)
         }
     }
 
@@ -75,7 +72,7 @@ class MkdocsPlugin implements Plugin<Project> {
             group = DOCUMENTATION_GROUP
             conventionMapping.with {
                 it.extraArgs = strictConvention
-                it.outputDir = { project.file("${extension.buildDir}/${extension.docVersion}") }
+                it.outputDir = { project.file("${getBuildOutputDir(extension)}") }
             }
         }
 
@@ -101,30 +98,32 @@ class MkdocsPlugin implements Plugin<Project> {
         project.plugins.apply(GitPublishPlugin)
 
         project.afterEvaluate {
+            MkdocsExtension.Publish publish = extension.publish
+            String path = extension.resolveDocPath()
+
             project.configure(project) {
                 gitPublish {
 
-                    // by default the same repo
-                    if (extension.publishRepoUri) {
-                        repoUri = extension.publishRepoUri
-                    }
-
-                    branch = extension.publishBranch
+                    repoUri = publish.repoUri
+                    branch = publish.branch
 
                     // folder to checkout branch, apply changes and commit
-                    repoDir = file(extension.publishRepoDir)
+                    repoDir = file(publish.repoDir)
 
                     contents {
                         from("${extension.buildDir}")
                     }
 
-                    // keep everything (all other versions) except publishing version
-                    preserve {
-                        include '**'
-                        exclude "${extension.docVersion}/**"
+                    // required only when multi-version publishing used
+                    if (path) {
+                        // keep everything (all other versions) except publishing version
+                        preserve {
+                            include '**'
+                            exclude "${path}/**"
+                        }
                     }
 
-                    commitMessage = getComment(extension)
+                    commitMessage = extension.resolveComment()
                 }
             }
         }
@@ -135,14 +134,14 @@ class MkdocsPlugin implements Plugin<Project> {
         // create dummy task to simplify usage
         project.tasks.create('mkdocsPublish') {
             group = DOCUMENTATION_GROUP
-            description = 'Publish documentation version to github pages'
+            description = 'Publish documentation'
             dependsOn 'gitPublishPush'
         }
     }
 
-    private String getComment(MkdocsExtension extension) {
-        return new GStringTemplateEngine().createTemplate(extension.publishComment)
-                .make([docVersion: extension.docVersion]).toString()
+    private String getBuildOutputDir(MkdocsExtension extension) {
+        String path = extension.resolveDocPath()
+        return extension.buildDir + (path ? '/' + path : '')
     }
 
     @SuppressWarnings('UnnecessaryCast')

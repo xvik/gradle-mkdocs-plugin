@@ -8,7 +8,7 @@ import ru.vyarus.gradle.plugin.mkdocs.AbstractKitTest
  * @author Vyacheslav Rusakov
  * @since 29.11.2017
  */
-class MkdocsServeTaskKitTest extends AbstractKitTest {
+class ServeTaskKitTest extends AbstractKitTest {
 
     def "Check serve"() {
         setup:

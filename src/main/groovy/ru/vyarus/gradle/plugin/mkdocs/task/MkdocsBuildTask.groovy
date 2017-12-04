@@ -12,7 +12,7 @@ import org.gradle.api.tasks.OutputDirectory
  * @since 14.11.2017
  */
 @CompileStatic
-class MkkdocsBuildTask extends MkdocsTask {
+class MkdocsBuildTask extends MkdocsTask {
 
     @OutputDirectory
     File outputDir
@@ -23,7 +23,7 @@ class MkkdocsBuildTask extends MkdocsTask {
 
         // add redirect index file if multi-version publishing used
         String path = extension.resolveDocPath()
-        if (path && extension.publish.rootRedirect) {
+        if (path) {
             if (extension.publish.rootRedirect) {
                 // create root redirection file
                 URL template = getClass()

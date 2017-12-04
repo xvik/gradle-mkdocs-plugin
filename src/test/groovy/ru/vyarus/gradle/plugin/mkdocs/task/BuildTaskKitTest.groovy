@@ -144,6 +144,7 @@ class BuildTaskKitTest extends AbstractKitTest {
         file('build/mkdocs/index.html').exists()
 
         when: "building without redirect"
+        buildFile.delete()
         build """
             plugins {
                 id 'ru.vyarus.mkdocs'                                                              

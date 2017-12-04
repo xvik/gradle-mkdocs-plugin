@@ -7,7 +7,7 @@ import org.ajoberstar.grgit.Grgit
 import org.eclipse.jgit.errors.RepositoryNotFoundException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import ru.vyarus.gradle.plugin.mkdocs.task.MkDocsBuildTask
+import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsBuildTask
 import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsInitTask
 import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsTask
 import ru.vyarus.gradle.plugin.python.PythonExtension
@@ -67,7 +67,7 @@ class MkdocsPlugin implements Plugin<Project> {
 
         Closure strictConvention = { extension.strict ? ['-s'] : null }
 
-        project.tasks.create(MKDOCS_BUILD_TASK, MkDocsBuildTask) {
+        project.tasks.create(MKDOCS_BUILD_TASK, MkdocsBuildTask) {
             description = 'Build mkdocs documentation'
             group = DOCUMENTATION_GROUP
             conventionMapping.with {
@@ -114,7 +114,7 @@ class MkdocsPlugin implements Plugin<Project> {
                     repoDir = file(publish.repoDir)
 
                     contents {
-                        from("${extension.buildDir}")
+                        from(project.tasks.mkdocsBuild)
                     }
 
                     // required only when multi-version publishing used

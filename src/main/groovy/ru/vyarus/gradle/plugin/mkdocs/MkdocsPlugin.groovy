@@ -114,7 +114,7 @@ class MkdocsPlugin implements Plugin<Project> {
                     repoDir = file(publish.repoDir)
 
                     contents {
-                        from(project.tasks.mkdocsBuild)
+                        from("${extension.buildDir}")
                     }
 
                     // required only when multi-version publishing used

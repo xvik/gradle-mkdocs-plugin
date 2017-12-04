@@ -32,7 +32,7 @@ class MkdocsExtension {
             'mkdocs:0.17.2',
             'mkdocs-material:2.2.0',
             'pygments:2.2.0',
-            'pymdown-extensions:4.3',
+            'pymdown-extensions:4.5.1',
     ]
 
     private final Project project

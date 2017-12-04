@@ -12,7 +12,7 @@ import org.gradle.api.tasks.OutputDirectory
  * @since 14.11.2017
  */
 @CompileStatic
-class MkDocsBuildTask extends MkdocsTask {
+class MkkdocsBuildTask extends MkdocsTask {
 
     @OutputDirectory
     File outputDir

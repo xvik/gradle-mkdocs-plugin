@@ -34,4 +34,25 @@ class MkdocsPluginKitTest extends AbstractKitTest {
         file('build/mkdocs/1.0-SNAPSHOT/index.html').exists()
 
     }
+
+    def "Check custom task"() {
+
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            task mkHelp(type: MkdocsTask) {
+                command = '--help'
+            }            
+        """
+
+        when: "run help"
+        BuildResult result = run('mkHelp')
+
+        then: "executed"
+        result.task(':mkHelp').outcome == TaskOutcome.SUCCESS
+        result.output.contains('-V, --version  Show the version and exit.')
+    }
 }

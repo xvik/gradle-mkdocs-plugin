@@ -91,6 +91,9 @@ class MkdocsPlugin implements Plugin<Project> {
         project.tasks.withType(MkdocsTask) { task ->
             task.conventionMapping.workDir = { extension.sourcesDir }
         }
+
+        // simplify direct task usage
+        project.extensions.extraProperties.set(MkdocsTask.simpleName, MkdocsTask)
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)

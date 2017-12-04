@@ -117,4 +117,45 @@ class BuildTaskKitTest extends AbstractKitTest {
         result.task(':mkdocsBuild').outcome == TaskOutcome.FAILED
         result.output.contains("Config file '${file('docs/mkdocs.yml').canonicalPath}' does not exist.")
     }
+
+
+    def "Check stale index.html remove"() {
+
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                                              
+            }            
+        """
+        file('docs/').mkdirs()
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "build site"
+        result = run('mkdocsBuild')
+
+        then: "redirect index generated"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        file('build/mkdocs/index.html').exists()
+
+        when: "building without redirect"
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                                              
+            }
+            
+            mkdocs.publish.rootRedirect = false            
+        """
+        file('src/doc/docs/index.md') << 'overwrite file'
+        result = run('mkdocsBuild')
+
+        then: "index.html removed"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        !file('build/mkdocs/index.html').exists()
+    }
 }

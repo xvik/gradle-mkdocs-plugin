@@ -24,13 +24,23 @@ class MkDocsBuildTask extends MkdocsTask {
         // add redirect index file if multi-version publishing used
         String path = extension.resolveDocPath()
         if (path && extension.publish.rootRedirect) {
-            URL template = getClass()
-                    .getResource('/ru/vyarus/gradle/plugin/mkdocs/template/publish/index.html')
+            if (extension.publish.rootRedirect) {
+                // create root redirection file
+                URL template = getClass()
+                        .getResource('/ru/vyarus/gradle/plugin/mkdocs/template/publish/index.html')
 
-            project.copy {
-                from project.file(template)
-                into extension.buildDir
-                filter(ReplaceTokens, tokens: [docPath: path])
+                project.copy {
+                    from project.file(template)
+                    into extension.buildDir
+                    filter(ReplaceTokens, tokens: [docPath: path])
+                }
+            } else {
+                // remove stale index.html (to avoid unintentional redirect override)
+                // of course, build always must be called after clean, but at leas minimize damage on incorrect usage
+                File index = project.file(extension.buildDir + '/index.html')
+                if (index.exists()) {
+                    index.delete()
+                }
             }
         }
     }

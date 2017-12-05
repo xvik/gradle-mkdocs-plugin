@@ -1,9 +1,9 @@
 package ru.vyarus.gradle.plugin.mkdocs.task
 
 import groovy.transform.CompileStatic
-import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
+import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
 
 /**
  * Builds mkdocs site. If version is configured as default for publication, then generate extra index.html.
@@ -26,14 +26,8 @@ class MkdocsBuildTask extends MkdocsTask {
         if (path) {
             if (extension.publish.rootRedirect) {
                 // create root redirection file
-                URL template = getClass()
-                        .getResource('/ru/vyarus/gradle/plugin/mkdocs/template/publish/index.html')
-
-                project.copy {
-                    from project.file(template)
-                    into extension.buildDir
-                    filter(ReplaceTokens, tokens: [docPath: path])
-                }
+                TemplateUtils.copy(project, '/ru/vyarus/gradle/plugin/mkdocs/template/publish/',
+                        extension.buildDir, [docPath: path])
             } else {
                 // remove stale index.html (to avoid unintentional redirect override)
                 // of course, build always must be called after clean, but at leas minimize damage on incorrect usage

@@ -344,9 +344,9 @@ and previous `custom-dir` folder (already committed) will be removed before.
 Plugin will install by default the following pip modules:
 
 * [mkdocs:0.17.2](https://pypi.python.org/pypi/mkdocs)
-* [mkdocs-material:2.2.0](https://pypi.python.org/pypi/mkdocs-material)
+* [mkdocs-material:2.2.1](https://pypi.python.org/pypi/mkdocs-material)
 * [pygments:2.2.0](https://pypi.python.org/pypi/Pygments)
-* [pymdown-extensions:4.5.1](https://pypi.python.org/pypi/pymdown-extensions)
+* [pymdown-extensions:4.6](https://pypi.python.org/pypi/pymdown-extensions)
 
 If you want to use other python modules:
 

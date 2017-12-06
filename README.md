@@ -13,9 +13,10 @@ Ideal for open source projects:
 * Easy start: initial docs source generation
 * Markdown syntax (with handy extensions)
 * Great look from [material theme](https://squidfunk.github.io/mkdocs-material/) (used by default) with extra features:
+    - Mobile friendly
     - Embedded search
     - Syntax highlighting
-    - Easy documentation contribution (jump to source)
+* Easy documentation contribution (jump to source)
 * Multi-version documentation publishing to github pages 
 
 ##### Summary
@@ -62,7 +63,7 @@ plugins {
 
 #### Python
 
-**Requires installed python** 2.7 or 3.3 and above (most *nix distributions already include it).
+**Requires installed python** 2.7 or 3.3 and above.
 Required pip modules will be installed automatically (make sure exact versions are installed).
 
 Make sure python and pip are installed:
@@ -101,7 +102,7 @@ src/doc/
     mkdocs.yml          - site configuration
 ```
 
-Call `mkdocsServe` task to start live reload server: look [generated default docs](http://127.0.0.1:8000/).
+Call `mkdocsServe` task to start live reload server: look generated default docs ([http://127.0.0.1:8000/](http://127.0.0.1:8000/)).
 
 ### Initial site configuration
 
@@ -113,11 +114,11 @@ Open generated mkdocs config file `src/doc/mkdocs.yml`. It contains many comment
 | Commented option | Recommendation |
 |------------------|--------|   
 | [site_author](http://www.mkdocs.org/user-guide/configuration/#site_author) | fill with you name or remove (appear in meta tags only) |
-| [site_url](http://www.mkdocs.org/user-guide/configuration/#site_url) |  For most cases not useful (only adds link in html page header). May be set to documentation root url. |
+| [site_url](http://www.mkdocs.org/user-guide/configuration/#site_url) |  Set to documentation root url (gh-pages url). Used as meta tag and as a link on the home icon. |
 | | **Repository link on each page (right top corner)** |
 | [repo_name](http://www.mkdocs.org/user-guide/configuration/#repo_name) | Source repository link text (by default set to project name) |
 | [repo_url](http://www.mkdocs.org/user-guide/configuration/#repo_url) | Repository url (Github or Bitbucket) |
-| [edit_uri](http://www.mkdocs.org/user-guide/configuration/#edit_uri) | Path to documentation source in the source repository (required for "edit page" link)|
+| [edit_uri](http://www.mkdocs.org/user-guide/configuration/#edit_uri) | Path to documentation source in the source repository (required for "edit page" (pencil icon) link)|
 |  | **Copyright** |
 | [copyright](http://www.mkdocs.org/user-guide/configuration/#copyright)| Shown below each page |
 
@@ -163,7 +164,7 @@ As documentation is often updated for already released version, it makes sense t
 current version manually (or define it when you need to publish to exact version):
 
 ```groovy
-mkdocs.oublish.docPath = '1.0'
+mkdocs.publish.docPath = '1.0'
 ```
 
 When older documentation version needs to be updated switch off redirection `index.html` generation
@@ -240,12 +241,13 @@ mkdocs {
 Plugin does not use [mkdocs publication](http://www.mkdocs.org/#deploying), because it does not support
 multi-versioning. Instead, [git-publish](https://github.com/ajoberstar/gradle-git-publish) plugin is used for publication.
 
-By default, no configuration is required. Only project itself must be published to git.
+By default, no configuration is required. Only project itself must be published to git so that plugin could calculate default url 
+(or mkdocs.publish.repoUrl manually specified).
 
 On the first `mkdocksPublish` task call:
 
 * `gh-pages` branch will be created in the same repo
-* site built and committed to repository 
+* built site pushed to gh-pages repository branch 
 
 Later `mkdocsPublish` task calls will only remove current version folder (replace with the new one)
 or publish completely new version only.
@@ -278,7 +280,7 @@ with extra `javadoc` folder inside (you can put relative link to it inside docum
 
 ##### Advanced publishing configuration
 
-To be able to configure advanced cases, you need to understand how everything is working in detail.
+To be able to configure advanced cases, you need to understand how everything works in detail.
 
 Here is how [git-publish](https://github.com/ajoberstar/gradle-git-publish) plugin is configured by default:
 
@@ -297,8 +299,7 @@ gitPublish {
     if (multi_version_publish) {
         preserve {
             include '**'
-            // path - mkdocs site generation folder inside extension.buildDir
-            exclude "${path}/**"
+            exclude "${mkdocs.publish.docPath}/**"
         }
     }    
 }
@@ -311,10 +312,10 @@ mkdocsBuild <- gitPublishReset <- gitPublishCopy <- gitPublishCommit <- gitPubli
 
 Publication process:
 
-1. `mkdocsBuild` build site into  `$mkdocs.buildDir/$mkdocs.publish.docPath` (by default, `build/mkdocs/version/`)
-    - root redirect `index.html` could be generated (by default, `build/mkdocs/index.html`)
-1. `gitPublishReset` clones gh-pages repo or creates new one (by default, `.gradle/gh-pages`)
-    - cleanup repo according to `gitPublish.preserve` (by default, `.gradle/gh-pages/version/` folder removed only) 
+1. `mkdocsBuild` build site into  `$mkdocs.buildDir/$mkdocs.publish.docPath` (by default, `build/mkdocs/$version/`)
+    - root redirect `index.html` generated (by default, `build/mkdocs/index.html`)
+1. `gitPublishReset` clones gh-pages repo (by default, into `.gradle/gh-pages`) or creates new one
+    - cleanup repo according to `gitPublish.preserve` (by default, `.gradle/gh-pages/$version/` folder removed only) 
 1. `gitPublishCopy` copies everything according to `gitPublish.contents` (by default, everything from `build/mkdocs`)
 1. `gitPublishCommit`, `gitPublishPush` - commit changes and push to gh-pages repository (by default, `gh-pages` branch in current repo)
 
@@ -336,7 +337,7 @@ gitPublish {
 ```
 
 Here extra `build/custom-dir` directory added for publication (into `custom-dir`)
-and previous `custom-dir` folder (already committed) will be removed before.
+and previous `custom-dir` folder (already committed) will be removed before publication.
 
    
 ### Pip modules
@@ -348,13 +349,13 @@ Plugin will install by default the following pip modules:
 * [pygments:2.2.0](https://pypi.python.org/pypi/Pygments)
 * [pymdown-extensions:4.6](https://pypi.python.org/pypi/pymdown-extensions)
 
-If you want to use other python modules:
+If you want to use other python modules (e.g. other theme):
 
 ```groovy
 python.pip 'other-module:12', 'and-other:1.0'
 ```
 
-Also you can override default modules versions:
+Also, you can override default modules versions:
 
 ```groovy
 python.pip 'mkdocs:18.0'
@@ -387,6 +388,15 @@ task doSomething(type: MkdocsTask) {
 ```
 
 `:doSomething` task call will do: `python -m mkdocs --help`.  
+
+### Might also like
+
+* [quality-plugin](https://github.com/xvik/gradle-quality-plugin) - java and groovy source quality checks
+* [animalsniffer-plugin](https://github.com/xvik/gradle-animalsniffer-plugin) - java compatibility checks
+* [pom-plugin](https://github.com/xvik/gradle-pom-plugin) - improves pom generation
+* [java-lib-plugin](https://github.com/xvik/gradle-java-lib-plugin) - avoid boilerplate for java or groovy library project
+* [github-info-plugin](https://github.com/xvik/gradle-github-info-plugin) - pre-configure common plugins with github related info
+
 
 ---
 [![gradle plugin generator](http://img.shields.io/badge/Powered%20by-%20Gradle%20plugin%20generator-green.svg?style=flat-square)](https://github.com/xvik/generator-gradle-plugin)

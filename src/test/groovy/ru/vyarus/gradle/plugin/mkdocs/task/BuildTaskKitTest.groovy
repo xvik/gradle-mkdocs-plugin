@@ -159,4 +159,36 @@ class BuildTaskKitTest extends AbstractKitTest {
         result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
         !file('build/mkdocs/index.html').exists()
     }
+
+    def "Check up to date"() {
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                                              
+            }
+            
+            version = '1.0'
+        """
+        file('src/doc/').mkdirs()
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "build site"
+        result = run('mkdocsBuild')
+
+        then: "built"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+
+        when: "once again build"
+        result = run('mkdocsBuild')
+
+        then: "built"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.UP_TO_DATE
+
+    }
 }

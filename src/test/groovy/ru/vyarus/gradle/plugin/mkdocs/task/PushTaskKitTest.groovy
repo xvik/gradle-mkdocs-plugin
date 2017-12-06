@@ -209,4 +209,43 @@ class PushTaskKitTest extends AbstractKitTest {
         file('/.gradle/gh-pages/index.html').exists()
         file('/.gradle/gh-pages/index.html').text.contains('URL=\'en/1.1\'')
     }
+
+    def "Check up to date"() {
+
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            version = '1.0'
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "publish"
+        result = run('mkdocsPublish')
+
+        then: "published"
+        result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
+        repo.branch.list().size() == 2
+
+        then: "content available"
+        file('/.gradle/gh-pages/1.0/index.html').exists()
+        file('/.gradle/gh-pages/index.html').exists()
+
+        when: "publish again"
+        result = run('mkdocsPublish')
+
+        then: "version published"
+        result.task(':mkdocsPublish').outcome == TaskOutcome.UP_TO_DATE
+        file('/.gradle/gh-pages/1.0/index.html').exists()
+        file('/.gradle/gh-pages/index.html').exists()
+    }
+
 }

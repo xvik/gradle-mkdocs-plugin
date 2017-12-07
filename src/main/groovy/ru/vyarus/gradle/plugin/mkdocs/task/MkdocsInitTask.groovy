@@ -31,6 +31,6 @@ class MkdocsInitTask extends DefaultTask {
                 projectDescription: project.description ?: '',
                 docDir: extension.sourcesDir,
         ])
-        logger.lifecycle("Mkdocs site initialized in $extension.sourcesDir")
+        logger.lifecycle("Mkdocs site initialized: $extension.sourcesDir")
     }
 }

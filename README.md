@@ -114,7 +114,7 @@ Open generated mkdocs config file `src/doc/mkdocs.yml`. It contains many comment
 | Commented option | Recommendation |
 |------------------|--------|   
 | [site_author](http://www.mkdocs.org/user-guide/configuration/#site_author) | fill with you name or remove (appear in meta tags only) |
-| [site_url](http://www.mkdocs.org/user-guide/configuration/#site_url) |  Set to documentation root url (gh-pages url). Used as meta tag and as a link on the home icon. |
+| [site_url](http://www.mkdocs.org/user-guide/configuration/#site_url) |  Set to documentation root url (gh-pages url). Used as meta tag, as a link on the home icon and inside generated sitemap.xml. **NOTE** plugin will automatically modify url to point to correct published folder (when multi-version publication used). |
 | | **Repository link on each page (right top corner)** |
 | [repo_name](http://www.mkdocs.org/user-guide/configuration/#repo_name) | Source repository link text (by default set to project name) |
 | [repo_url](http://www.mkdocs.org/user-guide/configuration/#repo_url) | Repository url (Github or Bitbucket) |
@@ -206,6 +206,28 @@ mkdocs.publish.docPath = ''  // or null
 This way, mkdocs site will always be published at the root (in case of publish it will always replace 
 previous site version).
 
+#### site_url
+
+[`site_url`](http://www.mkdocs.org/user-guide/configuration/#site_url) configuration defined in mkdocs.yml should point to the site root. It may be github pages or some custom domain.
+Setting affect home icon link, page metadata and links in genearted sitemap.xml.
+
+When multi-version publishing used (by default), this url must be modified to match target documentation folder
+(otherwise links will be incorrect)). To avoid manual changes, just configure *root site url* and 
+plugin will *automatically* change site_url before `mkdocsBuild` (config is reverted back after the task, so
+you will not have to commit or revert changes).
+
+If `site_url` option is not defined at all (or multi-version publishing is not enabled) then
+config will not be changed.
+
+You can disable automatic configuration changes:
+
+```groovy
+mkdocs.updateSiteUrl = false
+```
+
+Note that `mkdocsServe` is not affected (will generate with the original site_url) because it is
+not important for documentation writing (you can always call `mkdocsBuild` and validate urls correctness).
+
 ### Configuration
 
 Configuration properties with default values:
@@ -218,6 +240,8 @@ mkdocs {
     strict = true    
     // target build directory (publication root)
     buildDir = 'build/mkdocs'
+    // automatically update site_url in mkdocs.yml before mkdocsBuild
+    updateSiteUrl = true
     
     publish {
         // publication sub-folder (by default project version)

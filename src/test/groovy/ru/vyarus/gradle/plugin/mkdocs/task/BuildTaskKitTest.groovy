@@ -35,6 +35,8 @@ class BuildTaskKitTest extends AbstractKitTest {
         result.output =~ /\[python\] python -m mkdocs build -c -d "[^"]+" -s/
 
         file('build/mkdocs/1.0/index.html').exists()
+        // site_url wasn't modified
+        file('build/mkdocs/1.0/sitemap.xml').text.contains('<loc>/guide/installation/</loc>')
         file('build/mkdocs/index.html').exists()
         file('build/mkdocs/index.html').text.contains('URL=\'1.0\'')
 
@@ -115,7 +117,7 @@ class BuildTaskKitTest extends AbstractKitTest {
 
         then: "correct source path used"
         result.task(':mkdocsBuild').outcome == TaskOutcome.FAILED
-        result.output.contains("Config file '${file('docs/mkdocs.yml').canonicalPath}' does not exist.")
+        result.output.contains('Mkdocs config file not found: docs\\mkdocs.yml')
     }
 
 

@@ -49,6 +49,7 @@ class InitTaskKitTest extends AbstractKitTest {
 
         then: "task successful"
         result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        result.output.contains('Mkdocs site initialized: docs')
         file('docs/mkdocs.yml').exists()
 
         then: "all dirs generated"

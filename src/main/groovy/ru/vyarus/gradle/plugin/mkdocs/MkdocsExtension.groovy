@@ -61,6 +61,23 @@ class MkdocsExtension {
     String buildDir = 'build/mkdocs'
 
     /**
+     * 'site_url' configuration in mkdocs.yml declares full site url. Configuration affects meta tag and
+     * generated sitemap.xml. With multi-version publication, different site url's must be used for each
+     * generated version.
+     * <p>
+     * Set root site url into 'site_url' and mkdocsBuild will update mkdocs.yml by adding correct folder
+     * to the root path. This way generated site will contain correct urls. After the build original config
+     * is reverted (so config will always contain the root url).
+     * <p>
+     * Note that config will not be touched if site_url is not defined or multi-version publishing not used.
+     * Config will not be changed for mkdocsServe task because it is not important for general documentation
+     * development (you can always build final version (with mkdocsBuild) and verify generated urls).
+     * <p>
+     * Set to false to disable mkdocs.yml config modification.
+     */
+    boolean updateSiteUrl = true
+
+    /**
      * Publication configuration.
      */
     final Publish publish = new Publish()

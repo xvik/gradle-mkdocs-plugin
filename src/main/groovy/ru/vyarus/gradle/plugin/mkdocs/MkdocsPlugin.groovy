@@ -73,6 +73,7 @@ class MkdocsPlugin implements Plugin<Project> {
             conventionMapping.with {
                 it.extraArgs = strictConvention
                 it.outputDir = { project.file("${getBuildOutputDir(extension)}") }
+                it.updateSiteUrl = { extension.updateSiteUrl }
             }
         }
 

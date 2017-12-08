@@ -42,7 +42,9 @@ class MkdocsConfig {
         if (line) {
             int pos = line.indexOf(':')
             // special case: no value defined on property
-            return pos < line.length() - 1 ? line[pos + 1..-1].trim() : ''
+            String res = pos < line.length() - 1 ? line[pos + 1..-1].trim() : ''
+            // remove quotes
+            return res.replaceAll(/^['"]/, '').replaceAll(/['"]$/, '')
         }
         return null
     }

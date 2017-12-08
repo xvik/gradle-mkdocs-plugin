@@ -175,4 +175,34 @@ ex: http://other-url.com
 #line
 """
     }
+
+    def "Check quotes support"() {
+
+        setup:
+        Project project = project()
+        File conf = file('mkdocs.yml')
+        conf.createNewFile()
+        MkdocsConfig config = new MkdocsConfig(project, null)
+
+        when: "quoted value"
+        conf.delete()
+        conf << 'ex: \'http://some-url.com\''
+        def val = config.find('ex')
+        then: "found"
+        val == 'http://some-url.com'
+
+        when: "quoted value 2"
+        conf.delete()
+        conf << 'ex: "http://some-url.com"'
+        val = config.find('ex')
+        then: "found"
+        val == 'http://some-url.com'
+
+        when: "write quoted"
+        config.set('ex', '\'http://other-url.com\'')
+        val = config.find('ex')
+        then: "found, but empty"
+        val == 'http://other-url.com'
+        conf.text == 'ex: \'http://other-url.com\''
+    }
 }

@@ -248,4 +248,39 @@ class PushTaskKitTest extends AbstractKitTest {
         file('/.gradle/gh-pages/index.html').exists()
     }
 
+    def "Check auth props bind"() {
+
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+                
+            ext['org.ajoberstar.grgit.auth.username'] = 'user'
+            ext['org.ajoberstar.grgit.auth.password'] = 'pass'                        
+            
+            mkdocsPublish.doLast {
+                println 'check system properties set'
+                assert System.getProperty('org.ajoberstar.grgit.auth.username') == 'user'
+                assert System.getProperty('org.ajoberstar.grgit.auth.password') == 'pass'
+            }
+            
+            version = '1.0'
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "publish"
+        result = run('mkdocsPublish')
+
+        then: "published"
+        result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
+        repo.branch.list().size() == 2
+    }
+
 }

@@ -100,6 +100,7 @@ class MkdocsPlugin implements Plugin<Project> {
     @CompileStatic(TypeCheckingMode.SKIP)
     private void configurePublish(Project project, MkdocsExtension extension) {
         project.plugins.apply(GitPublishPlugin)
+        applyGitCredentials(project)
 
         project.afterEvaluate {
             MkdocsExtension.Publish publish = extension.publish
@@ -159,4 +160,18 @@ class MkdocsPlugin implements Plugin<Project> {
         return null
     }
 
+    private void applyGitCredentials(Project project) {
+        // allow to configure git auth with global gradle properties (instead of swing popup)
+        // http://ajoberstar.org/grgit/grgit-authentication.html
+        project.tasks.getByName('gitPublishReset').doFirst {
+            ['username', 'password', 'ssh.private', 'ssh.passphrase'].each {
+                String key = "org.ajoberstar.grgit.auth.$it"
+                String value = project.findProperty(key)
+                if (value) {
+                    project.logger.lifecycle("Git auth gradle property detected: $key")
+                    System.setProperty(key, value)
+                }
+            }
+        }
+    }
 }

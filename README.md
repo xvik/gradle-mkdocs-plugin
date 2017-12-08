@@ -280,6 +280,34 @@ You can find actual `gh-pages` branch inside `.gradle/gh-pages` (this checkout i
 Gradle folder is used to cache repository checkout because eventually it would contain many versions
 and there is no need to checkout all of them each time (folder could be changed with `mkdocs.publish.repoDir`).
 
+#### Authentication
+
+By default, git-publish will ask credentials with a popup (swing). Even if github pages are published on the same repo,
+the repo is checked out into different folder and so current repository credentials can't be used automatically.  
+
+You can specify credentials as:
+
+* Environment variables: `GRGIT_USER` (could be [github token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)), `GRGIT_PASS`
+* System properties: `org.ajoberstar.grgit.auth.username` (could be github token), `org.ajoberstar.grgit.auth.password`
+* Ssh key properties: `org.ajoberstar.grgit.auth.ssh.private` (path to key), `org.ajoberstar.grgit.auth.ssh.passphrase`
+
+See details in [grgit docs](http://ajoberstar.org/grgit/grgit-authentication.html).
+
+Plugin will automatically bind gradle properties `org.ajoberstar.grgit.auth.*` to system properties (just before `gitPublishReset`).
+This allows you to define credentials as global gradle properties in `~/.gradle/gradle.properties`:
+
+```properties
+org.ajoberstar.grgit.auth.username=user
+org.ajoberstar.grgit.auth.password=pass
+```
+
+For testing, you can define properties inside gradle script:
+
+```groovy
+ext['org.ajoberstar.grgit.auth.username'] = 'user'
+ext['org.ajoberstar.grgit.auth.password'] = 'pass'  
+```
+
 #### Publish additional resources
 
 If you want to publish not only generated site, but something else too then configure

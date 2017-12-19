@@ -47,6 +47,8 @@ class PushTaskKitTest extends AbstractKitTest {
             }
             
             version = '1.0'
+            
+            python.scope = USER
         """
 
         when: "run init"
@@ -78,6 +80,8 @@ class PushTaskKitTest extends AbstractKitTest {
             }
             
             version = '1.1'
+            
+            python.scope = USER
         """
         result = run('mkdocsPublish')
 
@@ -98,6 +102,8 @@ class PushTaskKitTest extends AbstractKitTest {
             }
             
             version = '1.0'
+            
+            python.scope = USER
             
             mkdocs.publish.docPath = null
         """
@@ -134,6 +140,8 @@ class PushTaskKitTest extends AbstractKitTest {
             
             version = '1.1'
             
+            python.scope = USER
+            
             mkdocs.publish.docPath = null
         """
         result = run('mkdocsPublish')
@@ -162,6 +170,8 @@ class PushTaskKitTest extends AbstractKitTest {
             }
             
             version = '1.0'
+            
+            python.scope = USER
             
             mkdocs.publish.docPath = 'en/1.0'
         """
@@ -198,6 +208,8 @@ class PushTaskKitTest extends AbstractKitTest {
             
             version = '1.1'
             
+            python.scope = USER
+            
             mkdocs.publish.docPath = 'en/1.1/'
         """
         result = run('mkdocsPublish')
@@ -219,6 +231,8 @@ class PushTaskKitTest extends AbstractKitTest {
             }
             
             version = '1.0'
+            
+            python.scope = USER
         """
 
         when: "run init"
@@ -266,6 +280,8 @@ class PushTaskKitTest extends AbstractKitTest {
             }
             
             version = '1.0'
+            
+            python.scope = USER
         """
 
         when: "run init"

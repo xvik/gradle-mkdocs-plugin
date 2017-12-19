@@ -18,6 +18,8 @@ class BuildTaskKitTest extends AbstractKitTest {
             }
             
             version = '1.0'  
+            
+            python.scope = USER
         """
 
         when: "run init"
@@ -57,6 +59,8 @@ class BuildTaskKitTest extends AbstractKitTest {
             
             version = '1.0'  
             
+            python.scope = USER
+            
             mkdocs.publish {
                 // simulation case: updating docs for older version 
                 docPath = '0.9'
@@ -88,6 +92,8 @@ class BuildTaskKitTest extends AbstractKitTest {
                 id 'ru.vyarus.mkdocs'                                                              
             }
             
+            python.scope = USER
+            
             mkdocs.strict = false
         """
         file('src/doc/').mkdirs()
@@ -108,6 +114,8 @@ class BuildTaskKitTest extends AbstractKitTest {
                 id 'ru.vyarus.mkdocs'                                                              
             }
             
+            python.scope = USER
+            
             mkdocs.sourcesDir = 'docs'
         """
         file('docs/').mkdirs()
@@ -127,7 +135,9 @@ class BuildTaskKitTest extends AbstractKitTest {
         build """
             plugins {
                 id 'ru.vyarus.mkdocs'                                                              
-            }            
+            }      
+            
+            python.scope = USER      
         """
         file('docs/').mkdirs()
 
@@ -152,6 +162,8 @@ class BuildTaskKitTest extends AbstractKitTest {
                 id 'ru.vyarus.mkdocs'                                                              
             }
             
+            python.scope = USER
+            
             mkdocs.publish.rootRedirect = false            
         """
         file('src/doc/docs/index.md') << 'overwrite file'
@@ -170,6 +182,8 @@ class BuildTaskKitTest extends AbstractKitTest {
             }
             
             version = '1.0'
+            
+            python.scope = USER
         """
         file('src/doc/').mkdirs()
 

@@ -16,6 +16,8 @@ class ServeTaskKitTest extends AbstractKitTest {
             plugins {
                 id 'ru.vyarus.mkdocs'                                                              
             }
+            
+            python.scope = USER
         """
         file('src/doc/').mkdirs()
 
@@ -33,6 +35,8 @@ class ServeTaskKitTest extends AbstractKitTest {
             plugins {
                 id 'ru.vyarus.mkdocs'                                                              
             }
+            
+            python.scope = USER
             
             mkdocs.strict = false
         """
@@ -53,6 +57,8 @@ class ServeTaskKitTest extends AbstractKitTest {
             plugins {
                 id 'ru.vyarus.mkdocs'                                                              
             }
+            
+            python.scope = USER
             
             mkdocs.sourcesDir = 'docs'
         """

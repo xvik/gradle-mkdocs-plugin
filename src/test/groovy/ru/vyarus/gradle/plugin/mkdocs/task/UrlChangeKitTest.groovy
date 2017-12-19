@@ -18,6 +18,8 @@ class UrlChangeKitTest extends AbstractKitTest {
             }
             
             version = '1.0'  
+            
+            python.scope = USER
         """
 
         when: "run init"
@@ -55,6 +57,8 @@ class UrlChangeKitTest extends AbstractKitTest {
             }
             
             version = '1.0'  
+            
+            python.scope = USER
             
             mkdocs.updateSiteUrl = false
         """

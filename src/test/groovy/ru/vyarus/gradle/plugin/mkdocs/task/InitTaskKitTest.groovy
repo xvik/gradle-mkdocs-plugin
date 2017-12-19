@@ -16,6 +16,8 @@ class InitTaskKitTest extends AbstractKitTest {
             plugins {
                 id 'ru.vyarus.mkdocs'
             }
+            
+            python.scope = USER
         """
 
         when: "run task"
@@ -39,6 +41,8 @@ class InitTaskKitTest extends AbstractKitTest {
             plugins {
                 id 'ru.vyarus.mkdocs'
             }
+            
+            python.scope = USER
             
             mkdocs.sourcesDir = 'docs'
         """

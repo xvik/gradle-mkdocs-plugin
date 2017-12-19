@@ -17,6 +17,7 @@ class MkdocsPluginKitTest extends AbstractKitTest {
             }
             
             version = '1.0-SNAPSHOT'
+            python.scope = USER
         """
 
         when: "run init"
@@ -42,6 +43,8 @@ class MkdocsPluginKitTest extends AbstractKitTest {
             plugins {
                 id 'ru.vyarus.mkdocs'                                
             }
+            
+            python.scope = USER
             
             task mkHelp(type: MkdocsTask) {
                 command = '--help'

@@ -49,6 +49,8 @@ class PublishJavadocKitTest extends AbstractKitTest {
             }
             
             version = '1.0'
+
+            python.scope = USER
             
             gitPublish.contents {
                 from(javadoc) {

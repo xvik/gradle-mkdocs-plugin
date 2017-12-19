@@ -63,22 +63,9 @@ plugins {
 
 #### Python
 
-**Requires installed python** 2.7 or 3.3 and above.
-Required pip modules will be installed automatically (make sure exact versions are installed).
+**Requires installed python** 2.7 or 3.3 and above with pip.
 
-Make sure python and pip are installed:
-
-```bash
-python --version
-pip --version
-```
-
-On most *nix distributions python is already installed. On windows 
-[download and install](https://www.python.org/downloads/windows/) python manually or use 
-[chocolately](https://chocolatey.org/packages/python/3.6.3) (`choco install python`)
-
-See [gradle-use-python-plugin](https://gihub.com/xvik/gradle-use-python-plugin) for gradle python 
-integration configuration (if required).
+[Check and install python if required](https://github.com/xvik/gradle-use-python-plugin#python--pip).
 
 ### Usage
 

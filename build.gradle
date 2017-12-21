@@ -18,7 +18,7 @@ wrapper {
     gradleVersion = '4.1'
 }
 
-repositories { jcenter(); mavenLocal(); maven { url "https://plugins.gradle.org/m2/" } }
+repositories { jcenter() }
 dependencies {
     compile 'ru.vyarus:gradle-use-python-plugin:1.0.0'
     compile 'org.ajoberstar:gradle-git-publish:0.3.2'

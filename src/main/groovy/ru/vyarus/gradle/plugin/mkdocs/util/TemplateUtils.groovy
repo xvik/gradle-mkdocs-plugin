@@ -1,7 +1,9 @@
 package ru.vyarus.gradle.plugin.mkdocs.util
 
+import groovy.transform.CompileStatic
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.Project
+import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.file.FileTree
 
 /**
@@ -10,6 +12,7 @@ import org.gradle.api.file.FileTree
  * @author Vyacheslav Rusakov
  * @since 05.12.2017
  */
+@CompileStatic
 class TemplateUtils {
 
     private static final String SLASH = '/'
@@ -38,7 +41,7 @@ class TemplateUtils {
             if (isJar) {
                 include pathToWildcard(path)
                 // cut off path
-                eachFile { f ->
+                eachFile { FileCopyDetails f ->
                     f.path = f.path.replaceFirst(pathToCutPrefix(path), '')
                 }
                 includeEmptyDirs = false

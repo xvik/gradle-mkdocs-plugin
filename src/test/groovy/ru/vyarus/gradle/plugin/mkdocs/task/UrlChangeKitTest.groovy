@@ -36,7 +36,7 @@ class UrlChangeKitTest extends AbstractKitTest {
 
         then: "built"
         result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
-        result.output =~ /\[python\] python -m mkdocs build -c -d "[^"]+" -s/
+        result.output =~ /\[python] python(3)? -m mkdocs build -d "[^"]+" -c -s/
 
         file('build/mkdocs/1.0/index.html').exists()
         // site_url modified
@@ -77,7 +77,7 @@ class UrlChangeKitTest extends AbstractKitTest {
 
         then: "built"
         result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
-        result.output =~ /\[python\] python -m mkdocs build -c -d "[^"]+" -s/
+        result.output =~ /\[python] python(3)? -m mkdocs build -d "[^"]+" -c -s/
 
         file('build/mkdocs/1.0/index.html').exists()
         // site_url wasn't modified

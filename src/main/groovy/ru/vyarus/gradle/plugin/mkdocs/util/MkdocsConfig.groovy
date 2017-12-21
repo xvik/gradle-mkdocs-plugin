@@ -1,5 +1,6 @@
 package ru.vyarus.gradle.plugin.mkdocs.util
 
+import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
@@ -9,6 +10,7 @@ import org.gradle.api.Project
  * @author Vyacheslav Rusakov
  * @since 07.12.2017
  */
+@CompileStatic
 class MkdocsConfig {
 
     private final Project project

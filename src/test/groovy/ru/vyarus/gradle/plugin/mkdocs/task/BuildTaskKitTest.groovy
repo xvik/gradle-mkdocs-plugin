@@ -34,7 +34,7 @@ class BuildTaskKitTest extends AbstractKitTest {
 
         then: "built"
         result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
-        result.output =~ /\[python\] python -m mkdocs build -c -d "[^"]+" -s/
+        result.output =~ /\[python] python(3)? -m mkdocs build -d "[^"]+" -c -s/
 
         file('build/mkdocs/1.0/index.html').exists()
         // site_url wasn't modified
@@ -103,7 +103,7 @@ class BuildTaskKitTest extends AbstractKitTest {
 
         then: "command correct"
         result.task(':mkdocsBuild').outcome == TaskOutcome.FAILED
-        !(result.output =~ /\[python\] python -m mkdocs build -c -d "[^"]+" -s/)
+        !(result.output =~ /\[python] python(3)? -m mkdocs build -c -d "[^"]+" -s/)
     }
 
     def "Check different source folder"() {

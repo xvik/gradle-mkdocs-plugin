@@ -26,7 +26,7 @@ class ServeTaskKitTest extends AbstractKitTest {
 
         then: "command correct"
         result.task(':mkdocsServe').outcome == TaskOutcome.FAILED
-        result.output =~ /\[python\] python -m mkdocs serve -s/
+        result.output =~ /\[python] python(3)? -m mkdocs serve -s/
     }
 
     def "Check non strict serve"() {
@@ -47,7 +47,7 @@ class ServeTaskKitTest extends AbstractKitTest {
 
         then: "command correct"
         result.task(':mkdocsServe').outcome == TaskOutcome.FAILED
-        !(result.output =~ /\[python\] python -m mkdocs serve -s/)
+        !(result.output =~ /\[python] python(3)? -m mkdocs serve -s/)
     }
 
     def "Check different source folder"() {

@@ -55,7 +55,7 @@ class MkdocsBuildTask extends MkdocsTask {
 
     @Override
     String getCommand() {
-        return "build -c -d \"${getOutputDir().canonicalPath}\""
+        return "build -d \"${getOutputDir().canonicalPath}\" -c"
     }
 
     private void withModifiedConfig(String path, Closure action) {

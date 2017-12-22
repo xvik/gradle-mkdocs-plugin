@@ -31,7 +31,7 @@ Ideal for open source projects:
     - `mkdocsPublish` - publish to github pages
     - `type:MkdocsTask` to call custom mdocs commands   
 * Enable plugins: [git-publish](https://github.com/ajoberstar/gradle-git-publish),
-[use-python](https://giеhub.com/xvik/gradle-use-python-plugin)
+[use-python](https://github.com/xvik/gradle-use-python-plugin)
 
 ### Setup
 

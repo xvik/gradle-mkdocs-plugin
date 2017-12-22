@@ -27,14 +27,13 @@ class BuildTaskKitTest extends AbstractKitTest {
 
         then: "docs created"
         result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
-        file('src/doc/mkdocs.yml').exists()
 
         when: "build site"
         result = run('mkdocsBuild')
 
         then: "built"
         result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
-        result.output =~ /\[python] python(3)? -m mkdocs build -d "[^"]+" -c -s/
+        result.output =~ /\[python] python(3)? -m mkdocs build -d ${isWin ? '"[^"]+"' : '[^(-)]+'} -c -s/
 
         file('build/mkdocs/1.0/index.html').exists()
         // site_url wasn't modified
@@ -49,6 +48,36 @@ class BuildTaskKitTest extends AbstractKitTest {
         result.task(':mkdocsBuild').outcome == TaskOutcome.UP_TO_DATE
 
     }
+
+    def "Check build path with space"() {
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                                              
+            }
+            
+            version = 'v 1.0'  
+            
+            python.scope = USER
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "build site"
+        result = run('mkdocsBuild')
+        println(file('build/mkdocs/').list())
+
+        then: "built"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        result.output =~ /\[python] python(3)? -m mkdocs build -d ${isWin ? '"[^"]+"' : '[^(-)]+'} -c -s/
+        file('build/mkdocs/v 1.0/index.html').exists()
+    }
+
 
     def "Check build not default doc"() {
         setup:
@@ -103,7 +132,7 @@ class BuildTaskKitTest extends AbstractKitTest {
 
         then: "command correct"
         result.task(':mkdocsBuild').outcome == TaskOutcome.FAILED
-        !(result.output =~ /\[python] python(3)? -m mkdocs build -c -d "[^"]+" -s/)
+        !(result.output =~ /\[python] python(3)? -m mkdocs build -c -d ${isWin ? '"[^"]+"' : '[^(-)]+'} -s/)
     }
 
     def "Check different source folder"() {
@@ -125,7 +154,7 @@ class BuildTaskKitTest extends AbstractKitTest {
 
         then: "correct source path used"
         result.task(':mkdocsBuild').outcome == TaskOutcome.FAILED
-        result.output.contains('Mkdocs config file not found: docs\\mkdocs.yml')
+        result.output.contains("Mkdocs config file not found: docs${isWin ? '\\' : '/'}mkdocs.yml")
     }
 
 

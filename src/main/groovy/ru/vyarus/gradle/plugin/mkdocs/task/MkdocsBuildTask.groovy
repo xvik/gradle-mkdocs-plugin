@@ -1,10 +1,12 @@
 package ru.vyarus.gradle.plugin.mkdocs.task
 
 import groovy.transform.CompileStatic
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
+import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 import ru.vyarus.gradle.plugin.mkdocs.util.MkdocsConfig
 import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
 
@@ -54,8 +56,22 @@ class MkdocsBuildTask extends MkdocsTask {
     }
 
     @Override
-    String getCommand() {
-        return "build -d \"${getOutputDir().canonicalPath}\" -c"
+    List<String> getExtraArgs() {
+        // TODO temporary solution before python plugin release (move back to command)
+        boolean isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+        String path = getOutputDir().canonicalPath
+        if (isWindows) {
+            // always wrap into quotes for windows
+            path = "\"$path\""
+        } else {
+            // on linux quotes cant be used and spaces must be escaped
+            path = path.replaceAll(' ', '\\ ')
+        }
+        List<String> res = ['build', '-d', path, '-c']
+        if (project.extensions.findByType(MkdocsExtension).strict) {
+            res += ['-s']
+        }
+        return res
     }
 
     private void withModifiedConfig(String path, Closure action) {

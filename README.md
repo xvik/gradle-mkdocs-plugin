@@ -200,10 +200,10 @@ previous site version).
 [`site_url`](http://www.mkdocs.org/user-guide/configuration/#site_url) configuration defined in mkdocs.yml should point to the site root. It may be github pages or some custom domain.
 Setting affect home icon link, page metadata and links in genearted sitemap.xml.
 
-When multi-version publishing used (by default), this url must be modified to match target documentation folder
-(otherwise links will be incorrect)). To avoid manual changes, just configure *root site url* and 
-plugin will *automatically* change site_url before `mkdocsBuild` (config is reverted back after the task, so
-you will not have to commit or revert changes).
+When multi-version publishing used (by default), this url must point to documentation version folder
+(otherwise links will be incorrect in the sitemap). To avoid manual changes, just configure *root site url* (e.g. `http://myroot.com/`) and 
+plugin will *automatically* change site_url before `mkdocsBuild` (for example, to `http://myroot.com/1.0/`; see build log - it will show updated url). 
+Config is reverted back after the task, so you will not have to commit or revert changes.
 
 If `site_url` option is not defined at all (or multi-version publishing is not enabled) then
 config will not be changed.
@@ -390,6 +390,9 @@ Plugin will install by default the following pip modules:
 * [pygments:2.2.0](https://pypi.python.org/pypi/Pygments)
 * [pymdown-extensions:4.6](https://pypi.python.org/pypi/pymdown-extensions)
 
+By default, modules are installed into project specific [virtualenv](https://github.com/xvik/gradle-use-python-plugin#virtualenv). 
+You can see all installed modules with `pipList` task.
+
 If you want to use other python modules (e.g. other theme):
 
 ```groovy
@@ -408,15 +411,7 @@ And even downgrade:
 python.pip 'mkdocs:16.0'
 ```
 
-By default, `pipInstall` prints all global modules into console. If you want to disable it use:
-
-```groovy
-python.showInstalledVersions = false
-```
-
-You can use `pipUpdates` task to check if newer module versions are available.
-
-See [gradle-use-python-plugin](https://github.com/xvik/gradle-use-python-plugin) for other configuration options.
+You can use `pipUpdates` task to check if newer module [versions are available](https://github.com/xvik/gradle-use-python-plugin#check-modules-updates).
 
 ### Custom Mkdocs task
 

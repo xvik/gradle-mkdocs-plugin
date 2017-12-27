@@ -6,7 +6,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
-import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 import ru.vyarus.gradle.plugin.mkdocs.util.MkdocsConfig
 import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
 
@@ -49,29 +48,22 @@ class MkdocsBuildTask extends MkdocsTask {
         }
     }
 
-    @InputDirectory
-    @SuppressWarnings('UnnecessaryGetter')
-    File getSourcesDir() {
-        return project.file(getWorkDir())
-    }
-
     @Override
-    List<String> getExtraArgs() {
-        // TODO temporary solution before python plugin release (move back to command)
+    Object getCommand() {
         boolean isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
         String path = getOutputDir().canonicalPath
         if (isWindows) {
             // always wrap into quotes for windows
             path = "\"$path\""
-        } else {
-            // on linux quotes cant be used and spaces must be escaped
-            path = path.replaceAll(' ', '\\ ')
         }
-        List<String> res = ['build', '-d', path, '-c']
-        if (project.extensions.findByType(MkdocsExtension).strict) {
-            res += ['-s']
-        }
-        return res
+        // use array to avoid escaping spaces in path (and consequent args parsing)
+        return ['build', '-c', '-d', path]
+    }
+
+    @InputDirectory
+    @SuppressWarnings('UnnecessaryGetter')
+    File getSourcesDir() {
+        return project.file(getWorkDir())
     }
 
     private void withModifiedConfig(String path, Closure action) {

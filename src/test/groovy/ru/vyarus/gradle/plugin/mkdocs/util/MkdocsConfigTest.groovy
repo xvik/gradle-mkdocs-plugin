@@ -1,8 +1,10 @@
 package ru.vyarus.gradle.plugin.mkdocs.util
 
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import ru.vyarus.gradle.plugin.mkdocs.AbstractTest
+import spock.lang.IgnoreIf
 
 /**
  * @author Vyacheslav Rusakov
@@ -66,18 +68,27 @@ class MkdocsConfigTest extends AbstractTest {
         back.exists()
         back.text != 'existing back'
 
-        when: "can't restore from backup because backup can't be renamed"
-        // keep config opened to prevent it's deletion
-        file('mkdocs.yml').withReader { reader ->
-            reader.readLine()
-            config.restoreBackup(back)
-        }
-        then: "error"
-        thrown(IllegalStateException)
-
         when: "can't restore from backup because it is not exist"
         back.delete()
         config.restoreBackup(back)
+        then: "error"
+        thrown(IllegalStateException)
+    }
+
+    @IgnoreIf({Os.isFamily(Os.FAMILY_UNIX)})
+    def "Check impossible rename during backup restore"() {
+
+        setup:
+        Project project = project()
+        MkdocsConfig config = new MkdocsConfig(project, null)
+        file('mkdocs.yml').createNewFile()
+        File back = config.backup()
+
+        when: "can't restore from backup because backup can't be renamed"
+        // keep config opened to prevent it's deletion
+        file('mkdocs.yml').withReader { reader ->
+            config.restoreBackup(back)
+        }
         then: "error"
         thrown(IllegalStateException)
     }

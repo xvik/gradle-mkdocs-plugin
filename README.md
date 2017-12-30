@@ -40,7 +40,7 @@ Releases are published to [bintray jcenter](https://bintray.com/vyarus/xvik/grad
 [gradle plugins portal](https://plugins.gradle.org/plugin/ru.vyarus.mkdocs).
 
 
-[![JCenter](https://img.shields.io/bintray/v/vyarus/xvik/gradle-mkdocs-plugin.svg?label=jcenter)](https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/_latestVersion)
+[![JCenter](https://api.bintray.com/packages/vyarus/xvik/gradle-mkdocs-plugin/images/download.svg)](https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/_latestVersion)
 [![Maven Central](https://img.shields.io/maven-central/v/ru.vyarus/gradle-mkdocs-plugin.svg)](https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin)
 
 ```groovy

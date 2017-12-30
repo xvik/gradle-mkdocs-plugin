@@ -59,13 +59,12 @@ class MkdocsConfigTest extends AbstractTest {
 
         when: "creating backup when backup already exists"
         def back = file('mkdocs.yml.bak')
-        back.createNewFile()
-        def original = back.lastModified()
+        back.text = 'existing back'
         config.backup()
         then: "old file removed"
         conf.exists()
         back.exists()
-        back.lastModified() != original
+        back.text != 'existing back'
 
         when: "can't restore from backup because backup can't be renamed"
         // keep config opened to prevent it's deletion

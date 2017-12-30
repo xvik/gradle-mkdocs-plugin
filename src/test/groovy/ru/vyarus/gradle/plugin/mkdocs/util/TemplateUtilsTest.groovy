@@ -27,6 +27,16 @@ class TemplateUtilsTest extends AbstractTest {
         then: "copied"
         file('tp2/mkdocs.yml').exists()
         file('tp2/docs/index.md').exists()
+
+        when: "relative path"
+        TemplateUtils.copy(project, 'relative/path', 'tp', [:])
+        then: "error"
+        thrown(IllegalArgumentException)
+
+        when: "not existing path"
+        TemplateUtils.copy(project, '/not/existing', 'tp', [:])
+        then: "error"
+        thrown(IllegalArgumentException)
     }
 
     def "Check zip access"() {
@@ -59,7 +69,7 @@ class TemplateUtilsTest extends AbstractTest {
         file('tp/docs/index.md').exists()
 
         when: "no trailing slash"
-        TemplateUtils.copy(project, '/template/init/', 'tp2', [:])
+        TemplateUtils.copy(project, '/template/init', 'tp2', [:])
 
         then: "copied"
         file('tp2/mkdocs.yml').exists()

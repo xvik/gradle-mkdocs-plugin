@@ -45,6 +45,43 @@ class MkdocsConfigTest extends AbstractTest {
         conf.text == 'backup'
     }
 
+    def "Check special cases"() {
+
+        setup:
+        Project project = project()
+        MkdocsConfig config = new MkdocsConfig(project, null)
+        file('mkdocs.yml').createNewFile()
+
+        when: "config exists"
+        File conf = config.getConfig()
+        then: "ok"
+        conf.exists()
+
+        when: "creating backup when backup already exists"
+        def back = file('mkdocs.yml.bak')
+        back.createNewFile()
+        def original = back.lastModified()
+        config.backup()
+        then: "old file removed"
+        conf.exists()
+        back.exists()
+        back.lastModified() != original
+
+        when: "can't restore from backup because backup can't be renamed"
+        // keep config opened to prevent it's deletion
+        file('mkdocs.yml').withReader {
+            config.restoreBackup(back)
+        }
+        then: "error"
+        thrown(IllegalStateException)
+
+        when: "can't restore from backup because it is not exist"
+        back.delete()
+        config.restoreBackup(back)
+        then: "error"
+        thrown(IllegalStateException)
+    }
+
     def "Check config in dir"() {
 
         setup:

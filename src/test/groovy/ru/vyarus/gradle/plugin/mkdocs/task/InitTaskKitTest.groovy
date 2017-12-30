@@ -16,6 +16,7 @@ class InitTaskKitTest extends AbstractKitTest {
             plugins {
                 id 'ru.vyarus.mkdocs'
             }
+            description = 'desc'
             
             python.scope = USER
         """
@@ -60,5 +61,29 @@ class InitTaskKitTest extends AbstractKitTest {
         file('docs/docs/index.md').exists()
         file('docs/docs/about/history.md').exists()
         file('docs/docs/guide/installation.md').exists()
+    }
+
+    def "Check init into existing docs dir"() {
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'
+            }
+            
+            python.scope = USER
+        """
+
+        when: "run task"
+        BuildResult result = run('mkdocsInit')
+
+        then: "task successful"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        def yml = file('src/doc/mkdocs.yml')
+        yml.exists()
+
+        when: "call init into already inited dir"
+        result = runFailed('mkdocsInit')
+        then: "error"
+        result.output.contains('Can\'t init new mkdocs site because target directory is not empty:')
     }
 }

@@ -1,6 +1,7 @@
 package ru.vyarus.gradle.plugin.mkdocs.util
 
 import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.Project
 import org.gradle.api.file.FileCopyDetails
@@ -25,6 +26,7 @@ class TemplateUtils {
      * @param to target location (string, File)
      * @param tokens substitution tokens
      */
+    @CompileStatic(TypeCheckingMode.SKIP)
     static void copy(Project project, String path, Object to, Map<String, String> tokens) {
         URL folder = getUrl(path)
         FileTree tree

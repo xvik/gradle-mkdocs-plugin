@@ -64,7 +64,6 @@ class MkdocsPlugin implements Plugin<Project> {
 
     @CompileStatic(TypeCheckingMode.SKIP)
     private void configureMkdocsTasks(Project project, MkdocsExtension extension) {
-
         Closure strictConvention = { extension.strict ? ['-s'] : null }
 
         project.tasks.create(MKDOCS_BUILD_TASK, MkdocsBuildTask) {
@@ -108,7 +107,6 @@ class MkdocsPlugin implements Plugin<Project> {
 
             project.configure(project) {
                 gitPublish {
-
                     repoUri = publish.repoUri
                     branch = publish.branch
 

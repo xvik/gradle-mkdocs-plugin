@@ -8,7 +8,9 @@
 
 Generates project documentation with [Mkdocs](http://www.mkdocs.org/) python tool. 
 
-[Example documentation](http://xvik.github.io/dropwizard-guicey/) (generated and published with the plugin). 
+Examples (documentation generated and published with the plugin):
+* [dropwizard-guicey](http://xvik.github.io/dropwizard-guicey/)
+* [gradle-quality-plugin](http://xvik.github.io/gradle-quality-plugin/) 
 
 Ideal for open source projects:
 

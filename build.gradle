@@ -102,6 +102,9 @@ test {
         exceptionFormat 'full'
     }
     maxHeapSize = '512m'
+    doLast {
+        sleep(500)
+    }
 }
 
 dependencyUpdates.revision = 'release'

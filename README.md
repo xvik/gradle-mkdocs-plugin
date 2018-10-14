@@ -204,7 +204,7 @@ previous site version).
 #### site_url
 
 [`site_url`](http://www.mkdocs.org/user-guide/configuration/#site_url) configuration defined in mkdocs.yml should point to the site root. It may be github pages or some custom domain.
-Setting affect home icon link, page metadata and links in genearted sitemap.xml.
+Setting affect home icon link, page metadata and links in generated sitemap.xml.
 
 When multi-version publishing used (by default), this url must point to documentation version folder
 (otherwise links will be incorrect in the sitemap). To avoid manual changes, just configure *root site url* (e.g. `http://myroot.com/`) and 

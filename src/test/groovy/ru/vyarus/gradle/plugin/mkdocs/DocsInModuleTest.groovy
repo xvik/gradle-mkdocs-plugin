@@ -41,7 +41,7 @@ class DocsInModuleTest extends AbstractKitTest {
         result = run(':doc:mkdocsBuild')
 
         then: "built"
-        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        result.task(':doc:mkdocsBuild').outcome == TaskOutcome.SUCCESS
         file('doc/build/mkdocs/1.0-SNAPSHOT/index.html').exists()
 
     }

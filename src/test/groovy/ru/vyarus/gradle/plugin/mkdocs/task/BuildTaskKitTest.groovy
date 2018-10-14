@@ -37,7 +37,7 @@ class BuildTaskKitTest extends AbstractKitTest {
 
         file('build/mkdocs/1.0/index.html').exists()
         // site_url wasn't modified
-        file('build/mkdocs/1.0/sitemap.xml').text.contains('<loc>/guide/installation/</loc>')
+        file('build/mkdocs/1.0/sitemap.xml').text.contains('<loc>http://localhost/1.0/guide/installation/</loc>')
         file('build/mkdocs/index.html').exists()
         file('build/mkdocs/index.html').text.contains('URL=\'1.0\'')
 

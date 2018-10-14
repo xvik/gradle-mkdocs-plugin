@@ -8,7 +8,7 @@ site_description: @projectDescription@
 # Repository (add link to repository on each page)
 #repo_name: @projectName@
 #repo_url: http://github.com/you/@projectName@
-#edit_uri: edit/master/@docDir@
+#edit_uri: edit/master/@docDir@/docs/
 
 #Copyright (shown at the footer)
 #copyright: 'Copyright &copy; 2017 Your Name'

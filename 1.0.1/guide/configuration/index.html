@@ -317,13 +317,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#docs-as-module" title="Docs as module" class="md-nav__link">
-    Docs as module
-  </a>
-  
-</li>
-      
       
       
       
@@ -463,13 +456,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#docs-as-module" title="Docs as module" class="md-nav__link">
-    Docs as module
-  </a>
-  
-</li>
-      
       
       
       
@@ -536,39 +522,6 @@
 
 <p>This way, mkdocs site will always be published at the root (in case of publish it will always replace 
 previous site version).</p>
-<h2 id="docs-as-module">Docs as module<a class="headerlink" href="#docs-as-module" title="Permanent link">&para;</a></h2>
-<p>Example of moving documentation into separate gradle module: </p>
-<div class="codehilite"><pre><span></span><span class="n">plugins</span> <span class="o">{</span>
-    <span class="n">id</span> <span class="s1">&#39;ru.vyarus.mkdocs&#39;</span> <span class="n">version</span> <span class="s1">&#39;1.0.1&#39;</span> <span class="n">apply</span> <span class="kc">false</span>                                
-<span class="o">}</span>
-
-<span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0-SNAPSHOT&#39;</span>
-
-<span class="n">project</span><span class="o">(</span><span class="s1">&#39;:doc&#39;</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;ru.vyarus.mkdocs&#39;</span> 
-
-    <span class="n">mkdocs</span> <span class="o">{</span>
-        <span class="n">sourcesDir</span> <span class="o">=</span> <span class="s1">&#39;src&#39;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</pre></div>
-
-<p>Default docs location simplified to simple <code>src</code> because of no other sources in this module.</p>
-<p>If we call <code>:doc:mkdocsInit</code> it will generate documentation stubs like this:</p>
-<p>Project structure:</p>
-<div class="codehilite"><pre><span></span>/
-    /doc/
-        src/
-            docs/
-            ...
-            index.md
-        mkdocs.yaml
-build.gradle
-settings.gradle            
-</pre></div>
-
-<p>For simplicity, gradle configuration for <code>doc</code> module is declared in the main file,
-but it could be declared inside doc's own build.gradle.</p>
                 
                   
                 

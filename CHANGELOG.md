@@ -1,3 +1,4 @@
+### 1.1.0 (2018-10-14)
 * Default template's mkdocs.yml changes:
     - fixed `edit_uri` (missed "/docs" ending)
     - `pages` changed to `nav`

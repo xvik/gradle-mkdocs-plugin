@@ -2,10 +2,10 @@
 
 Plugin will install by default the following pip modules:
 
-* [mkdocs:0.17.2](https://pypi.python.org/pypi/mkdocs)
-* [mkdocs-material:2.2.1](https://pypi.python.org/pypi/mkdocs-material)
+* [mkdocs:1.0.4](https://pypi.python.org/pypi/mkdocs)
+* [mkdocs-material:3.0.4](https://pypi.python.org/pypi/mkdocs-material)
 * [pygments:2.2.0](https://pypi.python.org/pypi/Pygments)
-* [pymdown-extensions:4.6](https://pypi.python.org/pypi/pymdown-extensions)
+* [pymdown-extensions:6.0.0](https://pypi.python.org/pypi/pymdown-extensions)
 
 By default, modules are installed into project specific [virtualenv](https://github.com/xvik/gradle-use-python-plugin#virtualenv)
 (located in `.gradle/python`). 
@@ -20,13 +20,13 @@ python.pip 'other-module:12', 'and-other:1.0'
 Also, you can override default modules versions:
 
 ```groovy
-python.pip 'mkdocs:18.0'
+python.pip 'mkdocs:1.0.5'
 ```
 
 And even downgrade:
 
 ```groovy
-python.pip 'mkdocs:16.0'
+python.pip 'mkdocs:1.0.3'
 ```
 
 You can use `pipUpdates` task to check if newer module [versions are available](https://github.com/xvik/gradle-use-python-plugin#check-modules-updates).

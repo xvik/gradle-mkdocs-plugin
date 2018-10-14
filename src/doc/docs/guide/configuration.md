@@ -51,3 +51,43 @@ mkdocs.publish.docPath = ''  // or null
 This way, mkdocs site will always be published at the root (in case of publish it will always replace 
 previous site version).
     
+## Docs as module
+
+Example of moving documentation into separate gradle module: 
+
+```groovy
+plugins {
+    id 'ru.vyarus.mkdocs' version '1.1.0' apply false                                
+}
+
+version = '1.0-SNAPSHOT'
+
+project(':doc') {
+    apply plugin: 'ru.vyarus.mkdocs' 
+    
+    mkdocs {
+        sourcesDir = 'src'
+    }
+}
+```
+
+Default docs location simplified to simple `src` because of no other sources in this module.
+
+If we call `:doc:mkdocsInit` it will generate documentation stubs like this:
+
+Project structure:
+
+```
+/
+    /doc/
+        src/
+            docs/
+            ...
+            index.md
+        mkdocs.yaml
+build.gradle
+settings.gradle            
+```
+
+For simplicity, gradle configuration for `doc` module is declared in the main file,
+but it could be declared inside doc's own build.gradle.

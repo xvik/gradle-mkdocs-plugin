@@ -16,7 +16,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:1.0.1'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:1.1.0'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -26,13 +26,13 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '1.0.1'
+    id 'ru.vyarus.mkdocs' version '1.1.0'
 }
 ```
 
 ### Python
 
-**Requires installed python** 2.7 or 3.3 and above with pip.
+**Requires installed python** 2.7 or 3.4 and above with pip.
 
 [Check and install python if required](https://github.com/xvik/gradle-use-python-plugin#python--pip).
 
@@ -89,10 +89,10 @@ Note that most useful material theme extensions are already enabled (see `markdo
  
 ## Writing
 
-Yaml configuration `pages` section declares your documentation structure. Pages inside `docs` folder
+Yaml configuration `nav` section declares your documentation structure. Pages inside `docs` folder
 may be structured as you want.
 
-To add new page simply add new markdown file (page.md) and add reference to it in `pages` config section.   
+To add new page simply add new markdown file (page.md) and add reference to it in `nav` config section.   
 
 !!! note
     All changes are immediately appeared in the started live reload server (`mkdocsServe`)

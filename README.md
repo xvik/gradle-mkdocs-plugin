@@ -49,7 +49,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:1.0.1'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:1.1.0'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -59,13 +59,13 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '1.0.1'
+    id 'ru.vyarus.mkdocs' version '1.1.0'
 }
 ```
 
 #### Python
 
-**Requires installed python** 2.7 or 3.3 and above with pip.
+**Requires installed python** 2.7 or 3.4 and above with pip.
 
 [Check and install python if required](https://github.com/xvik/gradle-use-python-plugin#python--pip).
 

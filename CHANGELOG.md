@@ -1,8 +1,9 @@
 * Default template's mkdocs.yml changes:
     - fixed `edit_uri` (missed "/docs" ending)
-    - Set by default `site_url: http://localhost/` (required by sitemap generation)
+    - `pages` changed to `nav`
+    - change parameters syntax in `markdown_extensions` section 
 * Fix documentation in sub module support (use-python plugin 1.2.0)
-* Mkdocks updated to 1.0:
+* Support Mkdocks 1.0:
     - Update default mkdocs 0.17.3 -> 1.0.4
     - Update default mkdocs-material 2.7.2 -> 3.0.4
     - Update default pymdown-extensions 4.9.2 -> 6.0.0

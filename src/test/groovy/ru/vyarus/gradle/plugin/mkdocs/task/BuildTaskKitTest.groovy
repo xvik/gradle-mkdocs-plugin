@@ -29,6 +29,8 @@ class BuildTaskKitTest extends AbstractKitTest {
         result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
 
         when: "build site"
+        File conf = file('src/doc/mkdocs.yml')
+        conf.text = conf.text.replaceAll(/(?m)^#site_url:.*/, "site_url: http://localhost")
         result = run('mkdocsBuild')
 
         then: "built"

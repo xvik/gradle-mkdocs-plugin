@@ -3,7 +3,7 @@ site_name: @projectName@
 # Meta tags (placed in header)
 site_description: @projectDescription@
 #site_author: Your Name
-site_url: http://localhost/
+#site_url: https://you.github.io/@projectName@
 
 # Repository (add link to repository on each page)
 #repo_name: @projectName@

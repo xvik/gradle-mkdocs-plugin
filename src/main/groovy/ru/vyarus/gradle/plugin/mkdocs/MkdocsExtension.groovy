@@ -91,7 +91,7 @@ class MkdocsExtension {
         if (!publish.docPath) {
             return null
         }
-        String path = render(publish.docPath, [version: project.version])
+        String path = render(publish.docPath, [version: project.rootProject.version])
         String slash = '/'
         // cut off leading slash
         if (path.startsWith(slash)) {

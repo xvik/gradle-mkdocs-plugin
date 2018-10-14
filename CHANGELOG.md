@@ -1,4 +1,5 @@
 * Fix edit_uri in init template
+* Fix documentation in module support (use-python plugin 1.2.0)
 
 ### 1.0.1 (2018-04-23)
 * Fix pip 10 compatibility (use-python plugin 1.0.2)

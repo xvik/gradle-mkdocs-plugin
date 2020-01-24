@@ -64,6 +64,13 @@ src/doc/
 
 Call `mkdocsServe` task to start live reload server to see default site: [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
+!!! tip
+    Used port may be changed in mkdocs.yml with [dev_addr](https://www.mkdocs.org/user-guide/configuration/#dev_addr):
+    
+    ```yaml
+    dev_addr: 127.0.0.1:3000
+    ```
+
 !!! warning 
     Python process will not be killed after you stop gradle execution (search and kill python process manually). This is a [known gradle problem](https://github.com/gradle/gradle/issues/1128) 
     and the only known workaround is to start task without daemon: `gradlew mkdocsServe --no-daemon`. 

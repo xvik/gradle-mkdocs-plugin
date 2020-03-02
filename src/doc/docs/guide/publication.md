@@ -7,7 +7,7 @@
 By default, no configuration is required. Only project itself must be published to git so that plugin could calculate default url 
 (or `mkdocs.publish.repoUrl` manually specified).
 
-On the first `mkdocksPublish` task call:
+On the first `mkdocsPublish` task call:
 
 * `gh-pages` branch will be created in the same repo
 * built site pushed to gh-pages repository branch 

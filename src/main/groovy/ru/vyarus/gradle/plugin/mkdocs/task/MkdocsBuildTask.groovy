@@ -4,7 +4,6 @@ import groovy.transform.CompileStatic
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import ru.vyarus.gradle.plugin.mkdocs.util.MkdocsConfig
 import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
@@ -26,7 +25,6 @@ class MkdocsBuildTask extends MkdocsTask {
     File outputDir
 
     @Input
-    @Optional
     boolean updateSiteUrl
 
     @Override

@@ -40,8 +40,9 @@ Releases are published to [bintray jcenter](https://bintray.com/vyarus/xvik/grad
 [gradle plugins portal](https://plugins.gradle.org/plugin/ru.vyarus.mkdocs).
 
 
-[![JCenter](https://api.bintray.com/packages/vyarus/xvik/gradle-mkdocs-plugin/images/download.svg)](https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/_latestVersion)
+[![JCenter](https://img.shields.io/bintray/v/vyarus/xvik/gradle-mkdocs-plugin.svg?label=jcenter)](https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/_latestVersion)
 [![Maven Central](https://img.shields.io/maven-central/v/ru.vyarus/gradle-mkdocs-plugin.svg)](https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin)
+[![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/ru/vyarus/mkdocs/ru.vyarus.mkdocs.gradle.plugin/maven-metadata.xml.svg?colorB=007ec6&label=plugins%20portal)](https://plugins.gradle.org/plugin/ru.vyarus.mkdocs)
 
 ```groovy
 buildscript {
@@ -63,11 +64,67 @@ plugins {
 }
 ```
 
-#### Python
+#### Compatibility
+
+Plugin compiled for java 7
 
 **Requires installed python** 2.7 or 3.4 and above with pip.
 
 [Check and install python if required](https://github.com/xvik/gradle-use-python-plugin#python--pip).
+
+
+#### Snapshots
+
+<details>
+      <summary>Snapshots may be used through JitPack</summary>
+
+* Go to [JitPack project page](https://jitpack.io/#ru.vyarus/gradle-mkdocs-plugin)
+* Select `Commits` section and click `Get it` on commit you want to use 
+    or use `master-SNAPSHOT` to use the most recent snapshot
+
+For gradle before 6.0 use `buildscript` block with required commit hash as version:
+
+```groovy
+buildscript {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:2450c7e881'
+    }
+}
+apply plugin: 'ru.vyarus.mkdocs'
+```
+
+For gradle 6.0 and above:
+
+* Add to `settings.gradle` (top most!) with required commit hash as version:
+
+  ```groovy
+  pluginManagement {
+      resolutionStrategy {
+          eachPlugin {
+              if (requested.id.namespace == 'ru.vyarus.java-lib') {
+                  useModule('ru.vyarus:gradle-mkdocs-plugin:2450c7e881')
+              }
+          }
+      }
+      repositories {
+          maven { url 'https://jitpack.io' }
+          gradlePluginPortal()          
+      }
+  }    
+  ``` 
+* Use plugin without declaring version: 
+
+  ```groovy
+  plugins {
+      id 'ru.vyarus.mkdocs'
+  }
+  ```  
+
+</details>  
+
 
 ### Usage
 

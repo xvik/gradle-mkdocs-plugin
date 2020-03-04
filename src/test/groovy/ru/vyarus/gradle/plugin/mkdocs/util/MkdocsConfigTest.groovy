@@ -85,7 +85,7 @@ class MkdocsConfigTest extends AbstractTest {
         File back = config.backup()
 
         when: "can't restore from backup because backup can't be renamed"
-        // keep config opened to prevent it's deletion
+        // keep config opened to prevent its deletion
         file('mkdocs.yml').withReader { reader ->
             config.restoreBackup(back)
         }

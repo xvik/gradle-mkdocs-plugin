@@ -11,7 +11,10 @@ matrix:
     - jdk: openjdk8
     - jdk: openjdk11
 
-before_install: chmod +x gradlew
+before_install:
+  - chmod +x gradlew
+  - sudo pip3 install -U pip
+
 env:
   - TRAVIS=true
 

@@ -3,8 +3,6 @@ package ru.vyarus.gradle.plugin.mkdocs.util
 import org.gradle.api.Project
 import ru.vyarus.gradle.plugin.mkdocs.AbstractTest
 
-import java.lang.reflect.Method
-
 /**
  * @author Vyacheslav Rusakov
  * @since 05.12.2017
@@ -58,9 +56,8 @@ class TemplateUtilsTest extends AbstractTest {
 
         when: "copy template from jar"
         // add to current classpath
-        Method method = URLClassLoader.class.getDeclaredMethod("addURL", [URL] as Class[])
-        method.setAccessible(true);
-        method.invoke(ClassLoader.getSystemClassLoader(), [jar.toURI().toURL()] as Object[]);
+        URLClassLoader extendedLoader = new URLClassLoader([jar.toURI().toURL()] as  URL[], TemplateUtils.getClassLoader())
+        Thread.currentThread().setContextClassLoader(extendedLoader)
 
         TemplateUtils.copy(project, '/template/init/', 'tp', [:])
 

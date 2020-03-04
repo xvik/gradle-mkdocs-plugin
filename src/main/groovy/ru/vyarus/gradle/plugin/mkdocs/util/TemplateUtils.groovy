@@ -58,6 +58,10 @@ class TemplateUtils {
         }
         URL folder = TemplateUtils.getResource(path)
         if (folder == null) {
+            // workaround for tests
+            folder = Thread.currentThread().getContextClassLoader().getResource(path.replaceAll("^/", ""))
+        }
+        if (folder == null) {
             throw new IllegalArgumentException("No resources found on path: $path")
         }
         return folder

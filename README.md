@@ -35,11 +35,6 @@ Ideal for open source projects:
 
 ### Setup
 
-Releases are published to [bintray jcenter](https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/), 
-[maven central](https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin) and 
-[gradle plugins portal](https://plugins.gradle.org/plugin/ru.vyarus.mkdocs).
-
-
 [![JCenter](https://img.shields.io/bintray/v/vyarus/xvik/gradle-mkdocs-plugin.svg?label=jcenter)](https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/_latestVersion)
 [![Maven Central](https://img.shields.io/maven-central/v/ru.vyarus/gradle-mkdocs-plugin.svg)](https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin)
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/ru/vyarus/mkdocs/ru.vyarus.mkdocs.gradle.plugin/maven-metadata.xml.svg?colorB=007ec6&label=plugins%20portal)](https://plugins.gradle.org/plugin/ru.vyarus.mkdocs)
@@ -104,7 +99,7 @@ For gradle 6.0 and above:
   pluginManagement {
       resolutionStrategy {
           eachPlugin {
-              if (requested.id.namespace == 'ru.vyarus.java-lib') {
+              if (requested.id.namespace == 'ru.vyarus.mkdocs') {
                   useModule('ru.vyarus:gradle-mkdocs-plugin:2450c7e881')
               }
           }

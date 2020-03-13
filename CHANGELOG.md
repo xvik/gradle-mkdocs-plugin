@@ -1,4 +1,6 @@
 * (breaking) Drop java 7 support
+* (breaking) Dropw gradle 4 support
+* Fix jgit dependency conflict (#4)  (plugin now use jgit 5)
 
 ### 1.1.0 (2018-10-14)
 * Default template's mkdocs.yml changes:

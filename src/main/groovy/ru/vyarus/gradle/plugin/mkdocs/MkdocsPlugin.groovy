@@ -3,7 +3,11 @@ package ru.vyarus.gradle.plugin.mkdocs
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.ajoberstar.gradle.git.publish.GitPublishPlugin
+import org.ajoberstar.grgit.Branch
+import org.ajoberstar.grgit.Configurable
 import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.operation.BranchChangeOp
+import org.ajoberstar.grgit.operation.OpenOp
 import org.eclipse.jgit.errors.RepositoryNotFoundException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -134,6 +138,11 @@ class MkdocsPlugin implements Plugin<Project> {
         // mkdocsBuild <- gitPublishReset <- gitPublishCopy <- gitPublishCommit <- gitPublishPush <- mkdocsPublish
         project.tasks.gitPublishReset.dependsOn MKDOCS_BUILD_TASK
 
+        project.tasks.gitPublishPush.doLast {
+            // UP_TO_DATE fix
+            fixOrphanBranch(project, extension.publish.repoDir, extension.publish.branch)
+        }
+
         // create dummy task to simplify usage
         project.tasks.create('mkdocsPublish') {
             group = DOCUMENTATION_GROUP
@@ -170,6 +179,28 @@ class MkdocsPlugin implements Plugin<Project> {
                     System.setProperty(key, value)
                 }
             }
+        }
+    }
+
+    private void fixOrphanBranch(Project project, String repoDir, String branchName) {
+        //https://github.com/ajoberstar/gradle-git-publish/issues/82
+        // if remote branch not exists gitPublishReset will create orphan local branch and gitPublishPush
+        // will not set tracking after push! (also gitPublishReset will not set tracking on next execution and so
+        // branch will remain orphan on next run, even though remote branch already exists (and plugin knows it!)
+        // This leads to incorrect UP_TO_DATE behaviour: gitPublishPush will NEVER be SKIPPED (even on consequent
+        // task execution) because it tries to check branch status and fails (as branch does not have tracking)
+        // To workaround this behaviour (not terribly incorrect, ofc) setting branch tracking manually, if required
+        Grgit git = Grgit.open({ OpenOp op -> op.dir = project.file(repoDir) } as Configurable<OpenOp>)
+        Branch branch = git.branch.current()
+        // normally, this would be executed just once: after first publication, creating remote brnach; in all
+        // other cases, correct tracking would be set automatically
+        if (branch?.name == branchName && branch?.trackingBranch == null) {
+            // set update branch with remote tracking
+            git.branch.change({ BranchChangeOp op ->
+                op.name = branchName
+                op.startPoint = "origin/${branchName}"
+                op.mode = BranchChangeOp.Mode.TRACK
+            } as Configurable<BranchChangeOp>)
         }
     }
 }

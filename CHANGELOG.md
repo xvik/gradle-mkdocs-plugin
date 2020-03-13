@@ -1,6 +1,11 @@
 * (breaking) Drop java 7 support
-* (breaking) Dropw gradle 4 support
+* (breaking) Drop gradle 4 support
 * Fix jgit dependency conflict (#4)  (plugin now use jgit 5)
+* Update packages:
+    - mkdocs 1.0.4 -> 1.1
+    - mkdocs-material 3.0.4 -> 4.6.3
+    - pygments 2.2.0 -> 2.6.1
+    - pymdown-extensions 6.0.0 -> 6.3.0
 
 ### 1.1.0 (2018-10-14)
 * Default template's mkdocs.yml changes:

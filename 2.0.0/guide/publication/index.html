@@ -1,0 +1,717 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Mkdocs documentation plugin">
+      
+      
+        <link rel="canonical" href="https://xvik.github.io/gradle-mkdocs-plugin/2.0.0/guide/publication/">
+      
+      
+        <meta name="author" content="Vyacheslav Rusakov">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-4.6.3">
+    
+    
+      
+        <title>Publication - Gradle-mkdocs-plugin</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.adb8469c.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.86422ebf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#publication" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://xvik.github.io/gradle-mkdocs-plugin/2.0.0" title="Gradle-mkdocs-plugin" aria-label="Gradle-mkdocs-plugin" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Gradle-mkdocs-plugin
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Publication
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="http://github.com/xvik/gradle-mkdocs-plugin/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    gradle-mkdocs-plugin
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://xvik.github.io/gradle-mkdocs-plugin/2.0.0" title="Gradle-mkdocs-plugin" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    Gradle-mkdocs-plugin
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="http://github.com/xvik/gradle-mkdocs-plugin/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    gradle-mkdocs-plugin
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/" title="Getting started" class="md-nav__link">
+      Getting started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      User guide
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        User guide
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../configuration/" title="Configuration" class="md-nav__link">
+      Configuration
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pip/" title="Pip" class="md-nav__link">
+      Pip
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../multi-version/" title="Multi-version" class="md-nav__link">
+      Multi-version
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Publication
+      </label>
+    
+    <a href="./" title="Publication" class="md-nav__link md-nav__link--active">
+      Publication
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#publish-additional-resources" class="md-nav__link">
+    Publish additional resources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-publishing-configuration" class="md-nav__link">
+    Advanced publishing configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#site_url" class="md-nav__link">
+    site_url
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../tasks/" title="Tasks" class="md-nav__link">
+      Tasks
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      About
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/history/" title="Release notes" class="md-nav__link">
+      Release notes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#publish-additional-resources" class="md-nav__link">
+    Publish additional resources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-publishing-configuration" class="md-nav__link">
+    Advanced publishing configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#site_url" class="md-nav__link">
+    site_url
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="http://github.com/xvik/gradle-mkdocs-plugin/edit/master/src/doc/docs/guide/publication.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="publication">Publication<a class="headerlink" href="#publication" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Plugin does not use <a href="http://www.mkdocs.org/#deploying">mkdocs publication</a>, because it does not support
+multi-versioning. Instead, <a href="https://github.com/ajoberstar/gradle-git-publish">git-publish</a> plugin is used for publication.</p>
+</div>
+<p>By default, no configuration is required. Only project itself must be published to git so that plugin could calculate default url 
+(or <code>mkdocs.publish.repoUrl</code> manually specified).</p>
+<p>On the first <code>mkdocsPublish</code> task call:</p>
+<ul>
+<li><code>gh-pages</code> branch will be created in the same repo</li>
+<li>built site pushed to gh-pages repository branch </li>
+</ul>
+<p>Later <code>mkdocsPublish</code> task calls will only remove current version folder (replace with the new one)
+or publish completely new version only.</p>
+<p>You can find actual <code>gh-pages</code> branch inside <code>.gradle/gh-pages</code> (this checkout is used for publishing). 
+Gradle folder is used to cache repository checkout because eventually it would contain many versions
+and there is no need to checkout all of them each time (folder could be changed with <code>mkdocs.publish.repoDir</code>).</p>
+<h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
+<p>By default, git-publish will ask credentials with a popup (swing). Even if github pages are published on the same repo,
+the repo is checked out into different folder and so current repository credentials can't be used automatically.  </p>
+<p>You can specify credentials as:</p>
+<ul>
+<li>Environment variables: <code>GRGIT_USER</code> (could be <a href="https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/">github token</a>), <code>GRGIT_PASS</code></li>
+<li>System properties: <code>org.ajoberstar.grgit.auth.username</code> (could be github token), <code>org.ajoberstar.grgit.auth.password</code></li>
+<li>Ssh key properties: <code>org.ajoberstar.grgit.auth.ssh.private</code> (path to key), <code>org.ajoberstar.grgit.auth.ssh.passphrase</code></li>
+</ul>
+<p>See details in <a href="http://ajoberstar.org/grgit/grgit-authentication.html">grgit docs</a>.</p>
+<p>Plugin will automatically bind gradle properties <code>org.ajoberstar.grgit.auth.*</code> to system properties (just before <code>gitPublishReset</code>).
+This allows you to define credentials as global gradle properties in <code>~/.gradle/gradle.properties</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="na">org.ajoberstar.grgit.auth.username</span><span class="o">=</span><span class="s">user</span>
+<span class="na">org.ajoberstar.grgit.auth.password</span><span class="o">=</span><span class="s">pass</span>
+</code></pre></div>
+
+<p>For testing, you can define properties inside gradle script:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">ext</span><span class="o">[</span><span class="s1">&#39;org.ajoberstar.grgit.auth.username&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;user&#39;</span>
+<span class="n">ext</span><span class="o">[</span><span class="s1">&#39;org.ajoberstar.grgit.auth.password&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;pass&#39;</span>  
+</code></pre></div>
+
+<h2 id="publish-additional-resources">Publish additional resources<a class="headerlink" href="#publish-additional-resources" title="Permanent link">&para;</a></h2>
+<p>If you want to publish not only generated site, but something else too then configure
+<a href="https://github.com/ajoberstar/gradle-git-publish">git-publish</a> plugin to include additional content.</p>
+<p>For example, to include javadoc:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">gitPublish</span><span class="o">.</span><span class="na">contents</span> <span class="o">{</span>
+    <span class="n">from</span><span class="o">(</span><span class="n">javadoc</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// need to use resolveDocPath because by default it&#39;s a template </span>
+        <span class="n">into</span> <span class="s2">&quot;\${mkdocs.resolveDocPath()}/javadoc&quot;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// dependency will NOT be set automatically by copySpec above</span>
+<span class="n">gitPublishReset</span><span class="o">.</span><span class="na">dependsOn</span> <span class="n">javadoc</span>
+</code></pre></div>
+
+<p>With this configuration, calling <code>mkdocsPublish</code> will publish generated mkdocs site
+with extra <code>javadoc</code> folder inside (you can put relative link to it inside documentation).</p>
+<h2 id="advanced-publishing-configuration">Advanced publishing configuration<a class="headerlink" href="#advanced-publishing-configuration" title="Permanent link">&para;</a></h2>
+<p>To be able to configure advanced cases, you need to understand how everything works in detail.</p>
+<p>Here is how <a href="https://github.com/ajoberstar/gradle-git-publish">git-publish</a> plugin is configured by default:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">gitPublish</span> <span class="o">{</span>
+
+    <span class="n">repoUri</span> <span class="o">=</span> <span class="n">mkdocs</span><span class="o">.</span><span class="na">publish</span><span class="o">.</span><span class="na">repoUri</span>
+    <span class="n">branch</span> <span class="o">=</span> <span class="n">mkdocs</span><span class="o">.</span><span class="na">publish</span><span class="o">.</span><span class="na">branch</span>
+    <span class="n">repoDir</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="n">mkdocs</span><span class="o">.</span><span class="na">publish</span><span class="o">.</span><span class="na">repoDir</span><span class="o">)</span>
+    <span class="n">commitMessage</span> <span class="o">=</span> <span class="n">mkdocs</span><span class="o">.</span><span class="na">publish</span><span class="o">.</span><span class="na">comment</span>
+
+    <span class="n">contents</span> <span class="o">{</span>
+        <span class="n">from</span><span class="o">(</span><span class="s2">&quot;${mkdocs.buildDir}&quot;</span><span class="o">)</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">multi_version_publish</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">preserve</span> <span class="o">{</span>
+            <span class="n">include</span> <span class="s1">&#39;**&#39;</span>
+            <span class="n">exclude</span> <span class="s2">&quot;${mkdocs.publish.docPath}/**&quot;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>    
+<span class="o">}</span>
+</code></pre></div>
+
+<p>Customized tasks dependency chain:
+<div class="codehilite"><pre><span></span><code>mkdocsBuild &lt;- gitPublishReset &lt;- gitPublishCopy &lt;- gitPublishCommit &lt;- gitPublishPush &lt;- mkdocsPublish
+</code></pre></div></p>
+<p>Publication process:</p>
+<ol>
+<li><code>mkdocsBuild</code> build site into  <code>$mkdocs.buildDir/$mkdocs.publish.docPath</code> (by default, <code>build/mkdocs/$version/</code>)<ul>
+<li>root redirect <code>index.html</code> generated (by default, <code>build/mkdocs/index.html</code>)</li>
+</ul>
+</li>
+<li><code>gitPublishReset</code> clones gh-pages repo (by default, into <code>.gradle/gh-pages</code>) or creates new one<ul>
+<li>cleanup repo according to <code>gitPublish.preserve</code> (by default, <code>.gradle/gh-pages/$version/</code> folder removed only) </li>
+</ul>
+</li>
+<li><code>gitPublishCopy</code> copies everything according to <code>gitPublish.contents</code> (by default, everything from <code>build/mkdocs</code>)</li>
+<li><code>gitPublishCommit</code>, <code>gitPublishPush</code> - commit changes and push to gh-pages repository (by default, <code>gh-pages</code> branch in current repo)</li>
+</ol>
+<p>You can configure additional folders for publication with <code>contents</code> (as shown above with javadoc) 
+and cleanup extra directories with <code>preserve</code> configuration. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">gitPublish</span> <span class="o">{</span>
+    <span class="n">contents</span> <span class="o">{</span>
+        <span class="n">from</span> <span class="s1">&#39;build/custom-dir&#39;</span> <span class="o">{</span>
+            <span class="n">into</span> <span class="s1">&#39;custom-dir&#39;</span>        
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="n">preserve</span> <span class="o">{</span>
+        <span class="n">exclude</span> <span class="s1">&#39;custom-dir&#39;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<p>Here extra <code>build/custom-dir</code> directory added for publication (into <code>custom-dir</code>)
+and previous <code>custom-dir</code> folder (already committed) will be removed before publication.</p>
+<h2 id="site_url">site_url<a class="headerlink" href="#site_url" title="Permanent link">&para;</a></h2>
+<p><a href="http://www.mkdocs.org/user-guide/configuration/#site_url"><code>site_url</code></a> configuration defined in mkdocs.yml should point to the site root. It may be github pages or some custom domain.
+Setting affect home icon link, page metadata and links in generated sitemap.xml.</p>
+<p>When multi-version publishing used (by default), this url must point to documentation version folder
+(otherwise links will be incorrect in the sitemap). To avoid manual changes, just configure <em>root site url</em> (e.g. <code>http://myroot.com/</code>) and 
+plugin will <em>automatically</em> change site_url before <code>mkdocsBuild</code> (for example, to <code>http://myroot.com/1.0/</code>; see build log - it will show updated url). 
+Config is reverted back after the task, so you will not have to commit or revert changes.</p>
+<p>If <code>site_url</code> option is not defined at all (or multi-version publishing is not enabled) then
+config will not be changed.</p>
+<p>You can disable automatic configuration changes:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">mkdocs</span><span class="o">.</span><span class="na">updateSiteUrl</span> <span class="o">=</span> <span class="kc">false</span>
+</code></pre></div>
+
+<p>Note that <code>mkdocsServe</code> is not affected (will generate with the original site_url) because it is
+not important for documentation writing (you can always call <code>mkdocsBuild</code> and validate urls correctness).</p>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../multi-version/" title="Multi-version" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Multi-version
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../tasks/" title="Tasks" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Tasks
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017-2020 Vyacheslav Rusakov
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/xvik" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/vyarus" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.c33a9706.js"></script>
+      
+      <script>app.initialize({version:"1.1",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>

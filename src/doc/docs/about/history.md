@@ -1,3 +1,14 @@
+### [2.0.0](http://xvik.github.io/gradle-mkdocs-plugin/2.0.0) (2020-03-13)
+* (breaking) Drop java 7 support
+* (breaking) Drop gradle 4 support
+* Fix jgit dependency conflict (#4) (plugin now use jgit 5)
+* Update packages:
+    - mkdocs 1.0.4 -> 1.1
+    - mkdocs-material 3.0.4 -> 4.6.3
+    - pygments 2.2.0 -> 2.6.1
+    - pymdown-extensions 6.0.0 -> 6.3.0
+* Use gradle tasks configuration avoidance for lazy tasks initialization (no init when tasks not needed)    
+
 ### [1.1.0](http://xvik.github.io/gradle-mkdocs-plugin/1.1.0) (2018-10-14)
 * Default template's mkdocs.yml changes:
     - fixed `edit_uri` (missed "/docs" ending)

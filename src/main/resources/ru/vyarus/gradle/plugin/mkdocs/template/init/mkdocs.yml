@@ -14,7 +14,11 @@ site_description: @projectDescription@
 #copyright: 'Copyright &copy; 2017 Your Name'
 
 # Meterial theme
-theme: 'material'
+theme:
+  name: 'material'
+  feature:
+    tabs: false
+
 #extra:
 #  palette:
 #    primary: 'indigo'
@@ -39,6 +43,7 @@ markdown_extensions:
       guess_lang: false
   - footnotes
   - meta
+  - def_list
   - toc:
       permalink: true
   - pymdownx.betterem:
@@ -48,6 +53,9 @@ markdown_extensions:
   - pymdownx.magiclink
   - pymdownx.smartsymbols
   - pymdownx.superfences
+
+# Dev server binding
+#dev_addr: 127.0.0.1:3001
 
 nav:
   - Home: index.md

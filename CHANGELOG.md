@@ -6,6 +6,7 @@
     - mkdocs-material 3.0.4 -> 4.6.3
     - pygments 2.2.0 -> 2.6.1
     - pymdown-extensions 6.0.0 -> 6.3.0
+* Use gradle tasks configuration avoidance for lazy tasks initialization (no init when tasks not needed)    
 
 ### 1.1.0 (2018-10-14)
 * Default template's mkdocs.yml changes:

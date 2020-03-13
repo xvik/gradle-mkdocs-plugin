@@ -3,6 +3,7 @@ package ru.vyarus.gradle.plugin.mkdocs
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.ajoberstar.gradle.git.publish.GitPublishPlugin
+import org.ajoberstar.gradle.git.publish.tasks.GitPublishReset
 import org.ajoberstar.grgit.Branch
 import org.ajoberstar.grgit.Configurable
 import org.ajoberstar.grgit.Grgit
@@ -44,6 +45,9 @@ class MkdocsPlugin implements Plugin<Project> {
     private static final String DOCUMENTATION_GROUP = 'documentation'
     private static final String MKDOCS_BUILD_TASK = 'mkdocsBuild'
 
+    private static final String GIT_PUSH_TASK = 'gitPublishPush'
+    private static final String GIT_RESET_TASK = 'gitPublishReset'
+
     @Override
     void apply(Project project) {
         MkdocsExtension extension = project.extensions.create('mkdocs', MkdocsExtension, project)
@@ -70,29 +74,35 @@ class MkdocsPlugin implements Plugin<Project> {
     private void configureMkdocsTasks(Project project, MkdocsExtension extension) {
         Closure strictConvention = { extension.strict ? ['-s'] : null }
 
-        project.tasks.create(MKDOCS_BUILD_TASK, MkdocsBuildTask) {
-            description = 'Build mkdocs documentation'
-            group = DOCUMENTATION_GROUP
-            conventionMapping.with {
-                it.extraArgs = strictConvention
-                it.outputDir = { project.file("${getBuildOutputDir(extension)}") }
-                it.updateSiteUrl = { extension.updateSiteUrl }
+        project.tasks.register(MKDOCS_BUILD_TASK, MkdocsBuildTask) {
+            it.with {
+                description = 'Build mkdocs documentation'
+                group = DOCUMENTATION_GROUP
+                conventionMapping.with {
+                    it.extraArgs = strictConvention
+                    it.outputDir = { project.file("${getBuildOutputDir(extension)}") }
+                    it.updateSiteUrl = { extension.updateSiteUrl }
+                }
             }
         }
 
-        project.tasks.create('mkdocsServe', MkdocsTask) {
-            description = 'Start mkdocs live reload server'
-            group = DOCUMENTATION_GROUP
-            command = 'serve'
-            conventionMapping.extraArgs = strictConvention
+        project.tasks.register('mkdocsServe', MkdocsTask) {
+            it.with {
+                description = 'Start mkdocs live reload server'
+                group = DOCUMENTATION_GROUP
+                command = 'serve'
+                conventionMapping.extraArgs = strictConvention
+            }
         }
 
-        project.tasks.create('mkdocsInit', MkdocsInitTask) {
-            description = 'Create mkdocs documentation'
-            group = DOCUMENTATION_GROUP
+        project.tasks.register('mkdocsInit', MkdocsInitTask) {
+            it.with {
+                description = 'Create mkdocs documentation'
+                group = DOCUMENTATION_GROUP
+            }
         }
 
-        project.tasks.withType(MkdocsTask) { task ->
+        project.tasks.withType(MkdocsTask).configureEach { task ->
             task.conventionMapping.workDir = { extension.sourcesDir }
         }
 
@@ -103,7 +113,6 @@ class MkdocsPlugin implements Plugin<Project> {
     @CompileStatic(TypeCheckingMode.SKIP)
     private void configurePublish(Project project, MkdocsExtension extension) {
         project.plugins.apply(GitPublishPlugin)
-        applyGitCredentials(project)
 
         project.afterEvaluate {
             MkdocsExtension.Publish publish = extension.publish
@@ -135,19 +144,34 @@ class MkdocsPlugin implements Plugin<Project> {
             }
         }
 
-        // mkdocsBuild <- gitPublishReset <- gitPublishCopy <- gitPublishCommit <- gitPublishPush <- mkdocsPublish
-        project.tasks.gitPublishReset.dependsOn MKDOCS_BUILD_TASK
+        configurePublishTasks(project, extension)
+    }
 
-        project.tasks.gitPublishPush.doLast {
-            // UP_TO_DATE fix
-            fixOrphanBranch(project, extension.publish.repoDir, extension.publish.branch)
+    private void configurePublishTasks(Project project, MkdocsExtension extension) {
+        // mkdocsBuild <- gitPublishReset <- gitPublishCopy <- gitPublishCommit <- gitPublishPush <- mkdocsPublish
+        project.tasks.named(GIT_RESET_TASK).configure {
+            it.with {
+                dependsOn MKDOCS_BUILD_TASK
+                applyGitCredentials((GitPublishReset) it)
+            }
+        }
+
+        project.tasks.named(GIT_PUSH_TASK).configure {
+            it.with {
+                doLast {
+                    // UP_TO_DATE fix
+                    fixOrphanBranch(project, extension.publish.repoDir, extension.publish.branch)
+                }
+            }
         }
 
         // create dummy task to simplify usage
-        project.tasks.create('mkdocsPublish') {
-            group = DOCUMENTATION_GROUP
-            description = 'Publish documentation'
-            dependsOn 'gitPublishPush'
+        project.tasks.register('mkdocsPublish') {
+            it.with {
+                group = DOCUMENTATION_GROUP
+                description = 'Publish documentation'
+                dependsOn GIT_PUSH_TASK
+            }
         }
     }
 
@@ -159,7 +183,7 @@ class MkdocsPlugin implements Plugin<Project> {
     @SuppressWarnings('UnnecessaryCast')
     private String getProjectRepoUri(Project project) {
         try {
-            Grgit repo = Grgit.open([dir: project.rootDir] as Map<String, Object>)
+            Grgit repo = Grgit.open({ OpenOp op -> op.dir = project.rootDir } as Configurable<OpenOp>)
             return repo.remote.list().find { it.name == 'origin' }?.url
         } catch (RepositoryNotFoundException ignored) {
             // repository not initialized case - do nothing (most likely user is just playing with the plugin)
@@ -167,15 +191,15 @@ class MkdocsPlugin implements Plugin<Project> {
         return null
     }
 
-    private void applyGitCredentials(Project project) {
+    private void applyGitCredentials(GitPublishReset task) {
         // allow to configure git auth with global gradle properties (instead of swing popup)
         // http://ajoberstar.org/grgit/grgit-authentication.html
-        project.tasks.getByName('gitPublishReset').doFirst {
+        task.doFirst {
             ['username', 'password', 'ssh.private', 'ssh.passphrase'].each {
                 String key = "org.ajoberstar.grgit.auth.$it"
-                String value = project.findProperty(key)
+                String value = task.project.findProperty(key)
                 if (value) {
-                    project.logger.lifecycle("Git auth gradle property detected: $key")
+                    task.project.logger.lifecycle("Git auth gradle property detected: $key")
                     System.setProperty(key, value)
                 }
             }

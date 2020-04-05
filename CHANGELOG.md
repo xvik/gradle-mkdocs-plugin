@@ -1,3 +1,5 @@
+* Fix relative virtualenv paths support (don't rely on gradle work dir) (#5)
+
 ### 2.0.0 (2020-03-13)
 * (breaking) Drop java 7 support
 * (breaking) Drop gradle 4 support

@@ -1,5 +1,10 @@
 * Support python installed from Windows Store (use-python-plugin 2.3.0)
-
+* Update packages:
+    - mkdocs 1.1 -> 1.1.2
+    - mkdocs-material 4.6.3 -> 7.0.3
+    - pygments 2.6.1 -> 2.8.0
+    - pymdown-extensions 6.3.0 -> 8.1.1
+  
 ### 2.0.1 (2020-04-06)
 * Fix relative virtualenv paths support (don't rely on gradle work dir) (#5)
 

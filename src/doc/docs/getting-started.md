@@ -13,7 +13,7 @@ Releases are published to [bintray jcenter](https://bintray.com/vyarus/xvik/grad
 ```groovy
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'ru.vyarus:gradle-mkdocs-plugin:2.0.1'

@@ -42,7 +42,7 @@ Ideal for open source projects:
 ```groovy
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'ru.vyarus:gradle-mkdocs-plugin:2.0.1'

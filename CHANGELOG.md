@@ -1,3 +1,5 @@
+* Support python installed from Windows Store (use-python-plugin 2.3.0)
+
 ### 2.0.1 (2020-04-06)
 * Fix relative virtualenv paths support (don't rely on gradle work dir) (#5)
 

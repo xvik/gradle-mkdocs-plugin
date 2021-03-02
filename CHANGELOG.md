@@ -5,6 +5,21 @@
     - pygments 2.6.1 -> 2.8.0
     - pymdown-extensions 6.3.0 -> 8.1.1
   
+WARNING: there were some scheme changes in mkdocs-material. 
+Most likely you may face social links change:
+
+Before:
+  social:
+    - type: github
+      link: https://github.com/xvik
+
+After:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/xvik  
+
+See [mkdocs-material upgrade guide](https://squidfunk.github.io/mkdocs-material/upgrading/#extrasocial) for details
+
 ### 2.0.1 (2020-04-06)
 * Fix relative virtualenv paths support (don't rely on gradle work dir) (#5)
 

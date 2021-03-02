@@ -21,10 +21,10 @@ extra:
 #    accent: 'indigo'
 
   social:
-    - type: 'github'
-      link: 'https://github.com/xvik'
-    - type: 'twitter'
-      link: 'https://twitter.com/vyarus'
+    - icon: fontawesome/brands/github
+      link: https://github.com/xvik
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/vyarus
 
 
 # Google Analytics

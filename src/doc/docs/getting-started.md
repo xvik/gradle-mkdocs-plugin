@@ -16,7 +16,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.0.1'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.1.0'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -26,13 +26,13 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '2.0.1'
+    id 'ru.vyarus.mkdocs' version '2.1.0'
 }
 ```
 
 ### Python
 
-**Requires installed python** 2.7 or 3.4 and above with pip.
+**Requires installed python** 2.7 or 3.6 and above with pip.
 
 [Check and install python if required](https://github.com/xvik/gradle-use-python-plugin#python--pip).
 
@@ -40,6 +40,10 @@ plugins {
     Plugin will not affect global python: it will create project-specific virtualenv (in `.gradle/python`) 
     and install all required (pip) modules there. This will grant build reproduction (once initialized virtualenv used for all 
     future executions). 
+
+!!! tip
+    It is completely normal to manually remove virtualenv folder (`.gradle/python`) in case of problems
+    to re-create environment.
 
 ## Usage
 

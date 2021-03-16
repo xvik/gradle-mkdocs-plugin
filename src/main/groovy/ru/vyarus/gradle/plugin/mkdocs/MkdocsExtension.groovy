@@ -33,6 +33,7 @@ class MkdocsExtension {
             'mkdocs-material:7.0.3',
             'pygments:2.8.0',
             'pymdown-extensions:8.1.1',
+            'mkdocs-markdownextradata-plugin:0.2.4',
     ]
 
     private final Project project
@@ -76,6 +77,41 @@ class MkdocsExtension {
      * Set to false to disable mkdocs.yml config modification.
      */
     boolean updateSiteUrl = true
+
+    /**
+     * Extra variables to use in markdown files. Requires extra plugin: 'markdownextradata' (plugin module installed
+     * by default, but plugin is not activated). To activate plugin, add in mkdocs.yml:
+     * <pre>
+     * plugins:
+     *      - search
+     *      - markdownextradata
+     * <pre>
+     * (search plugin is active by default when plugins section not specified, so have to specify it when declaring
+     * plugins). If plugin is not active, but variables declared, error would be thrown (indicating problem).
+     * <p>
+     * When extra variables declared, plugin will generate an additional file:
+     * <code>[mkdocs.yml location]/docs/_data/gradle.yml</code> containing all specified properties.
+     * Markdownextradata plugin loads all yaml files in this directory and so all gradle-defined properties
+     * will be accessible as <code>{{ gradle.prop_key }}</code>. Note that you can create extra data files manually
+     * if required or declare additional (static) variables directly in mkdocs.yml (extra section) - read plugin
+     * documentation for more details.
+     * <p>
+     * If variable name would contain spaces, they would be replaced with '_'. For example:
+     * {@code mkdocs.extras = ['long name': 10]} would be available as <pre>{{ gradle.long_name }}</pre>.
+     * Null values are replaced with empty line: {@code mkdocs.extras = ['name': null]} would result in empty value
+     * ({@code name:}) in the generated file.
+     * <p>
+     * Extra properties file is generated before any mkdocs task, including custom tasks
+     * extending {@code MkdocsTask}. After task execution generated file is removed.
+     * <p>
+     * In most cases, variable values would be evaluated immediately, but if you need delayed (lazy) evaluation then
+     * use "lazy-closure" trick: {@code extras = ['version': "${-> project.version}"]}. This time, version value
+     * would be evaluated only before mkdocs task execution.
+     * <p>
+     * Property named "extras" instead of "variables" because markdownextradata refers to extra properties section
+     * by default for variables declaration.
+     */
+    Map<String, Serializable> extras = [:]
 
     /**
      * Publication configuration.

@@ -4,6 +4,8 @@ import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
+import java.util.regex.Matcher
+
 /**
  * Utility to work with mkdocs config (mkdocs.yml).
  *
@@ -49,6 +51,41 @@ class MkdocsConfig {
             return res.replaceAll(/^['"]/, '').replaceAll(/['"]$/, '')
         }
         return null
+    }
+
+    /**
+     * Searches for specified property. Supports nesting: if property contains dots then it will search for
+     * each property part sequentially (note that multiline list value also counted as property).
+     * <p>
+     * Looks only not commented lines. Counts hierarchy.
+     *
+     * @param option option (maybe composite: separated with dots) name to find
+     * @return true is string found, false otherwise
+     */
+    boolean contains(String option) {
+        String[] parts = option.split('\\.')
+        int i = 0
+        int whitespace = 0
+        String line = config.readLines().find {
+            // line must not be commented, contain enough whitespace and required option part
+            // allowed: [ prop, prop:, - prop, -prop ]
+            if (!it.trim().startsWith('#') && it.find(
+                    /${whitespace == 0 ? '^' : '\\s{' + whitespace + ',}'}(-\s{0,})?${parts[i]}(:|$| )/)) {
+                if (whitespace == 0) {
+                    whitespace++
+                } else {
+                    // count starting whitespace (to correctly recognize structure)
+                    Matcher matcher = it =~ /^(\s+)/
+                    if (!matcher.find()) {
+                        throw new IllegalStateException("Failed to recognize preceeding whitespace in '$it'")
+                    }
+                    whitespace = matcher.group(1).length() + 1
+                }
+                i++
+            }
+            return i == parts.length
+        }
+        return line != null
     }
 
     /**

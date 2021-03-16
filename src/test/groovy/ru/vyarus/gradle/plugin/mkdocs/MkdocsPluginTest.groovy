@@ -111,4 +111,28 @@ class MkdocsPluginTest extends AbstractTest {
         ext.resolveComment() == 'Publish  documentation'
 
     }
+
+    def "Check extra variables"() {
+
+        when: "plugin applied"
+        Project project = project {
+            apply plugin: 'ru.vyarus.mkdocs'
+
+            version = 1.0
+            mkdocs {
+                extras = [
+                        'foo':  project.version,
+                        'bar': "${-> project.version }",
+                ]
+            }
+
+            version = 1.1
+        }
+        MkdocsExtension ext = project.extensions.findByType(MkdocsExtension)
+
+        then: 'resolution correct'
+        ext.extras.foo == 1.0
+        ext.extras.bar == 1.1
+
+    }
 }

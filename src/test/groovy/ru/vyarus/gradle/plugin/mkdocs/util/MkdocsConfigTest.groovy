@@ -253,4 +253,127 @@ ex: http://other-url.com
         val == 'http://other-url.com'
         conf.text == 'ex: \'http://other-url.com\''
     }
+
+    def "Check properties search"() {
+
+        setup:
+        Project project = project()
+        File conf = file('mkdocs.yml')
+        conf.createNewFile()
+        MkdocsConfig config = new MkdocsConfig(project, null)
+
+        when: "simple property"
+        conf << 'sample:'
+        then: "found"
+        config.contains('sample')
+
+        when: "commented simple property"
+        conf.delete()
+        conf << '#sample:'
+        then: "not found"
+        !config.contains('sample')
+
+        when: "commented simple with shift property"
+        conf.delete()
+        conf << '   #sample:'
+        then: "not found"
+        !config.contains('sample')
+
+        when: "composite property"
+        conf.delete()
+        conf << """
+sample:
+    foo:
+        - bar
+"""
+        then: "found"
+        config.contains('sample.foo.bar')
+
+        when: "commented composite property"
+        conf.delete()
+        conf << """
+sample:
+    foo:
+#        - bar
+"""
+        then: "found"
+        !config.contains('sample.foo.bar')
+
+        when: "commented composite property 2"
+        conf.delete()
+        conf << """
+sample:
+ #   foo:
+        - bar
+"""
+        then: "found"
+        !config.contains('sample.foo.bar')
+
+        when: "composite property 2"
+        conf.delete()
+        conf << """
+sample:
+    foo:
+        bar
+"""
+        then: "found"
+        config.contains('sample.foo.bar')
+
+        when: "composite property 3"
+        conf.delete()
+        conf << """
+sample:
+    foo:
+        bar:
+"""
+        then: "found"
+        config.contains('sample.foo.bar')
+
+        when: "composite property 4"
+        conf.delete()
+        conf << """
+sample:
+    foo:
+        -bar
+"""
+        then: "found"
+        config.contains('sample.foo.bar')
+    }
+
+    def "Check composite properties search correctness"() {
+        setup:
+        Project project = project()
+        File conf = file('mkdocs.yml')
+        conf.createNewFile()
+        MkdocsConfig config = new MkdocsConfig(project, null)
+
+        when: "no target path"
+        conf << """
+sample:
+    foo:
+    bar:
+"""
+        then: "not found"
+        !config.contains('sample.foo.bar')
+
+        when: "no target path 2"
+        conf.delete()
+        conf << """
+sample:
+    foo:
+bar:
+"""
+        then: "not found"
+        !config.contains('sample.foo.bar')
+
+        when: "incorrect path start"
+        conf.delete()
+        conf << """
+sample:
+    foo:
+        bar:
+"""
+        then: "not found"
+        !config.contains('foo.bar')
+    }
 }

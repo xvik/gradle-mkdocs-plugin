@@ -103,7 +103,10 @@ class MkdocsPlugin implements Plugin<Project> {
         }
 
         project.tasks.withType(MkdocsTask).configureEach { task ->
-            task.conventionMapping.workDir = { extension.sourcesDir }
+            task.conventionMapping.with {
+                it.workDir = { extension.sourcesDir }
+                it.extras = { extension.extras }
+            }
         }
 
         // simplify direct task usage

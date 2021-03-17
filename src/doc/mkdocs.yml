@@ -26,6 +26,9 @@ extra:
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/vyarus
 
+plugins:
+  - search
+  - markdownextradata
 
 # Google Analytics
 #google_analytics:
@@ -63,3 +66,5 @@ nav:
   - About:
       - Release notes: about/history.md
       - License: about/license.md
+
+dev_addr: 127.0.0.1:3001

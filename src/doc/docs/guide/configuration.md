@@ -60,7 +60,7 @@ Example of moving documentation into separate gradle module:
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '2.1.0' apply false                                
+    id 'ru.vyarus.mkdocs' version '{{ gradle.version }}' apply false                                
 }
 
 version = '1.0-SNAPSHOT'

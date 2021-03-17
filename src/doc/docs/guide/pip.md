@@ -2,10 +2,11 @@
 
 Plugin will install by default the following pip modules:
 
-* [mkdocs:1.1.2](https://pypi.python.org/pypi/mkdocs)
-* [mkdocs-material:7.0.6](https://pypi.python.org/pypi/mkdocs-material)
-* [pygments:2.8.0](https://pypi.python.org/pypi/Pygments)
-* [pymdown-extensions:8.1.1](https://pypi.python.org/pypi/pymdown-extensions)
+* [mkdocs:{{ gradle.mkdocs }}](https://pypi.python.org/pypi/mkdocs)
+* [mkdocs-material:{{ gradle.mkdocs_material }}](https://pypi.python.org/pypi/mkdocs-material)
+* [pygments:{{ gradle.pygments }}](https://pypi.python.org/pypi/Pygments)
+* [pymdown-extensions:{{ gradle.pymdown_extensions }}](https://pypi.python.org/pypi/pymdown-extensions)
+* [mkdocs-markdownextradata-plugin:{{ gradle.mkdocs_markdownextradata_plugin }}](https://pypi.org/project/mkdocs-markdownextradata-plugin/)
 
 By default, modules are installed into project specific [virtualenv](https://github.com/xvik/gradle-use-python-plugin#virtualenv)
 (located in `.gradle/python`). 

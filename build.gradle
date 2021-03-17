@@ -41,10 +41,21 @@ github {
     license 'MIT'
 }
 
-mkdocs.publish {
-    docPath = '2.1.0'
-    rootRedirect = true
+mkdocs {
+    publish {
+        docPath = '2.1.0'
+        rootRedirect = true
+    }
+//    extras = [
+//        'version': project.version
+//    ]
 }
+//afterEvaluate {
+//    python.modules.each {
+//        def mod = it.split(':')
+//        mkdocs.extras[mod[0]] = mod[1]
+//    }
+//}
 
 pom {
     developers {

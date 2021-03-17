@@ -37,11 +37,82 @@ plugins:
 Now you can use variables in markdown files:
 
 ```
+{% raw %}
 {{ gradle.version }} and {{ gradle.something }}
+{% endraw %}
 ```
 
 !!! note 
     Variables will work for all mkdocs tasks (`MkdocsTask`), including `mkdocsServe`!
+
+!!! tip
+    All generated variables are also printed in console (for reference).
+
+## Keys
+
+Plugin will automatically replace ' ' and '-' in variable keys into '_'.
+
+For example:
+
+```groovy
+mkdocs {
+    extras = [
+            'something-else other': 'something else'
+    ]
+}
+```
+
+Will appear as `gradle.something_else_other` variable.
+
+## Automation example
+
+Variables addition may be scripted. For example, mkdocs plugin's build use this to 
+store used pip modules versions as vars:
+
+```groovy
+afterEvaluate {
+    // iterating over modules declared with python.pip
+    python.modules.each {
+        def mod = it.split(':')
+        // storing module name as-is: plugin will auto correct '-' to '_'
+        mkdocs.extras[mod[0]] = mod[1]
+    }
+}
+```
+
+And version reference in docs looks like:
+
+```markdown
+* [mkdocs:{% raw %} {{ gradle.mkdocs }} {% endraw %}](https://pypi.python.org/pypi/mkdocs)
+* [mkdocs-material:{% raw %} {{ gradle.mkdocs_material }} {% endraw %}](https://pypi.python.org/pypi/mkdocs-material)
+```
+
+`afterEvaluate` block is not required in this case, but it's usually safer to use it 
+to avoid "configuration property not yet ready" errors.
+
+## Show template syntax in doc
+
+If you want to prevent replacing variable, for example:
+
+```
+{% raw %}
+{{ not_var }}
+{% endraw %}
+```
+
+Then simply apply text "as variable" :
+
+```
+{{ '{{ \'{{ not_var }}\' }}' }}
+```
+
+or use [jinja raw block syntax](https://jinja.palletsprojects.com/en/2.11.x/templates/#escaping)
+
+```
+{{ '{% raw %}' }}
+{{ '{{ not_var }}' }}
+{{ '{% endraw %}' }}
+```
 
 ## How it works
 
@@ -65,7 +136,7 @@ or using additinoal `_data` files: see [plugin documentation](https://github.com
     python.pip 'mkdocs-markdownextradata-plugin:0.2.5'
     ```
 
-## Potential problem
+## Potential problem on linux
 
 Markdownextradata plugin requires PyYaml 5.1 or above. If you use older version, you may face 
 the following error:

@@ -16,7 +16,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.1.0'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:{{ gradle.version }}'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -26,7 +26,7 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '2.1.0'
+    id 'ru.vyarus.mkdocs' version '{{ gradle.version }}'
 }
 ```
 

@@ -14,8 +14,9 @@ matrix:
 
 before_install:
   - chmod +x gradlew
-  - sudo pip3 install -U pip
-  - sudo pip3 install -U pyyaml
+  - pip3 install --upgrade pip
+  # markdownextradata plugin requires at least pyyaml 5.1
+  - pip3 install --ignore-installed pyyaml
 
 env:
   - TRAVIS=true

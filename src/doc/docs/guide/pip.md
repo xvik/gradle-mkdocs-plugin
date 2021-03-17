@@ -3,7 +3,7 @@
 Plugin will install by default the following pip modules:
 
 * [mkdocs:1.1.2](https://pypi.python.org/pypi/mkdocs)
-* [mkdocs-material:7.0.3](https://pypi.python.org/pypi/mkdocs-material)
+* [mkdocs-material:7.0.6](https://pypi.python.org/pypi/mkdocs-material)
 * [pygments:2.8.0](https://pypi.python.org/pypi/Pygments)
 * [pymdown-extensions:8.1.1](https://pypi.python.org/pypi/pymdown-extensions)
 

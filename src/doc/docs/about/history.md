@@ -2,7 +2,7 @@
 * Support python installed from Windows Store (use-python-plugin 2.3.0)
 * Update packages:
   - mkdocs 1.1 -> 1.1.2
-  - mkdocs-material 4.6.3 -> 7.0.3
+  - mkdocs-material 4.6.3 -> 7.0.6
   - pygments 2.6.1 -> 2.8.0
   - pymdown-extensions 6.3.0 -> 8.1.1
 * Optional variables support for all mkdocs tasks: there is no (and not planned) native support for

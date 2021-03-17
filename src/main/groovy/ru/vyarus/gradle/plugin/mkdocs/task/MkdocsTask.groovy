@@ -96,7 +96,7 @@ class MkdocsTask extends PythonTask {
             gen.withWriter { BufferedWriter writer ->
                 getExtras().each { k, v ->
                     // Object value used for deferred evaluation (GString may use lazy placeholders)
-                    String line = k.replace(' ', '_') + ': ' + (v ?: '')
+                    String line = k.replaceAll('[ -]', '_') + ': ' + (v ?: '')
                     writer.writeLine(line)
                     report += "\t$line\n"
                 }

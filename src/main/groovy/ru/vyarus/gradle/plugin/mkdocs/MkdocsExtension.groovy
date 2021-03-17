@@ -96,8 +96,9 @@ class MkdocsExtension {
      * if required or declare additional (static) variables directly in mkdocs.yml (extra section) - read plugin
      * documentation for more details.
      * <p>
-     * If variable name would contain spaces, they would be replaced with '_'. For example:
-     * {@code mkdocs.extras = ['long name': 10]} would be available as <pre>{{ gradle.long_name }}</pre>.
+     * If variable name would contain spaces or '-', they would be replaced with '_'. For example:
+     * {@code mkdocs.extras = ['long name': 10]} would be available as <pre>{{ gradle.long_name }}</pre> and
+     * {@code mkdocs.extras = ['other-name': 10]} would be available as <pre>{{ gradle.other-name }}</pre> .
      * Null values are replaced with empty line: {@code mkdocs.extras = ['name': null]} would result in empty value
      * ({@code name:}) in the generated file.
      * <p>

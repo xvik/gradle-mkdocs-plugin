@@ -180,7 +180,7 @@ foo: bar
                 sourcesDir 'doc' 
                 extras = [ 
                     'version': project.version,
-                    'ver': "\${->project.version}" 
+                    'ver-ver': "\${->project.version}" 
                 ]                
             }
             
@@ -203,7 +203,7 @@ nav:
 # Index page
 
 Version {{ gradle.version }}
-Ver {{ gradle.ver }}
+Ver {{ gradle.ver_ver }}
 """
 
         when: "run build"

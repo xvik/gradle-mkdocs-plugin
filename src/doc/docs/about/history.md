@@ -13,6 +13,21 @@
       which markdownextradata plugin would recognize and use automatically.
     - Variables must be used with 'gradle' prefix: {% raw %} {{ gradle.declared_var_name }} {% endraw %}
 
+WARNING: there were some scheme changes in mkdocs-material.
+Most likely you may face social links change:
+
+Before:
+social:
+- type: github
+link: https://github.com/xvik
+
+After:
+social:
+- icon: fontawesome/brands/github
+link: https://github.com/xvik
+
+See [mkdocs-material upgrade guide](https://squidfunk.github.io/mkdocs-material/upgrading/#extrasocial) for details
+
 ### [2.0.1](http://xvik.github.io/gradle-mkdocs-plugin/2.0.1) (2020-04-06)
 * Fix relative virtualenv paths support (don't rely on gradle work dir) (#5)
 

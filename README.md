@@ -20,6 +20,7 @@ Ideal for open source projects:
     - Syntax highlighting
 * Easy documentation contribution (jump to source)
 * Multi-version documentation publishing to github pages 
+* Variables support
 
 ##### Summary
 
@@ -45,7 +46,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.0.1'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.1.0'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -55,7 +56,7 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '2.0.1'
+    id 'ru.vyarus.mkdocs' version '2.1.0'
 }
 ```
 
@@ -65,10 +66,10 @@ Plugin compiled for java 8, compatible with java 11
 
 Gradle | Version
 --------|-------
-5-6     | 2.0.1
+5-6     | 2.1.0
 4.x     | [1.1.0](https://github.com/xvik/gradle-mkdocs-plugin/tree/1.1.0)
 
-**Requires installed python** 2.7 or 3.4 and above with pip.
+**Requires installed python** 2.7 or 3.6 and above with pip.
 
 [Check and install python if required](https://github.com/xvik/gradle-use-python-plugin#python--pip).
 

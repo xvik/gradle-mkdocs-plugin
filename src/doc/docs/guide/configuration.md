@@ -12,6 +12,8 @@ mkdocs {
     buildDir = 'build/mkdocs'
     // automatically update site_url in mkdocs.yml before mkdocsBuild
     updateSiteUrl = true
+    // optional variables declaration (to bypass gradle data to docs)
+    extras = [:]
     
     publish {
         // publication sub-folder (by default project version)
@@ -36,6 +38,7 @@ By default:
 - `mkdocsBuild` task will build site into `build/mkdocs`
 - Current project version is used as documentation folder (`build/mkdocs/$version`)
 - Github repository is assumed by default, so publication will be performed into `gh-pages` branch (where github will automatically detect it)
+- Variables plugin is not configured. See [variables section](vars.md) for details.
     
 !!! note
     In order to include something else into published docks (e.g. javadoc) see [publication](publication.md).    
@@ -57,7 +60,7 @@ Example of moving documentation into separate gradle module:
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '2.0.1' apply false                                
+    id 'ru.vyarus.mkdocs' version '2.1.0' apply false                                
 }
 
 version = '1.0-SNAPSHOT'

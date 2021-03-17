@@ -15,6 +15,7 @@
     - Syntax highlighting
 * Easy documentation contribution (jump to source directly from doc)
 * **Multi-version** documentation publishing to github pages 
+* Variables support
 
 ## Example usages:
 

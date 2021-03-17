@@ -1,3 +1,18 @@
+### [2.1.0](http://xvik.github.io/gradle-mkdocs-plugin/2.1.0) (2021-03-17)
+* Support python installed from Windows Store (use-python-plugin 2.3.0)
+* Update packages:
+  - mkdocs 1.1 -> 1.1.2
+  - mkdocs-material 4.6.3 -> 7.0.3
+  - pygments 2.6.1 -> 2.8.0
+  - pymdown-extensions 6.3.0 -> 8.1.1
+* Optional variables support for all mkdocs tasks: there is no (and not planned) native support for
+  variables in mkdocs, but often it is very handful. It is only possible to have it with a plugin. (#7)
+  - Added mkdocs-markdownextradata-plugin 0.2.4 as installed module (no harm, you must active it manually!)
+  - Added mkdocs.extras configuration option: map to declare additional variables
+  - When extra variables declared, plugin would generate a special file, containing all declared variables,
+    which markdownextradata plugin would recognize and use automatically.
+  - Variables must be used with 'gradle' prefix: {{ gradle.declared_var_name }}
+
 ### [2.0.1](http://xvik.github.io/gradle-mkdocs-plugin/2.0.1) (2020-04-06)
 * Fix relative virtualenv paths support (don't rely on gradle work dir) (#5)
 

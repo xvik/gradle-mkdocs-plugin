@@ -15,6 +15,7 @@ matrix:
 before_install:
   - chmod +x gradlew
   - sudo pip3 install -U pip
+  - sudo pip3 install -U pyyaml
 
 env:
   - TRAVIS=true

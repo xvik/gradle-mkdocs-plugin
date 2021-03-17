@@ -1,0 +1,6 @@
+version: 2.1.1-SNAPSHOT
+mkdocs: 1.1.2
+mkdocs_material: 7.0.6
+pygments: 2.8.0
+pymdown_extensions: 8.1.1
+mkdocs_markdownextradata_plugin: 0.2.4

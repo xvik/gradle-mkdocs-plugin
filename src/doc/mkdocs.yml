@@ -59,6 +59,7 @@ nav:
       - Multi-version: guide/multi-version.md
       - Publication: guide/publication.md
       - Tasks: guide/tasks.md
+      - Themes: guide/theme.md
   - About:
       - Release notes: about/history.md
       - License: about/license.md

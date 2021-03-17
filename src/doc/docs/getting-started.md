@@ -108,10 +108,16 @@ To add new page simply add new markdown file (page.md) and add reference to it i
 !!! note
     All changes are immediately appeared in the started live reload server (`mkdocsServe`)
 
+!!! tip ""
+    You can use [gradle-driven variables](guide/vars.md), for example, to insert project version in docs.
+
 Read:
 
 * Mkdocs [getting started guide](http://www.mkdocs.org/#getting-started).
 * Mkdocs-material [extensions docs](https://squidfunk.github.io/mkdocs-material/getting-started/#extensions).
+
+!!! tip
+    If you want to use a different theme (not material) then you'll need to [configure it](guide/theme.md)
 
 ## Building
 

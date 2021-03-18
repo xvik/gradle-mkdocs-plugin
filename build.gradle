@@ -10,7 +10,7 @@ plugins {
     id 'ru.vyarus.github-info' version '1.2.0'
     id 'com.github.ben-manes.versions' version '0.36.0'
     id "pl.droidsonroids.jacoco.testkit" version "1.0.7"
-    id 'ru.vyarus.mkdocs' version '2.0.1'
+    id 'ru.vyarus.mkdocs' version '2.1.0'
 }
 
 sourceCompatibility = 1.8
@@ -46,16 +46,16 @@ mkdocs {
         docPath = '2.1.1'
         rootRedirect = true
     }
-//    extras = [
-//        'version': project.version
-//    ]
+    extras = [
+        'version': project.version
+    ]
 }
-//afterEvaluate {
-//    python.modules.each {
-//        def mod = it.split(':')
-//        mkdocs.extras[mod[0]] = mod[1]
-//    }
-//}
+afterEvaluate {
+    python.modules.each {
+        def mod = it.split(':')
+        mkdocs.extras[mod[0]] = mod[1]
+    }
+}
 
 pom {
     developers {

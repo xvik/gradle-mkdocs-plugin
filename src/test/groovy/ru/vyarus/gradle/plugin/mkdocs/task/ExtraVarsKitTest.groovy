@@ -4,6 +4,8 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import ru.vyarus.gradle.plugin.mkdocs.AbstractKitTest
 
+import java.nio.file.Files
+
 /**
  * @author Vyacheslav Rusakov
  * @since 04.03.2021
@@ -218,5 +220,116 @@ Ver {{ gradle.ver_ver }}
 
         and: "data file removed"
         !file('doc/docs/_data').exists()
+    }
+
+
+    def "Check custom sources dir"() {
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                                              
+            }
+            
+            version = '1.0'                          
+            
+            python.scope = USER
+            
+            mkdocs {
+                sourcesDir 'doc' 
+                extras = [ 
+                    'version': project.version 
+                ]                
+            }
+        """
+
+        file('doc').mkdir()
+        file('doc/mkdocs.yml') << """
+site_name: test
+docs_dir: src
+
+plugins:
+    - search
+    - markdownextradata
+
+nav:
+  - Home: index.md    
+"""
+        file('doc/src').mkdir()
+        file('doc/src/index.md') << """
+# Index page
+
+Version {{ gradle.version }}
+"""
+
+        when: "run build"
+        BuildResult result = run('mkdocsBuild')
+
+        then: "build success"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        file('build/mkdocs/1.0/index.html').exists()
+        def idx = file('build/mkdocs/1.0/index.html').text
+        idx.contains('Version 1.0')
+
+        and: "data file removed"
+        !file('doc/src/_data').exists()
+    }
+
+
+    def "Check custom sources dir as absolute path"() {
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                                              
+            }
+            
+            version = '1.0'                          
+            
+            python.scope = USER
+            
+            mkdocs {
+                sourcesDir 'doc' 
+                extras = [ 
+                    'version': project.version 
+                ]                
+            }
+        """
+
+        // dir outside project!
+        File docSources = Files.createTempDirectory("test_sources").toFile()
+
+        file('doc').mkdir()
+        file('doc/mkdocs.yml') << """
+site_name: test
+docs_dir: ${docSources.absolutePath}
+
+plugins:
+    - search
+    - markdownextradata
+
+nav:
+  - Home: index.md    
+"""
+        new File(docSources, 'index.md') << """
+# Index page
+
+Version {{ gradle.version }}
+"""
+
+        when: "run build"
+        BuildResult result = run('mkdocsBuild')
+
+        then: "build success"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        file('build/mkdocs/1.0/index.html').exists()
+        def idx = file('build/mkdocs/1.0/index.html').text
+        idx.contains('Version 1.0')
+
+        and: "data file removed"
+        !new File(docSources, 'src/_data').exists()
+
+        cleanup:
+        if (docSources.exists()) {
+            docSources.delete()
+        }
     }
 }

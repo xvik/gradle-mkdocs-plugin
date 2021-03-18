@@ -61,26 +61,7 @@ class MkdocsTask extends PythonTask {
     }
 
     private void runWithVariables() {
-        MkdocsConfig config = new MkdocsConfig(project, extension.sourcesDir)
-
-        if (!config.contains('plugins.markdownextradata')) {
-            throw new GradleException(
-                    'Gradle-defined extra properties require \'markdownextradata\' plugin active in ' +
-                    'your mkdocs.yml file, which is currently not the case. \nEither remove extra properties ' +
-                    'declaration (in build.gradle) or declare plugin (in mkdocs.yml) like this: \n' +
-                    'plugins:\n' +
-                    '   - search\n' +
-                    '   - markdownextradata')
-        }
-
-        // data file generation
-        File root = project.file(extension.sourcesDir)
-        File data = new File(root, 'docs/_data')
-        if (!data.parentFile.exists()) {
-            // docs/ dir must be present (dir with actual documentation sources)
-            throw new GradleException(
-                    "Mkdocs documentation sources directory not found: ${project.relativePath(data.parentFile)}")
-        }
+        File data = resolveDataDir()
         boolean removeDataDir = !data.exists()
         File gen = new File(data, 'gradle.yml')
         try {
@@ -91,7 +72,7 @@ class MkdocsTask extends PythonTask {
             if (gen.exists()) {
                 gen.delete()
             }
-            logger.lifecycle('Generating mkdocs data file: {}', project.relativePath(gen))
+            logger.lifecycle('Generating mkdocs data file: {}', getFilePath(gen))
             String report = ''
             gen.withWriter { BufferedWriter writer ->
                 getExtras().each { k, v ->
@@ -109,5 +90,50 @@ class MkdocsTask extends PythonTask {
                 data.delete()
             }
         }
+    }
+
+    private File resolveDataDir() {
+        MkdocsConfig config = new MkdocsConfig(project, extension.sourcesDir)
+
+        if (!config.contains('plugins.markdownextradata')) {
+            throw new GradleException(
+                    'Gradle-defined extra properties require \'markdownextradata\' plugin active in ' +
+                            'your mkdocs.yml file, which is currently not the case. \nEither remove extra properties ' +
+                            'declaration (in build.gradle) or declare plugin (in mkdocs.yml) like this: \n' +
+                            'plugins:\n' +
+                            '   - search\n' +
+                            '   - markdownextradata')
+        }
+
+        // mkdocs.yml location
+        File root = project.file(extension.sourcesDir)
+
+        // configuration may override default "docs" location
+        String docsPath = config.find('docs_dir') ?: 'docs'
+        File docs = new File(docsPath)
+        // docs_dir config value may contain absolute path declaration
+        if (!docs.absolute) {
+            docs = new File(root, docs.path)
+        }
+        if (!docs.exists()) {
+            // documentation sources dir must be present (catches misconfiguration)
+            throw new GradleException(
+                    "Mkdocs documentation sources directory not found: ${getFilePath(docs)}")
+        }
+
+        return new File(docs, '_data')
+    }
+
+    /**
+     * Looks if file inside project and relative path would be reasonable, otherwise return absolute path.
+     *
+     * @param file file
+     * @return relative or absolute file path
+     */
+    private String getFilePath(File file) {
+        if (file.path.startsWith(project.rootDir.path)) {
+            return project.relativePath(file)
+        }
+        return file.absolutePath
     }
 }

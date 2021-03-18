@@ -1,3 +1,5 @@
+* Fix variables support ignores 'docs_dir' from mkdocs.yml (#8)
+
 ### 2.1.0 (2021-03-17)
 * Support python installed from Windows Store (use-python-plugin 2.3.0)
 * Update packages:

@@ -1,3 +1,6 @@
+### [2.1.1](http://xvik.github.io/gradle-mkdocs-plugin/2.1.1) (2021-03-18)
+* Fix variables support ignore 'docs_dir' configuration from mkdocs.yml ([#8](https://github.com/xvik/gradle-mkdocs-plugin/issues/8))
+
 ### [2.1.0](http://xvik.github.io/gradle-mkdocs-plugin/2.1.0) (2021-03-17)
 * Support python installed from Windows Store (use-python-plugin 2.3.0)
 * Update packages:

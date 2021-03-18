@@ -46,7 +46,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.1.0'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.1.1'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -56,7 +56,7 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '2.1.0'
+    id 'ru.vyarus.mkdocs' version '2.1.1'
 }
 ```
 
@@ -66,7 +66,7 @@ Plugin compiled for java 8, compatible with java 11
 
 Gradle | Version
 --------|-------
-5-6     | 2.1.0
+5-6     | 2.1.1
 4.x     | [1.1.0](https://github.com/xvik/gradle-mkdocs-plugin/tree/1.1.0)
 
 **Requires installed python** 2.7 or 3.6 and above with pip.

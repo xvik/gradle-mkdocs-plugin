@@ -3,9 +3,9 @@ dist: bionic
 addons:
   apt:
     packages:
-      - "python3"
-      - "python3-pip"
-      - "python3-setuptools"
+      - python3
+      - python3-pip
+      - python3-setuptools
 
 matrix:
   include:
@@ -14,6 +14,8 @@ matrix:
 
 before_install:
   - chmod +x gradlew
+  - python3 --version
+  - pip3 --version
   - pip3 install --upgrade pip
   # markdownextradata plugin requires at least pyyaml 5.1
   - pip3 install --ignore-installed pyyaml

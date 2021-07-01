@@ -70,7 +70,7 @@ class MkdocsConfig {
             // line must not be commented, contain enough whitespace and required option part
             // allowed: [ prop, prop:, - prop, -prop ]
             if (!it.trim().startsWith('#') && it.find(
-                    /${whitespace == 0 ? '^' : '\\s{' + whitespace + ',}'}(-\s{0,})?${parts[i]}(:|$| )/)) {
+                    /${whitespace == 0 ? '^' : '\\s{' + whitespace + ',}'}(-\s{0,})?${parts[i]}(:|$|\s)/)) {
                 if (whitespace == 0) {
                     whitespace++
                 } else {

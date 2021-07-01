@@ -9,15 +9,9 @@
     "projectVersion": "0.1.0",
     "projectDesc": "Mkdocs documentation plugin",
     "pluginPortalDesc": "Mkdocs documentation generation and publishing plugin",
-    "targetJava": "1.7",
     "pluginPortalTags": "documentation, mkdocs",
-    "mirrorToJcenter": true,
     "pluginPortalUseCustomGroup": true,
-    "bintrayUser": "vyarus",
-    "bintrayRepo": "xvik",
-    "bintrayTags": "gradle, documentation, mkdocs",
-    "bintraySignFiles": true,
-    "mavenCentralSync": true,
-    "usedGeneratorVersion": "1.9.0"
+    "usedGeneratorVersion": "2.0.0",
+    "centralPublish": true
   }
 }

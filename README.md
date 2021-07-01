@@ -1,6 +1,6 @@
 # Gradle Mkdocs plugin
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://www.opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/travis/xvik/gradle-mkdocs-plugin.svg)](https://travis-ci.org/xvik/gradle-mkdocs-plugin)
+[![Build Status](https://travis-ci.com/xvik/gradle-mkdocs-plugin.svg?branch=master)](https://travis-ci.com/xvik/gradle-mkdocs-plugin)
 [![Appveyor build status](https://ci.appveyor.com/api/projects/status/github/xvik/gradle-mkdocs-plugin?svg=true)](https://ci.appveyor.com/project/xvik/gradle-mkdocs-plugin)
 [![codecov](https://codecov.io/gh/xvik/gradle-mkdocs-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/xvik/gradle-mkdocs-plugin)
 
@@ -36,7 +36,6 @@ Ideal for open source projects:
 
 ### Setup
 
-[![JCenter](https://img.shields.io/bintray/v/vyarus/xvik/gradle-mkdocs-plugin.svg?label=jcenter)](https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/_latestVersion)
 [![Maven Central](https://img.shields.io/maven-central/v/ru.vyarus/gradle-mkdocs-plugin.svg)](https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin)
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/ru/vyarus/mkdocs/ru.vyarus.mkdocs.gradle.plugin/maven-metadata.xml.svg?colorB=007ec6&label=plugins%20portal)](https://plugins.gradle.org/plugin/ru.vyarus.mkdocs)
 

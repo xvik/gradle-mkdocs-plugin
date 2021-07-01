@@ -2,13 +2,8 @@
 
 ## Installation
 
-Releases are published to [bintray jcenter](https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/), 
-[maven central](https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin) and 
-[gradle plugins portal](https://plugins.gradle.org/plugin/ru.vyarus.mkdocs).
-
-
-[![JCenter](https://api.bintray.com/packages/vyarus/xvik/gradle-mkdocs-plugin/images/download.svg)](https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/_latestVersion)
 [![Maven Central](https://img.shields.io/maven-central/v/ru.vyarus/gradle-mkdocs-plugin.svg)](https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin)
+[![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/ru/vyarus/mkdocs/ru.vyarus.mkdocs.gradle.plugin/maven-metadata.xml.svg?colorB=007ec6&label=plugins%20portal)](https://plugins.gradle.org/plugin/ru.vyarus.mkdocs)
 
 ```groovy
 buildscript {

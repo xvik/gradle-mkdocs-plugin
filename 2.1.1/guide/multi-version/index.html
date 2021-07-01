@@ -527,7 +527,6 @@
     <span class="n">rootRedirect</span> <span class="o">=</span> <span class="kc">true</span>  
 <span class="o">}</span>
 </code></pre></div>
-
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Usually it is more handy to manually set current doc version and not rely on project version because 
@@ -544,17 +543,14 @@ new documentation version and continue evolving it. Old version stays published 
     <span class="n">rootRedirect</span> <span class="o">=</span> <span class="kc">false</span>  <span class="c1">// site root must still redirect to &#39;1.0&#39; (assume it&#39;s already published)</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <p>Will build (without root index.html):</p>
 <div class="highlight"><pre><span></span><code>build/mkdocs/
     /0.9/    - mkdocs site for old version
 </code></pre></div>
-
 <h2 id="publication-layouts">Publication layouts<a class="headerlink" href="#publication-layouts" title="Permanent link">&para;</a></h2>
 <p>You may define whatever layout you want, e.g.:</p>
 <div class="highlight"><pre><span></span><code>mkdocs.publish.docPath = &#39;en/1.0/&#39;  
 </code></pre></div>
-
 <p>Here generated site will be published into <code>/en/1.0/</code> folder (not just version) and 
 index.html generated at the root with correct redirection.</p>
                 

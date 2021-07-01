@@ -585,7 +585,6 @@ Another alternative is to start serve command directly: copy console command fro
     /1.0-SNAPSHOT/    - mkdocs site
     index.html        - redirect to correct site
 </code></pre></div>
-
 <p>Plugin is configured for multi-version documentation publishing: each version is in it's own folder
 and special <code>index.html</code> at the root will redirect to the latest version (when published).</p>
 <p>Everything in <code>build/mkdocs/</code> is assumed to be published into github pages. </p>
@@ -595,7 +594,6 @@ and special <code>index.html</code> at the root will redirect to the latest vers
 current version manually (or define it when you need to publish to exact version):</p>
 <div class="highlight"><pre><span></span><code><span class="n">mkdocs</span><span class="o">.</span><span class="na">publish</span><span class="o">.</span><span class="na">docPath</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
 </code></pre></div>
-
 </div>
 <h3 id="update-old-documentation">Update old documentation<a class="headerlink" href="#update-old-documentation" title="Permanent link">&para;</a></h3>
 <p>When older documentation version needs to be updated switch off redirection <code>index.html</code> generation
@@ -605,12 +603,10 @@ current version manually (or define it when you need to publish to exact version
     <span class="n">rootRedirect</span> <span class="o">=</span> <span class="kc">false</span>  <span class="c1">// site root must still redirect to &#39;1.0&#39; (assume it&#39;s already published)</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <p>Will build:</p>
 <div class="highlight"><pre><span></span><code>build/mkdocs/
     /0.9/    - mkdocs site for old version
 </code></pre></div>
-
 <h2 id="publish">Publish<a class="headerlink" href="#publish" title="Permanent link">&para;</a></h2>
 <p><code>mkdocsPublish</code> calls <code>mkdocsBuild</code> and publish contents of <code>build/mkdocs/</code> into git repo
 (by default, <code>gh-pages</code> branch in current repo).</p>
@@ -621,7 +617,6 @@ current version manually (or define it when you need to publish to exact version
     <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;--help&#39;</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Full task package is not required because <code>MkdocsTask</code> is actually a property, regustered

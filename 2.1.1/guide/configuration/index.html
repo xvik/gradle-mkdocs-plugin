@@ -523,7 +523,6 @@
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <p>By default:</p>
 <ul>
 <li>All documentation sources located in <code>src/doc</code> (and <code>mkdocsInit</code> task generate stubs there)</li>
@@ -540,7 +539,6 @@
 <p>If you don't want to use multi-version support at all then:</p>
 <div class="highlight"><pre><span></span><code>mkdocs.publish.docPath = &#39;&#39;  // or null 
 </code></pre></div>
-
 <p>This way, mkdocs site will always be published at the root (in case of publish it will always replace 
 previous site version).</p>
 <h2 id="docs-as-module">Docs as module<a class="headerlink" href="#docs-as-module" title="Permanent link">&para;</a></h2>
@@ -559,7 +557,6 @@ previous site version).</p>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <p>Default docs location simplified to simple <code>src</code> because of no other sources in this module.</p>
 <p>If we call <code>:doc:mkdocsInit</code> it will generate documentation stubs like this:</p>
 <p>Project structure:</p>
@@ -573,7 +570,6 @@ previous site version).</p>
 build.gradle
 settings.gradle            
 </code></pre></div>
-
 <p>For simplicity, gradle configuration for <code>doc</code> module is declared in the main file,
 but it could be declared inside doc's own build.gradle.</p>
                 

@@ -554,12 +554,10 @@ This allows you to define credentials as global gradle properties in <code>~/.gr
 <div class="highlight"><pre><span></span><code><span class="na">org.ajoberstar.grgit.auth.username</span><span class="o">=</span><span class="s">user</span>
 <span class="na">org.ajoberstar.grgit.auth.password</span><span class="o">=</span><span class="s">pass</span>
 </code></pre></div>
-
 <p>For testing, you can define properties inside gradle script:</p>
 <div class="highlight"><pre><span></span><code><span class="n">ext</span><span class="o">[</span><span class="s1">&#39;org.ajoberstar.grgit.auth.username&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;user&#39;</span>
 <span class="n">ext</span><span class="o">[</span><span class="s1">&#39;org.ajoberstar.grgit.auth.password&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;pass&#39;</span>  
 </code></pre></div>
-
 <h2 id="publish-additional-resources">Publish additional resources<a class="headerlink" href="#publish-additional-resources" title="Permanent link">&para;</a></h2>
 <p>If you want to publish not only generated site, but something else too then configure
 <a href="https://github.com/ajoberstar/gradle-git-publish">git-publish</a> plugin to include additional content.</p>
@@ -574,7 +572,6 @@ This allows you to define credentials as global gradle properties in <code>~/.gr
 <span class="c1">// dependency will NOT be set automatically by copySpec above</span>
 <span class="n">gitPublishReset</span><span class="o">.</span><span class="na">dependsOn</span> <span class="n">javadoc</span>
 </code></pre></div>
-
 <p>With this configuration, calling <code>mkdocsPublish</code> will publish generated mkdocs site
 with extra <code>javadoc</code> folder inside (you can put relative link to it inside documentation).</p>
 <h2 id="advanced-publishing-configuration">Advanced publishing configuration<a class="headerlink" href="#advanced-publishing-configuration" title="Permanent link">&para;</a></h2>
@@ -599,7 +596,6 @@ with extra <code>javadoc</code> folder inside (you can put relative link to it i
     <span class="o">}</span>    
 <span class="o">}</span>
 </code></pre></div>
-
 <p>Customized tasks dependency chain:
 <div class="highlight"><pre><span></span><code>mkdocsBuild &lt;- gitPublishReset &lt;- gitPublishCopy &lt;- gitPublishCommit &lt;- gitPublishPush &lt;- mkdocsPublish
 </code></pre></div></p>
@@ -630,7 +626,6 @@ and cleanup extra directories with <code>preserve</code> configuration. For exam
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <p>Here extra <code>build/custom-dir</code> directory added for publication (into <code>custom-dir</code>)
 and previous <code>custom-dir</code> folder (already committed) will be removed before publication.</p>
 <h2 id="site_url">site_url<a class="headerlink" href="#site_url" title="Permanent link">&para;</a></h2>
@@ -645,7 +640,6 @@ config will not be changed.</p>
 <p>You can disable automatic configuration changes:</p>
 <div class="highlight"><pre><span></span><code><span class="n">mkdocs</span><span class="o">.</span><span class="na">updateSiteUrl</span> <span class="o">=</span> <span class="kc">false</span>
 </code></pre></div>
-
 <p>Note that <code>mkdocsServe</code> is not affected (will generate with the original site_url) because it is
 not important for documentation writing (you can always call <code>mkdocsBuild</code> and validate urls correctness).</p>
                 

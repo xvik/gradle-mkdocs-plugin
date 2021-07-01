@@ -570,7 +570,6 @@
     <span class="o">]</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>You'll have to use lazy evaluation syntax for sensitive properties. In the example above
@@ -588,12 +587,10 @@ The plugin is installed, but not activated by default. To use variables it must 
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">search</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">markdownextradata</span>
 </code></pre></div>
-
 <p>(search plugin is enabled by default when plugins section is not declared and so have to be manually specified)</p>
 <p>Now you can use variables in markdown files:</p>
 <div class="highlight"><pre><span></span><code>{{ gradle.version }} and {{ gradle.something }}
 </code></pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Variables will work for all mkdocs tasks (<code>MkdocsTask</code>), including <code>mkdocsServe</code>!</p>
@@ -611,7 +608,6 @@ The plugin is installed, but not activated by default. To use variables it must 
     <span class="o">]</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <p>Will appear as <code>gradle.something_else_other</code> variable.</p>
 <h2 id="automation-example">Automation example<a class="headerlink" href="#automation-example" title="Permanent link">&para;</a></h2>
 <p>Variables addition may be scripted. For example, mkdocs plugin's build use this to 
@@ -625,34 +621,28 @@ store used pip modules versions as vars:</p>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <p>And version reference in docs looks like:</p>
 <div class="highlight"><pre><span></span><code><span class="k">*</span> [<span class="nt">mkdocs: {{ gradle.mkdocs }} </span>](<span class="na">https://pypi.python.org/pypi/mkdocs</span>)
 <span class="k">*</span> [<span class="nt">mkdocs-material: {{ gradle.mkdocs_material }} </span>](<span class="na">https://pypi.python.org/pypi/mkdocs-material</span>)
 </code></pre></div>
-
 <p><code>afterEvaluate</code> block is not required in this case, but it's usually safer to use it 
 to avoid "configuration property not yet ready" errors.</p>
 <h2 id="show-template-syntax-in-doc">Show template syntax in doc<a class="headerlink" href="#show-template-syntax-in-doc" title="Permanent link">&para;</a></h2>
 <p>If you want to prevent replacing variable, for example:</p>
 <div class="highlight"><pre><span></span><code>{{ not_var }}
 </code></pre></div>
-
 <p>Then simply apply text "as variable" :</p>
 <div class="highlight"><pre><span></span><code>{{ &#39;{{ not_var }}&#39; }}
 </code></pre></div>
-
 <p>or use <a href="https://jinja.palletsprojects.com/en/2.11.x/templates/#escaping">jinja raw block syntax</a></p>
 <div class="highlight"><pre><span></span><code>{% raw %}
 {{ not_var }}
 {% endraw %}
 </code></pre></div>
-
 <h2 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
 <p>When variables declared (<code>mkdocs.extras</code>), plugin will generate a special data file before mkdocs task execution:</p>
 <div class="highlight"><pre><span></span><code>[mkdocs.yml location]/docs/_data/gradle.yml
 </code></pre></div>
-
 <p>Markdownextradata plugin loads all yaml files in <code>_data</code> directory by default and so it would
 recognize and load gradle-declared properties automatically.</p>
 <p>After task execution, file is removed (because it located inside sources).</p>
@@ -672,16 +662,13 @@ the following error:</p>
      if filename.suffix in [&quot;.yml&quot;, &quot;.yaml&quot;]
  AttributeError: module &#39;yaml&#39; has no attribute &#39;FullLoader&#39;
 </code></pre></div>
-
 <p>To workaround it either upgrade global PyYaml:</p>
 <div class="highlight"><pre><span></span><code>pip3 install --ignore-installed pyyaml
 </code></pre></div>
-
 <p>(<code>--ignore-installed</code> required!)</p>
 <p>Or specify exact pyyaml version for installation inside environment:</p>
 <div class="highlight"><pre><span></span><code><span class="n">python</span><span class="o">.</span><span class="na">pip</span> <span class="s1">&#39;pyyaml:5.4.1&#39;</span>
 </code></pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>PyYaml module not declared by default because it's a system module, installed with python.

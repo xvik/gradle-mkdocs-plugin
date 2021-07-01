@@ -603,11 +603,8 @@
                 
                 <h1 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>Releases are published to <a href="https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/">bintray jcenter</a>, 
-<a href="https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin">maven central</a> and 
-<a href="https://plugins.gradle.org/plugin/ru.vyarus.mkdocs">gradle plugins portal</a>.</p>
-<p><a href="https://bintray.com/vyarus/xvik/gradle-mkdocs-plugin/_latestVersion"><img alt="JCenter" src="https://api.bintray.com/packages/vyarus/xvik/gradle-mkdocs-plugin/images/download.svg" /></a>
-<a href="https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/ru.vyarus/gradle-mkdocs-plugin.svg" /></a></p>
+<p><a href="https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/ru.vyarus/gradle-mkdocs-plugin.svg" /></a>
+<a href="https://plugins.gradle.org/plugin/ru.vyarus.mkdocs"><img alt="Gradle Plugin Portal" src="https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/ru/vyarus/mkdocs/ru.vyarus.mkdocs.gradle.plugin/maven-metadata.xml.svg?colorB=007ec6&amp;label=plugins%20portal" /></a></p>
 <div class="highlight"><pre><span></span><code><span class="n">buildscript</span> <span class="o">{</span>
     <span class="n">repositories</span> <span class="o">{</span>
         <span class="n">mavenCentral</span><span class="o">()</span>
@@ -618,13 +615,11 @@
 <span class="o">}</span>
 <span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;ru.vyarus.mkdocs&#39;</span>
 </code></pre></div>
-
 <p>OR </p>
 <div class="highlight"><pre><span></span><code><span class="n">plugins</span> <span class="o">{</span>
     <span class="n">id</span> <span class="s1">&#39;ru.vyarus.mkdocs&#39;</span> <span class="n">version</span> <span class="s1">&#39;2.1.1&#39;</span>
 <span class="o">}</span>
 </code></pre></div>
-
 <h3 id="python">Python<a class="headerlink" href="#python" title="Permanent link">&para;</a></h3>
 <p><strong>Requires installed python</strong> 2.7 or 3.6 and above with pip.</p>
 <p><a href="https://github.com/xvik/gradle-use-python-plugin#python--pip">Check and install python if required</a>.</p>
@@ -652,7 +647,6 @@ to re-create environment.</p>
         index.md
     mkdocs.yml          - site configuration
 </code></pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Plugin does not use <a href="http://www.mkdocs.org/#getting-started">mkdocs new</a> command for site generation: custom template used 
@@ -664,7 +658,6 @@ with pre-configured plugins and enabled material theme.</p>
 <p>Used port may be changed in mkdocs.yml with <a href="https://www.mkdocs.org/user-guide/configuration/#dev_addr">dev_addr</a>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">dev_addr</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">127.0.0.1:3000</span>
 </code></pre></div>
-
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -748,7 +741,6 @@ may be structured as you want.</p>
     /1.0-SNAPSHOT/    - mkdocs site
     index.html        - redirect to correct site
 </code></pre></div>
-
 <p>Plugin is configured for multi-version documentation publishing: each version is in it's own folder
 and special <code>index.html</code> at the root will redirect to the latest version (when published).</p>
 <p>Everything in <code>build/mkdocs/</code> is assumed to be published into github pages (preserving all other already published folders).  </p>
@@ -758,12 +750,10 @@ and special <code>index.html</code> at the root will redirect to the latest vers
     <span class="n">rootRedirect</span> <span class="o">=</span> <span class="kc">true</span>  
 <span class="o">}</span>
 </code></pre></div>
-
 <p>As documentation is often updated for already released version, it makes sense to define 
 current version manually (or define it when you need to publish to exact version):</p>
 <div class="highlight"><pre><span></span><code><span class="n">mkdocs</span><span class="o">.</span><span class="na">publish</span><span class="o">.</span><span class="na">docPath</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
 </code></pre></div>
-
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>See <a href="../guide/multi-version/">multi-version</a> section for how to publish older docs version</p>
@@ -772,7 +762,6 @@ current version manually (or define it when you need to publish to exact version
 <p>If you don't want to use multi-version support at all then:</p>
 <div class="highlight"><pre><span></span><code>mkdocs.publish.docPath = &#39;&#39;  // or null 
 </code></pre></div>
-
 <p>This way, mkdocs site will always be published at the root (in case of publish it will always replace 
 previous site version).</p>
 <h2 id="publication">Publication<a class="headerlink" href="#publication" title="Permanent link">&para;</a></h2>

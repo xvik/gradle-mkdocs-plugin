@@ -23,7 +23,16 @@ wrapper {
 repositories { mavenLocal(); mavenCentral(); gradlePluginPortal() }
 dependencies {
     implementation 'ru.vyarus:gradle-use-python-plugin:2.3.0'
-    implementation 'org.ajoberstar:gradle-git-publish:3.0.0'
+
+    // plugin use latest release for grgit, changing to exact version because jgit 6 requires java 11
+    implementation ('org.ajoberstar:gradle-git-publish:3.0.0') {
+        exclude module: 'grgit-core'
+        exclude module: 'org.eclipse.jgit'
+    }
+    implementation ('org.ajoberstar.grgit:grgit-core:4.1.0') {
+        exclude module: 'org.eclipse.jgit'
+    }
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'
 
     testImplementation('org.spockframework:spock-core:2.0-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'

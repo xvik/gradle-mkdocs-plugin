@@ -9,7 +9,7 @@ import org.gradle.testkit.runner.TaskOutcome
  */
 class UpstreamKitTest extends AbstractKitTest {
 
-    String GRADLE_VERSION = '7.1'
+    String GRADLE_VERSION = '7.3'
 
     def "Check workflow"() {
         setup:
@@ -23,14 +23,14 @@ class UpstreamKitTest extends AbstractKitTest {
         """
 
         when: "run init"
-        BuildResult result = runVer(GRADLE_VERSION, 'mkdocsInit')
+        BuildResult result = runVer(GRADLE_VERSION, 'mkdocsInit', '--warning-mode', 'all')
 
         then: "docs created"
         result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
         file('src/doc/mkdocs.yml').exists()
 
         when: "build site"
-        result = runVer(GRADLE_VERSION, 'mkdocsBuild')
+        result = runVer(GRADLE_VERSION, 'mkdocsBuild', '--warning-mode', 'all')
 
         then: "built"
         result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
@@ -54,7 +54,7 @@ class UpstreamKitTest extends AbstractKitTest {
         """
 
         when: "run help"
-        BuildResult result = runVer(GRADLE_VERSION, 'mkHelp')
+        BuildResult result = runVer(GRADLE_VERSION, 'mkHelp', '--warning-mode', 'all')
 
         then: "executed"
         result.task(':mkHelp').outcome == TaskOutcome.SUCCESS

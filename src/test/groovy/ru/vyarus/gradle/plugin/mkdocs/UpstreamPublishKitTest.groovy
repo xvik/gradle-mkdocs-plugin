@@ -11,7 +11,7 @@ import spock.lang.TempDir
  */
 class UpstreamPublishKitTest extends AbstractKitTest {
 
-    String GRADLE_VERSION = '7.1'
+    String GRADLE_VERSION = '7.3'
 
     @TempDir File repoDir
 
@@ -51,7 +51,7 @@ class UpstreamPublishKitTest extends AbstractKitTest {
         """
 
         when: "run init"
-        BuildResult result = runVer(GRADLE_VERSION, 'mkdocsInit')
+        BuildResult result = runVer(GRADLE_VERSION, 'mkdocsInit', '--warning-mode', 'all')
 
         then: "docs created"
         result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
@@ -60,7 +60,7 @@ class UpstreamPublishKitTest extends AbstractKitTest {
         when: "publish"
 //        debug()
 //        println 'wait for debugger'
-        result = runVer(GRADLE_VERSION, 'mkdocsPublish')
+        result = runVer(GRADLE_VERSION, 'mkdocsPublish', '--warning-mode', 'all')
 
         then: "published"
         result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
@@ -82,7 +82,7 @@ class UpstreamPublishKitTest extends AbstractKitTest {
             
             python.scope = USER
         """
-        result = runVer(GRADLE_VERSION, 'mkdocsPublish')
+        result = runVer(GRADLE_VERSION, 'mkdocsPublish', '--warning-mode', 'all')
 
         then: "version published"
         result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS

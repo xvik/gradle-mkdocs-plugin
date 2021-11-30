@@ -1,3 +1,6 @@
+### [2.1.2](http://xvik.github.io/gradle-mkdocs-plugin/2.1.2) (2021-12-01)
+* Fix java 8 support, dropped due to jgit 6 transitive dependency ([#13](https://github.com/xvik/gradle-mkdocs-plugin/issues/13))
+
 ### [2.1.1](http://xvik.github.io/gradle-mkdocs-plugin/2.1.1) (2021-03-18)
 * Fix variables support ignore 'docs_dir' configuration from mkdocs.yml ([#8](https://github.com/xvik/gradle-mkdocs-plugin/issues/8))
 

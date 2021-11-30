@@ -1,3 +1,4 @@
+### 2.1.2 (2021-12-01)
 * Fix java 8 support, dropped due to jgit 6 transitive dependency (#13)
 
 ### 2.1.1 (2021-03-18)

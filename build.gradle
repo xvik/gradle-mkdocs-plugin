@@ -25,7 +25,7 @@ dependencies {
     implementation 'ru.vyarus:gradle-use-python-plugin:2.3.0'
     implementation 'org.ajoberstar:gradle-git-publish:3.0.0'
 
-    testImplementation('org.spockframework:spock-core:2.0-groovy-2.5') {
+    testImplementation('org.spockframework:spock-core:2.0-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
 }

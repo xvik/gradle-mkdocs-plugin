@@ -3,7 +3,7 @@ site_name: @projectName@
 # Meta tags (placed in header)
 site_description: @projectDescription@
 #site_author: Your Name
-#site_url: https://you.github.io/@projectName@
+site_url: # https://you.github.io/@projectName@
 
 # Repository (add link to repository on each page)
 #repo_name: @projectName@
@@ -16,8 +16,12 @@ site_description: @projectDescription@
 # Meterial theme
 theme:
   name: 'material'
-  feature:
-    tabs: false
+  features:
+    #- navigation.tabs
+    #- navigation.tabs.sticky
+    #- navigation.instant
+    - navigation.tracking
+    - navigation.top
 
 #plugins:
 #  - search
@@ -34,18 +38,15 @@ theme:
 #      link: https://github.com/you
 #    - icon: fontawesome/brands/twitter
 #      link: https://twitter.com/you
-
-
+#
 # Google Analytics
-#google_analytics:
-#  - 'UA-111111111-1'
-#  - 'auto'
+#  analytics:
+#    provider: google
+#    property: UA-XXXXXXXX-X
 
 # Extensions
 markdown_extensions:
   - admonition
-  - codehilite:
-      guess_lang: false
   - footnotes
   - meta
   - def_list
@@ -55,8 +56,8 @@ markdown_extensions:
       smart_enable: all
   - pymdownx.caret
   - pymdownx.inlinehilite
-  - pymdownx.magiclink
   - pymdownx.smartsymbols
+  - pymdownx.highlight
   - pymdownx.superfences
 
 # Dev server binding

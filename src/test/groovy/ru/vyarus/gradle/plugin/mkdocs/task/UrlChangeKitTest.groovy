@@ -31,7 +31,7 @@ class UrlChangeKitTest extends AbstractKitTest {
         conf.exists()
 
         when: "build site"
-        conf.text = conf.text.replaceAll(/(?m)^#site_url:.*/, "site_url: http://some-url.com")
+        conf.text = conf.text.replaceAll(/(?m)^site_url:.*/, "site_url: http://some-url.com")
         result = run('mkdocsBuild')
 
         then: "built"
@@ -72,7 +72,7 @@ class UrlChangeKitTest extends AbstractKitTest {
         conf.exists()
 
         when: "build site"
-        conf.text = conf.text.replaceAll(/(?m)^#site_url:.*/, "site_url: http://some-url.com")
+        conf.text = conf.text.replaceAll(/(?m)^site_url:.*/, "site_url: http://some-url.com")
         result = run('mkdocsBuild')
 
         then: "built"

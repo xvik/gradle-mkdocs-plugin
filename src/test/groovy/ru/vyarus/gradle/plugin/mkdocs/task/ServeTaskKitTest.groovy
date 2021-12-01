@@ -69,6 +69,6 @@ class ServeTaskKitTest extends AbstractKitTest {
 
         then: "correct source path used"
         result.task(':mkdocsServe').outcome == TaskOutcome.FAILED
-        result.output.contains("Config file '${file('docs/mkdocs.yml').canonicalPath}' does not exist.")
+        result.output.contains("Config file 'mkdocs.yml' does not exist.")
     }
 }

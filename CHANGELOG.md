@@ -1,5 +1,17 @@
 ### 2.1.2 (2021-12-01)
 * Fix java 8 support, dropped due to jgit 6 transitive dependency (#13)
+* Update packages:
+  - mkdocs 1.1.2 -> 1.2.3
+      See breaking changes: https://www.mkdocs.org/about/release-notes/#backward-incompatible-changes-in-12
+        * site_url is now required
+        * google_analytics option deprecated - theme specific configurations used instead (see below)
+  - mkdocs-material 7.0.6 -> 8.0.2
+      Migration notes: https://squidfunk.github.io/mkdocs-material/upgrade/#upgrading-from-7x-to-8x
+      * instead of google_analytics extra.analytics must be used
+      * replace codehilite extension with pymdownx.highlight
+  - pygments 2.8.0 -> 2.10.0
+  - pymdown-extensions 8.1.1 -> 9.1
+* Actualize mkdocs.yaml used in init task 
 
 ### 2.1.1 (2021-03-18)
 * Fix variables support ignore 'docs_dir' configuration from mkdocs.yml (#8)

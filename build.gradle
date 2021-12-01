@@ -29,7 +29,7 @@ dependencies {
         exclude module: 'grgit-core'
         exclude module: 'org.eclipse.jgit'
     }
-    implementation ('org.ajoberstar.grgit:grgit-core:4.1.0') {
+    implementation ('org.ajoberstar.grgit:grgit-core:4.1.1') {
         exclude module: 'org.eclipse.jgit'
     }
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'

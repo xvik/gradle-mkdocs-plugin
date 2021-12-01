@@ -3,7 +3,7 @@
 !!! summary ""
     [Mkdocs](http://www.mkdocs.org/) (python tool) documentation generation and publishing plugin
     
-[Release notes](about/history.md) - [License](about/license.md)
+[Release notes](about/history.md) - [Migration notes](about/migration.md) - [License](about/license.md)
 
 ## Ideal for open source projects
 

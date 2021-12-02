@@ -65,11 +65,23 @@ markdown_extensions:
   - pymdownx.tilde
 ```
 
-New list of proposed [navigation features](https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/) is:
+[Dark theme toggle activation](https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/#color-palette-toggle)
+with suggested [navigation features](https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/):
 
 ```yaml
 theme:
   name: 'material'
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
   features:
     #- navigation.tabs
     #- navigation.tabs.sticky

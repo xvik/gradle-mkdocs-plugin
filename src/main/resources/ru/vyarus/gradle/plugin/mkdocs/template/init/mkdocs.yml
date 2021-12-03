@@ -44,6 +44,9 @@ theme:
 #    primary: 'indigo'
 #    accent: 'indigo'
 
+#  version:
+#    provider: mike
+
 #  social:
 #    - icon: fontawesome/brands/github
 #      link: https://github.com/you

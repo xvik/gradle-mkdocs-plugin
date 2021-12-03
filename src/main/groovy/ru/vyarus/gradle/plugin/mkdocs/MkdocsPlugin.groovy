@@ -12,9 +12,11 @@ import org.ajoberstar.grgit.operation.OpenOp
 import org.eclipse.jgit.errors.RepositoryNotFoundException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskProvider
 import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsBuildTask
 import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsInitTask
 import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsTask
+import ru.vyarus.gradle.plugin.mkdocs.task.VersionsTask
 import ru.vyarus.gradle.plugin.python.PythonExtension
 import ru.vyarus.gradle.plugin.python.PythonPlugin
 
@@ -47,6 +49,7 @@ class MkdocsPlugin implements Plugin<Project> {
 
     private static final String GIT_PUSH_TASK = 'gitPublishPush'
     private static final String GIT_RESET_TASK = 'gitPublishReset'
+    private static final String GIT_COPY_TASK = 'gitPublishCopy'
 
     @Override
     void apply(Project project) {
@@ -151,7 +154,8 @@ class MkdocsPlugin implements Plugin<Project> {
     }
 
     private void configurePublishTasks(Project project, MkdocsExtension extension) {
-        // mkdocsBuild <- gitPublishReset <- gitPublishCopy <- gitPublishCommit <- gitPublishPush <- mkdocsPublish
+        // mkdocsBuild <- gitPublishReset <- generateMkdocsVersionsFile <- gitPublishCopy <- gitPublishCommit
+        // <- gitPublishPush <- mkdocsPublish
         project.tasks.named(GIT_RESET_TASK).configure {
             it.with {
                 dependsOn MKDOCS_BUILD_TASK
@@ -166,6 +170,19 @@ class MkdocsPlugin implements Plugin<Project> {
                     fixOrphanBranch(project, extension.publish.repoDir, extension.publish.branch)
                 }
             }
+        }
+
+        TaskProvider versionsTask = project.tasks.register('mkdocsVersionsFile', VersionsTask) {
+            it.with {
+                group = DOCUMENTATION_GROUP
+                description = 'Generate/actualize versions.json file from publish repository'
+                dependsOn GIT_RESET_TASK
+            }
+        }
+
+        // versions generation before copy because all updated files must be correctly registered in git (by copy task)
+        project.tasks.named(GIT_COPY_TASK).configure {
+            it.dependsOn versionsTask
         }
 
         // create dummy task to simplify usage

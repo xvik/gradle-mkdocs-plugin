@@ -1,5 +1,6 @@
 package ru.vyarus.gradle.plugin.mkdocs.task
 
+import groovy.json.JsonSlurper
 import org.ajoberstar.grgit.Grgit
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
@@ -69,6 +70,14 @@ class PushTaskKitTest extends AbstractKitTest {
         file('/.gradle/gh-pages/1.0/index.html').exists()
         file('/.gradle/gh-pages/index.html').exists()
 
+        then: "versions file correct"
+        result.output.contains("Versions file generated with 1 versions:")
+        file('/.gradle/gh-pages/versions.json').exists()
+        with(new JsonSlurper().parse(file('/.gradle/gh-pages/versions.json')) as List) {
+            it.size() == 1
+            it[0]['title'] == '1.0'
+        }
+
 
         when: "publish another version"
         buildFile.delete()
@@ -89,6 +98,15 @@ class PushTaskKitTest extends AbstractKitTest {
         file('/.gradle/gh-pages/1.0/index.html').exists()
         file('/.gradle/gh-pages/index.html').exists()
         file('/.gradle/gh-pages/index.html').text.contains('URL=\'1.1\'')
+
+        then: "versions file correct"
+        result.output.contains("Versions file generated with 2 versions:")
+        file('/.gradle/gh-pages/versions.json').exists()
+        with(new JsonSlurper().parse(file('/.gradle/gh-pages/versions.json')) as List) {
+            it.size() == 2
+            it[0]['title'] == '1.1'
+            it[1]['title'] == '1.0'
+        }
     }
 
     def "Check no multi-version"() {
@@ -124,6 +142,7 @@ class PushTaskKitTest extends AbstractKitTest {
 
         then: "content available"
         file('/.gradle/gh-pages/index.html').exists()
+        !file('/.gradle/gh-pages/versions.json').exists()
         !file('/.gradle/gh-pages/1.0/index.html').exists()
         // redirect file not generated
         !file('/.gradle/gh-pages/index.html').text.contains('meta http-equiv="refresh"')
@@ -155,6 +174,7 @@ class PushTaskKitTest extends AbstractKitTest {
         result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
         !file('/.gradle/gh-pages/1.1/index.html').exists()
         !file('/.gradle/gh-pages/1.0/index.html').exists()
+        !file('/.gradle/gh-pages/versions.json').exists()
         file('/.gradle/gh-pages/index.html').exists()
         !file('/.gradle/gh-pages/index.html').text.contains('meta http-equiv="refresh"')
     }
@@ -171,7 +191,10 @@ class PushTaskKitTest extends AbstractKitTest {
             
             python.scope = USER
             
-            mkdocs.publish.docPath = 'en/1.0'
+            mkdocs.publish {
+                docPath = 'en/1.0'
+                versionTitle = '1.0'
+            }
         """
 
         when: "run init"
@@ -196,6 +219,14 @@ class PushTaskKitTest extends AbstractKitTest {
         // redirect file generated
         file('/.gradle/gh-pages/index.html').text.contains('URL=\'en/1.0\'')
 
+        then: "versions file correct"
+        result.output.contains("Versions file generated with 1 versions:")
+        file('/.gradle/gh-pages/versions.json').exists()
+        with(new JsonSlurper().parse(file('/.gradle/gh-pages/versions.json')) as List) {
+            it.size() == 1
+            it[0]['version'] == 'en/1.0'
+            it[0]['title'] == '1.0'
+        }
 
         when: "publish another version"
         buildFile.delete()
@@ -208,7 +239,10 @@ class PushTaskKitTest extends AbstractKitTest {
             
             python.scope = USER
             
-            mkdocs.publish.docPath = 'en/1.1/'
+            mkdocs.publish {
+                docPath = 'en/1.1'
+                versionTitle = '1.1'
+            }
         """
         result = run('mkdocsPublish')
 
@@ -218,6 +252,17 @@ class PushTaskKitTest extends AbstractKitTest {
         file('/.gradle/gh-pages/en/1.0/index.html').exists()
         file('/.gradle/gh-pages/index.html').exists()
         file('/.gradle/gh-pages/index.html').text.contains('URL=\'en/1.1\'')
+
+        then: "versions file correct"
+        result.output.contains("Versions file generated with 2 versions:")
+        file('/.gradle/gh-pages/versions.json').exists()
+        with(new JsonSlurper().parse(file('/.gradle/gh-pages/versions.json')) as List) {
+            it.size() == 2
+            it[0]['version'] == 'en/1.1'
+            it[0]['title'] == '1.1'
+            it[1]['version'] == 'en/1.0'
+            it[1]['title'] == '1.0'
+        }
     }
 
     def "Check up to date"() {

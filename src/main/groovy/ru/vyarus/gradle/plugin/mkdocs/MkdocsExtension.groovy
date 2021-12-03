@@ -142,6 +142,11 @@ class MkdocsExtension {
     }
 
     @Memoized
+    String resolveVersionTitle() {
+        render(publish.versionTitle, [docPath: resolveDocPath() ?: ''])
+    }
+
+    @Memoized
     String resolveComment() {
         render(publish.comment, [docPath: resolveDocPath() ?: ''])
     }
@@ -165,6 +170,21 @@ class MkdocsExtension {
          * to publish documentation without sub folders (in this case {@link # rootRedirect} option will be ignored.
          */
         String docPath = '$version'
+
+        /**
+         * When multi-version publishing enabled, plugin would generate versions.json file at the root.
+         * The format used from mike tool's file (https://github.com/jimporter/mike). This file is required to
+         * show version selection list in material theme (just configure it as described in docs for mike).
+         * <p>
+         * On publication, plugin synchronizes existing file with the list of existing folders.
+         */
+        boolean generateVersionsFile = true
+
+        /**
+         * Sets version name in version switcher. The value would be used only for versions.json generation only and
+         * may differ from actual version path ({@link #docPath}).
+         */
+        String versionTitle = '$docPath'
 
         /**
          * When enabled, publish additional index.html at the root. Index file will redirect to the published

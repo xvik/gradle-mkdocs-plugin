@@ -183,8 +183,17 @@ class MkdocsExtension {
         /**
          * Sets version name in version switcher. The value would be used only for versions.json generation only and
          * may differ from actual version path ({@link #docPath}).
+         * <p>
+         * Do nothing when {@link #generateVersionsFile} disabled.
          */
         String versionTitle = '$docPath'
+
+        /**
+         * When specified, version would be published in 2 (or more) folders: version itself and alias(es). This is
+         * required, for example, to publish the latest documentation into 'latest' folder so user could reference
+         * docs with latest instead of version. Another example is 'dev' docs.
+         */
+        String[] versionAliases
 
         /**
          * When enabled, publish additional index.html at the root. Index file will redirect to the published

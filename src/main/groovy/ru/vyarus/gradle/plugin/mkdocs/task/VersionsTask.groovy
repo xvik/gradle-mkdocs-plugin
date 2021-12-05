@@ -7,6 +7,8 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 
+import java.util.regex.Pattern
+
 /**
  * Generate versions.json file in documentation root folder. File use mike (https://github.com/jimporter/mike)
  * format and required for version switcher activation (mike itself is not required - theme just requires this file).
@@ -17,7 +19,10 @@ import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 @CompileStatic
 class VersionsTask extends DefaultTask {
 
-    public static final String VERSIONS_FILE = 'versions.json'
+    private static final String VERSIONS_FILE = 'versions.json'
+    private static final String ALIASES = 'aliases'
+    // assume version must start with a digit, followed by dot (no matter what ending)
+    private static final Pattern VERSION_FOLDER = Pattern.compile('\\d+(\\..+)?')
 
     @TaskAction
     void run() {
@@ -33,6 +38,7 @@ class VersionsTask extends DefaultTask {
         // read file stored in repository
         File oldFile = new File(project.file(extension.publish.repoDir), VERSIONS_FILE)
         Map<String, Map<String, Object>> index = parseExistingFile(oldFile)
+        cleanupAliases(index, versions, extension)
         Report report = updateVersions(index, versions, extension)
 
         // write into build directory (it would be incorrect to write directly to repo dir)
@@ -47,12 +53,13 @@ class VersionsTask extends DefaultTask {
         int start = repo.absolutePath.length() + 1
         if (repo.exists()) {
             repo.listFiles()
-                    .findAll { isValidDirectory(it) }
+                    .findAll { it.directory && !it.name.startsWith('.') }
                     .forEach { File it ->
                         List<File> roots = []
                         findRoots(roots, it)
                         roots.each {
-                            versions.add(it.absolutePath[start..-1])
+                            // replace slashes for windows
+                            versions.add(it.absolutePath.replace('\\', '/')[start..-1])
                         }
                     }
         }
@@ -86,15 +93,49 @@ class VersionsTask extends DefaultTask {
     }
 
     private boolean isValidDirectory(File file) {
-        return file.directory && !file.name.startsWith('.')
+        // note: this automatically filters simple aliases like dev or latest, bit not aliases like "1.x"
+        return file.directory && VERSION_FOLDER.matcher(file.name).matches()
     }
 
+    /**
+     * First, all aliases must be removed from the folders list (aliases info is stored in the versions file).
+     * Then current alias must be removed from previous versions (e.g. if we publish new "latest" version,
+     * this alias must be removed from previous "latest" version).
+     *
+     * @param file current versions file content
+     * @param actual version folders found in repo
+     * @param extension version configuration
+     */
+    private void cleanupAliases(Map<String, Map<String, Object>> file,
+                                List<String> actual,
+                                MkdocsExtension extension) {
+        String[] currentAliases = extension.publish.versionAliases
+        file.values().each {
+            List aliases = it[ALIASES] as List
+            // remove aliases from found repo directories
+            actual.removeAll(aliases)
+            // remove current aliases from old version
+            if (currentAliases) {
+                aliases.removeAll(currentAliases)
+            }
+        }
+    }
+
+    /**
+     * First, remove all versions not found in repo from versions file. Then add all not mentioned folders
+     * as new versions (recover versions file by repository state, but in this case it is impossible to recover
+     * aliases).
+     *
+     * @param file current versions file content
+     * @param actual version folders found in repo
+     * @param extension version configuration
+     * @return report of versions file modifications
+     */
     @SuppressWarnings('SpaceAroundMapEntryColon')
     private Report updateVersions(Map<String, Map<String, Object>> file,
                                   List<String> actual,
                                   MkdocsExtension extension) {
         Report report = new Report()
-        report.survived.addAll(file.keySet())
         report.removed.addAll(file.keySet())
 
         // remove all versions not found on fs
@@ -114,15 +155,22 @@ class VersionsTask extends DefaultTask {
 
                 file.put(ver, ['version': ver,
                                'title'  : ver,
-                               'aliases': [],])
+                               (ALIASES): [],])
                 report.added.add(ver)
             }
         }
 
         // update custom title (to handle case when existing version re-generated)
         String currenTitle = extension.resolveVersionTitle() ?: currentVer
-        file.get(currentVer).put('title', currenTitle)
+        file.get(currentVer).with {
+            it.put('title', currenTitle)
+            if (extension.publish.versionAliases) {
+                it.put(VersionsTask.ALIASES, extension.publish.versionAliases)
+            }
+        }
 
+        report.survived.addAll(actual)
+        report.survived.removeAll(report.added)
         return report
     }
 
@@ -141,9 +189,9 @@ class VersionsTask extends DefaultTask {
 
     private String composeReport(Report report) {
         StringBuilder out = new StringBuilder()
-        appendReportLine(out, report.added, 'Added')
-        appendReportLine(out, report.removed, 'Removed')
-        appendReportLine(out, report.survived, 'Remains')
+        appendReportLine(out, report.added, 'new versions')
+        appendReportLine(out, report.removed, 'removed from file')
+        appendReportLine(out, report.survived, 'remains the same')
 
         if (out.length() == 0) {
             out.append('\tno version changes\n')

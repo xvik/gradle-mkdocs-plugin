@@ -117,6 +117,7 @@ class MkdocsPlugin implements Plugin<Project> {
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)
+    @SuppressWarnings('NestedBlockDepth')
     private void configurePublish(Project project, MkdocsExtension extension) {
         project.plugins.apply(GitPublishPlugin)
 
@@ -141,7 +142,12 @@ class MkdocsPlugin implements Plugin<Project> {
                         // keep everything (all other versions) except publishing version
                         preserve {
                             include '**'
+                            // remove publishing version
                             exclude "${path}/**"
+                            // remove publishing version aliases
+                            publish.versionAliases?.each {
+                                exclude "$it/**"
+                            }
                         }
                     }
 

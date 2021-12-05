@@ -1,6 +1,7 @@
 package ru.vyarus.gradle.plugin.mkdocs.task
 
 import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
@@ -43,6 +44,7 @@ class MkdocsBuildTask extends MkdocsTask {
         if (isMultiVersion) {
             // add root index.html
             copyRedirect(path)
+            copyAliases(path)
         }
     }
 
@@ -92,13 +94,25 @@ class MkdocsBuildTask extends MkdocsTask {
             // create root redirection file
             TemplateUtils.copy(project, '/ru/vyarus/gradle/plugin/mkdocs/template/publish/',
                     extension.buildDir, [docPath: path])
+            logger.lifecycle('Root redirection enabled for version')
         } else {
             // remove stale index.html (to avoid unintentional redirect override)
-            // of course, build always must be called after clean, but at leas minimize damage on incorrect usage
+            // of course, build always must be called after clean, but at least minimize damage on incorrect usage
             File index = project.file(extension.buildDir + '/index.html')
             if (index.exists()) {
                 index.delete()
             }
+        }
+    }
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private void copyAliases(String version) {
+        extension.publish.versionAliases?.each { String alias ->
+            project.copy {
+                from version
+                into alias
+            }
+            logger.lifecycle('Version alias added: {}', alias)
         }
     }
 }

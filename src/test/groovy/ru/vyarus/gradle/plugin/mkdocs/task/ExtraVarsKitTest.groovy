@@ -332,4 +332,61 @@ Version {{ gradle.version }}
             docSources.delete()
         }
     }
+
+    def "Check data file wasn't removed"() {
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                                              
+            }
+            
+            version = '1.0'                          
+            
+            python.scope = USER
+            
+            mkdocs {
+                sourcesDir 'doc' 
+                extras = [ 
+                    'version': project.version
+                ]                
+            }
+        """
+
+        file('doc').mkdir()
+        file('doc/mkdocs.yml') << """
+site_name: test
+
+plugins:
+    - search
+    - markdownextradata
+
+nav:
+  - Home: index.md    
+"""
+        file('doc/docs').mkdir()
+        file('doc/docs/index.md') << """
+# Index page
+
+Version {{ gradle.version }}
+"""
+
+        file('doc/docs/_data').mkdir()
+        file('doc/docs/_data/gradle.yml') << """
+Version: 0.1
+"""
+
+        when: "run build"
+        BuildResult result = run('mkdocsBuild')
+
+        then: "build success"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        file('build/mkdocs/1.0/index.html').exists()
+        def idx = file('build/mkdocs/1.0/index.html').text
+        idx.contains('Version 1.0')
+
+        and: "file was overwritten"
+        file('doc/docs/_data').exists()
+        !file('doc/docs/_data/gradle.yml').exists()
+    }
+
 }

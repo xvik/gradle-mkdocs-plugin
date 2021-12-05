@@ -66,7 +66,7 @@ class MkdocsTask extends PythonTask {
         File gen = new File(data, 'gradle.yml')
         try {
             if (removeDataDir) {
-                data.mkdir()
+                data.mkdirs()
             }
             // assuming this file owned by gradle exclusively and may remain only because of incorrect task shutdown
             if (gen.exists()) {
@@ -114,11 +114,6 @@ class MkdocsTask extends PythonTask {
         // docs_dir config value may contain absolute path declaration
         if (!docs.absolute) {
             docs = new File(root, docs.path)
-        }
-        if (!docs.exists()) {
-            // documentation sources dir must be present (catches misconfiguration)
-            throw new GradleException(
-                    "Mkdocs documentation sources directory not found: ${getFilePath(docs)}")
         }
 
         return new File(docs, '_data')

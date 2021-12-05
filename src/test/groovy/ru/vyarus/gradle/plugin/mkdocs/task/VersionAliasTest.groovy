@@ -190,4 +190,46 @@ class VersionAliasTest extends AbstractKitTest {
             it[0]['aliases'] == ['latest']
         }
     }
+
+    def "Check alias published when versions file publishing disabled"() {
+
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            version = '1.0'
+            
+            python.scope = USER
+            
+            mkdocs.publish {
+                versionAliases = ['latest']
+                generateVersionsFile = false
+            }    
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "publish"
+//        debug()
+//        println 'wait for debugger'
+        result = run('mkdocsPublish')
+
+        then: "published"
+        result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
+        repo.branch.list().size() == 2
+
+        then: "content available"
+        file('/.gradle/gh-pages/1.0/index.html').exists()
+        file('/.gradle/gh-pages/latest/index.html').exists()
+        file('/.gradle/gh-pages/latest/index.html').size() == file('/.gradle/gh-pages/1.0/index.html').size()
+        file('/.gradle/gh-pages/index.html').exists()
+        !file('/.gradle/gh-pages/versions.json').exists()
+    }
 }

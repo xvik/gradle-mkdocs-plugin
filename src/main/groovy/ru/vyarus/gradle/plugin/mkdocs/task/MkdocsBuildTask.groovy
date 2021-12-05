@@ -107,10 +107,11 @@ class MkdocsBuildTask extends MkdocsTask {
 
     @CompileStatic(TypeCheckingMode.SKIP)
     private void copyAliases(String version) {
+        File baseDir = project.file(extension.buildDir)
         extension.publish.versionAliases?.each { String alias ->
             project.copy {
-                from version
-                into alias
+                from new File(baseDir, version)
+                into new File(baseDir, alias)
             }
             logger.lifecycle('Version alias added: {}', alias)
         }

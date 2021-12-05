@@ -121,4 +121,73 @@ class VersionAliasTest extends AbstractKitTest {
             it[1]['aliases'] == []
         }
     }
+
+    def "Check version update publishing"() {
+
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            version = '1.0'
+            
+            python.scope = USER
+            
+            mkdocs.publish.versionAliases = ['latest']
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "publish"
+//        debug()
+//        println 'wait for debugger'
+        result = run('mkdocsPublish')
+
+        then: "published"
+        result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
+        repo.branch.list().size() == 2
+
+        then: "content available"
+        file('/.gradle/gh-pages/1.0/index.html').exists()
+        file('/.gradle/gh-pages/latest/index.html').exists()
+        file('/.gradle/gh-pages/latest/index.html').size() == file('/.gradle/gh-pages/1.0/index.html').size()
+        file('/.gradle/gh-pages/index.html').exists()
+
+        then: "versions file correct"
+        result.output.contains("Versions file generated with 1 versions:")
+        file('/.gradle/gh-pages/versions.json').exists()
+        with(new JsonSlurper().parse(file('/.gradle/gh-pages/versions.json')) as List) {
+            it.size() == 1
+            it[0]['title'] == '1.0'
+            it[0]['aliases'] == ['latest']
+        }
+
+
+        when: "publish again version"
+        // change to validate aliased version correctness
+        file('src/doc/docs/index.md') << 'different part'
+        result = run('mkdocsPublish')
+
+        then: "version published"
+        result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
+        file('/.gradle/gh-pages/1.0/index.html').exists()
+        file('/.gradle/gh-pages/latest/index.html').exists()
+        file('/.gradle/gh-pages/latest/index.html').size() == file('/.gradle/gh-pages/1.0/index.html').size()
+        file('/.gradle/gh-pages/index.html').exists()
+
+        then: "versions file correct"
+        result.output.contains("Versions file generated with 1 versions:")
+        file('/.gradle/gh-pages/versions.json').exists()
+        with(new JsonSlurper().parse(file('/.gradle/gh-pages/versions.json')) as List) {
+            it.size() == 1
+            it[0]['title'] == '1.0'
+            it[0]['aliases'] == ['latest']
+        }
+    }
 }

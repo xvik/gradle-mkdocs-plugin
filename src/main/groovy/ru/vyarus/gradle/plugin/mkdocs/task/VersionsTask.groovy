@@ -51,18 +51,16 @@ class VersionsTask extends DefaultTask {
     private List<String> listRepoVersions(File repo) {
         List<String> versions = []
         int start = repo.absolutePath.length() + 1
-        if (repo.exists()) {
-            repo.listFiles()
-                    .findAll { it.directory && !it.name.startsWith('.') }
-                    .forEach { File it ->
-                        List<File> roots = []
-                        findRoots(roots, it)
-                        roots.each {
-                            // replace slashes for windows
-                            versions.add(it.absolutePath.replace('\\', '/')[start..-1])
-                        }
+        repo.listFiles()
+                .findAll { it.directory && !it.name.startsWith('.') }
+                .forEach { File it ->
+                    List<File> roots = []
+                    findRoots(roots, it)
+                    roots.each {
+                        // replace slashes for windows
+                        versions.add(it.absolutePath.replace('\\', '/')[start..-1])
                     }
-        }
+                }
         return versions
     }
 
@@ -143,8 +141,7 @@ class VersionsTask extends DefaultTask {
         report.removed.removeAll(file.keySet())
 
         String currentVer = extension.resolveDocPath()
-        // version generation called before copying so version will exist in case of docs update and will not
-        // for initial version generation
+        // version would always be absent due to gitReset task (removing all outdated content before copying)
         if (!actual.contains(currentVer)) {
             actual.add(currentVer)
         }
@@ -192,10 +189,7 @@ class VersionsTask extends DefaultTask {
         appendReportLine(out, report.added, 'new versions')
         appendReportLine(out, report.removed, 'removed from file')
         appendReportLine(out, report.survived, 'remains the same')
-
-        if (out.length() == 0) {
-            out.append('\tno version changes\n')
-        }
+        // new version section would always contain at least just published version
         return out.toString()
     }
 

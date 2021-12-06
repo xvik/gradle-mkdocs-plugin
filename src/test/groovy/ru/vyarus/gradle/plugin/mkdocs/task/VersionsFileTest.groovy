@@ -217,7 +217,7 @@ class VersionsFileTest extends AbstractKitTest {
 
         then: "versions file correct"
         result.output.contains("Versions file generated with 3 versions:")
-        result.output.contains("new versions: 0.8, 0.9, 1.0")
+        result.output.contains("new versions: 1.0, 0.9, 0.8")
         file('/build/mkdocs/versions.json').exists()
         with(new JsonSlurper().parse(file('/build/mkdocs/versions.json')) as List) {
             it.size() == 3

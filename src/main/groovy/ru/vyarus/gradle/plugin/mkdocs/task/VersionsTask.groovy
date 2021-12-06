@@ -195,6 +195,7 @@ class VersionsTask extends DefaultTask {
 
     private void appendReportLine(StringBuilder out, List<String> list, String name) {
         if (!list.empty) {
+            list.sort(Comparator.reverseOrder())
             out.append("\t$name: ").append(list.join(', ')).append('\n')
         }
     }

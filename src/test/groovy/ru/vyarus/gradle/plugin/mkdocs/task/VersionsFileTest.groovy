@@ -313,7 +313,6 @@ class VersionsFileTest extends AbstractKitTest {
         then: "versions file correct"
         file('/build/mkdocs/versions.json').exists()
         with(new JsonSlurper().parse(file('/build/mkdocs/versions.json')) as List) {
-            it.size() == 5
             // yes, snapshots and rc go before released version - it's OK (because version format is unknown)
             it.collect {it['version']} == ['1.22', '1.21.1', '1.21', '1.11', '1.2-rc.2', '1.2-rc.1', '1.2', '1.1-SNAPSHOT', '1.1']
         }

@@ -95,10 +95,13 @@ For material theme configuration see: [configuration docs](https://squidfunk.git
 Read about [navigation configuration](https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/) to fine tune
 navigation menus behavior (in `theme.features` section).
 
-!!! warning
+!!! note
     Material theme supports docs version selector [natively](https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/#versioning),
-    but current plugin does not provide (yet) integrations for this feature 
-    (so there is no recommended way of how to make it work).
+    requiring [mike](https://github.com/jimporter/mike) tool. Gradle plugin provides its own
+    publishing implementation (not requiring mike) with exactly the same features (but easier to configure from gradle).
+    So if you want version switcher, just enable it as shown in docs and it will work.
+
+Another commonly used feature is [dark theme toggle](https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/#color-palette-toggle)
 
 ## Writing
 

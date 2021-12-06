@@ -17,7 +17,13 @@ mkdocs {
     
     publish {
         // publication sub-folder (by default project version)
-        docPath = '$version'        
+        docPath = '$version'
+        // generate versions.json file for versions switcher
+        generateVersionsFile = true
+        // custom version name shown in version switcher (by default version folder name)
+        versionTitle = '$docPath'
+        // one or more alias folders to copy generated docs to (e.g. 'latest' or 'dev')
+        versionAliases = []
         // generate index.html' for root redirection to the last published version 
         rootRedirect = true
         // publish repository uri (bu default the same as current repository)
@@ -87,7 +93,7 @@ Project structure:
             docs/
             ...
             index.md
-        mkdocs.yaml
+        mkdocs.yml
 build.gradle
 settings.gradle            
 ```

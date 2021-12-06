@@ -4,6 +4,12 @@
     Plugin does not use [mkdocs publication](http://www.mkdocs.org/#deploying), because it does not support
     multi-versioning. Instead, [git-publish](https://github.com/ajoberstar/gradle-git-publish) plugin is used for publication.
 
+!!! note
+    Mkdocs-material [suggests mike tool usage](https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/) for publication.
+    Gradle plugin implements [absolutely the same](multi-version.md#doc-version-switcher) workflow as mike, but much easier
+    customizable (as gradle plugin). Material theme would still be able to show version switcher because
+    plugin generates required versions.json file.
+
 By default, no configuration is required. Only project itself must be published to git so that plugin could calculate default url 
 (or `mkdocs.publish.repoUrl` manually specified).
 

@@ -10,7 +10,7 @@ Guides:
 * Mkdocs 1.2.x [breaking changes list](https://www.mkdocs.org/about/release-notes/#backward-incompatible-changes-in-12)
 * Material 8.x [migration notes](https://squidfunk.github.io/mkdocs-material/upgrade/#upgrading-from-7x-to-8x)
 
-Notable configuration changes:
+### Breaking changes
 
 `site_url` is now **required** (but it may be empty).
 
@@ -65,8 +65,76 @@ markdown_extensions:
   - pymdownx.tilde
 ```
 
-[Dark theme toggle activation](https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/#color-palette-toggle)
-with suggested [navigation features](https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/):
+### Documentation aliases
+
+It is now possible to publish version not only into version folder, but also into
+aliased folders.
+
+Could be useful for:
+
+- Publishing the latest documentation under `latest` alias, so users could always
+  reference the latest docs with the same link.
+- Publishing docs for developing version under `dev` alias, so users could easily find dev docs.
+- Serving the latest (patch) version for some mojor version: e.g. `5.x` alias could serve the latest
+  published bugfix.
+
+!!! note
+Feature implemented exactly the same as in [mike](https://github.com/jimporter/mike).
+  
+To enable aliases simply specify one or more of them:
+
+```yaml
+mkdocs.publish.versionAliases = ['latest']
+```
+
+!!! important
+    Keep in mind that alias folder contains a *copy* of generated documentation, which means
+    that sitemap or root page link would lead to path of exact version. 
+    It does not limit usage, just might be unexpected.
+
+If same version is re-published - aliases would be correctly updated too.
+
+### Version switcher
+
+Version switcher might be enabled [exactly as described in docs](https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/#versioning):
+
+```yaml
+extra:
+  version:
+    provider: mike
+```
+
+!!! important
+    You don't need [mike](https://github.com/jimporter/mike) itself! Plugin implements exactly the same functionality,
+    but in a way much easier for gradle plugin behaviour customization.
+
+Mkdocs-material requires only `versions.json` file stored at docs root. Plugin would automatically
+generate such file (following mike syntax):
+
+- Plugin verifies actually existing directories in gh-pages repository and would
+  add them to generated versions file. So if you already have many versions published, just publish
+  new version with enabled versions support and you'll see all of them in the version switcher.
+- Theme folders are detected by using `\d+(\..*)?` regexp (version folder must start with a number)
+  and it must contain 404.html file.
+- Deeper versions folders are also supported: e.g. if `mkdocs.publish.docPath = 'en/1.0/'` then 
+  `en/1.0' folder would be recognized as version
+- Existing records in versions.json file are preserved for found version folders.
+    - You can modify file manually (e.g. to modify version title) and will not be overridden on next publication
+    - You can manually remove version folder in repository and on next publication versions.json would be corrected 
+- If aliases used, they would be correctly updated (e.g. `latest` removed from previous latest version.)
+
+If you do not want to generate versions file:
+
+`mkdocs.publish.generateVersionsFile = false`
+
+To customize version title (shown in dropdown selection) use:
+
+`mkdocs.publish.versionTitle = '1.0 (important fix)'`
+
+### Dark theme
+
+[Dark theme toggle](https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/#color-palette-toggle)
+may be enabled with:
 
 ```yaml
 theme:
@@ -81,7 +149,15 @@ theme:
       scheme: slate
       toggle:
         icon: material/toggle-switch
-        name: Switch to light mode
+        name: Switch to light mode  
+```
+
+### Navigation features
+
+Suggested [navigation features](https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/) list:
+
+```yaml
+theme:
   features:
     #- navigation.tabs
     #- navigation.tabs.sticky

@@ -282,6 +282,43 @@ class VersionsFileTest extends AbstractKitTest {
         }
     }
 
+    def "Check versions sorting correctness"() {
+
+        setup:
+        initVersions('1.1', '1.2', '1.11', '1.21', '1.2-rc.1', '1.2-rc.2', '1.1-SNAPSHOT', '1.21.1')
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            version = '1.22'
+            
+            python.scope = USER           
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "build versions"
+        result = run('mkdocsVersionsFile')
+        println 'project repo copy: ' + file('/.gradle/gh-pages/').list()
+
+        then: "published"
+        result.task(':mkdocsVersionsFile').outcome == TaskOutcome.SUCCESS
+
+        then: "versions file correct"
+        file('/build/mkdocs/versions.json').exists()
+        with(new JsonSlurper().parse(file('/build/mkdocs/versions.json')) as List) {
+            it.size() == 5
+            // yes, snapshots and rc go before released version - it's OK (because version format is unknown)
+            it.collect {it['version']} == ['1.22', '1.21.1', '1.21', '1.11', '1.2-rc.2', '1.2-rc.1', '1.2', '1.1-SNAPSHOT', '1.1']
+        }
+    }
+
     private void initVersions(String... paths) {
         Grgit prjRepo = Grgit.init(dir: initDir)
         prjRepo.remote.add(name: 'origin', url: repoDir.canonicalPath, pushUrl: repoDir.canonicalPath)
@@ -292,7 +329,6 @@ class VersionsFileTest extends AbstractKitTest {
             File file = new File('404.html', dir)
             file.parentFile.mkdirs()
             file << "sample content"
-            println "created: $file.absolutePath"
         }
         prjRepo.add(patterns: ['.'])
         assert prjRepo.status().staged.allChanges.size() > 0

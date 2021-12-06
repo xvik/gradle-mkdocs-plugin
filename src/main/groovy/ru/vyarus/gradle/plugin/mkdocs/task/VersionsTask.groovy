@@ -6,6 +6,7 @@ import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
+import ru.vyarus.gradle.plugin.mkdocs.util.VersionsComparator
 
 import java.util.regex.Pattern
 
@@ -23,6 +24,7 @@ class VersionsTask extends DefaultTask {
     private static final String ALIASES = 'aliases'
     // assume version must start with a digit, followed by dot (no matter what ending)
     private static final Pattern VERSION_FOLDER = Pattern.compile('\\d+(\\..+)?')
+    private static final Comparator<String> VERSIONS_COMPARATOR = VersionsComparator.instance
 
     @TaskAction
     void run() {
@@ -81,7 +83,7 @@ class VersionsTask extends DefaultTask {
     private Map<String, Map<String, Object>> parseExistingFile(File file) {
         // self-sorted
         Map<String, Map<String, Object>> res =
-                new TreeMap<String, Map<String, Object>>(Comparator.<String> reverseOrder())
+                new TreeMap<String, Map<String, Object>>(VERSIONS_COMPARATOR.reversed())
 
         if (file.exists()) {
             ((List<Map<String, Object>>) new JsonSlurper().parse(file))
@@ -195,7 +197,7 @@ class VersionsTask extends DefaultTask {
 
     private void appendReportLine(StringBuilder out, List<String> list, String name) {
         if (!list.empty) {
-            list.sort(Comparator.reverseOrder())
+            list.sort(VERSIONS_COMPARATOR.reversed())
             out.append("\t$name: ").append(list.join(', ')).append('\n')
         }
     }

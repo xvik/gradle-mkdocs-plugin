@@ -44,42 +44,95 @@ related to material theme, which may be removed (in case of other theme used):
 ```yaml
 theme:
   name: 'material'
-  # Material theme configuration flag
-  feature:
-    tabs: false
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  features:
+    - navigation.tracking
+    - navigation.top
 
+extra:
+  #  palette:
+  #    primary: 'indigo'
+  #    accent: 'indigo'
 
-#extra:
-#  Material theme palette configurations
-#  palette:
-#    primary: 'indigo'
-#    accent: 'indigo'
+  version:
+    provider: mike
 
-#  Material theme social links configuration
-#  social:
-#    - icon: fontawesome/brands/github
-#      link: https://github.com/you
-#    - icon: fontawesome/brands/twitter
-#      link: https://twitter.com/you
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/xvik
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/vyarus
 
+# Google Analytics
+#  analytics:
+#    provider: google
+#    property: UA-XXXXXXXX-X
 
-# Extensions used by material
+plugins:
+  - search
+  - markdownextradata
+
 markdown_extensions:
+  # Python Markdown
+  - abbr
   - admonition
-  - codehilite:
-      guess_lang: false
+  - attr_list
+  - def_list
   - footnotes
   - meta
-  - def_list
+  - md_in_html
   - toc:
       permalink: true
+
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight
   - pymdownx.inlinehilite
-  - pymdownx.magiclink
+  - pymdownx.keys
+  - pymdownx.mark
   - pymdownx.smartsymbols
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - User guide:
+      - Configuration: guide/configuration.md
+      - Pip: guide/pip.md
+      - Variables: guide/vars.md
+      - Multi-version: guide/multi-version.md
+      - Publication: guide/publication.md
+      - Tasks: guide/tasks.md
+      - Themes: guide/theme.md
+  - About:
+      - Release notes: about/history.md
+      - Migration notes: about/migration.md
+      - License: about/license.md
+
+dev_addr: 127.0.0.1:3001
 ```
 
 !!! note

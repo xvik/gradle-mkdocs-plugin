@@ -13,8 +13,11 @@
     - Mobile friendly
     - Embedded search
     - Syntax highlighting
+    - Dark theme switcher
 * Easy documentation contribution (jump to source directly from doc)
-* **Multi-version** documentation publishing to github pages 
+* **Multi-version** documentation publishing to github pages
+    - Support version aliases (latest, dev, etc)
+    - Support mkdocs-material version switcher without mike tool usage
 * Variables support
 
 ## Example usages:

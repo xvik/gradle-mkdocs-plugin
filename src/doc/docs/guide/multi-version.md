@@ -117,8 +117,8 @@ extra:
     You don't need [mike](https://github.com/jimporter/mike) itself! 
 
 !!! important
-    You will not see switcher under `mkdocsServe` command, but if you call `mkdocsBuild`, and manually
-    open new version it would show switcher with all versions (because versions.json was generated) 
+    You will not see switcher under `mkdocsServe` command, but if you call `mkdocsVersionsFile` (which would also call
+    `mkdocsBuild`), and manually open new version it would show switcher with all versions (using generated versions.json) 
 
 Mkdocs-material requires only `versions.json` file stored at docs root. Plugin would automatically
 generate such file (following mike syntax):

@@ -111,10 +111,13 @@ Publication process:
 
 1. `mkdocsBuild` build site into  `$mkdocs.buildDir/$mkdocs.publish.docPath` (by default, `build/mkdocs/$version/`)
     - root redirect `index.html` generated (by default, `build/mkdocs/index.html`)
-1. `gitPublishReset` clones gh-pages repo (by default, into `.gradle/gh-pages`) or creates new one
-    - cleanup repo according to `gitPublish.preserve` (by default, `.gradle/gh-pages/$version/` folder removed only) 
-1. `gitPublishCopy` copies everything according to `gitPublish.contents` (by default, everything from `build/mkdocs`)
-1. `gitPublishCommit`, `gitPublishPush` - commit changes and push to gh-pages repository (by default, `gh-pages` branch in current repo)
+    - if required, alias folders would be generated too (by copying generated version content)
+2. `gitPublishReset` clones gh-pages repo (by default, into `.gradle/gh-pages`) or creates new one
+    - cleanup repo according to `gitPublish.preserve` (by default, `.gradle/gh-pages/$version/` folder removed only)
+3. `mkdocsVersionsFile` generates versions.json file based on version folders checked out from gh-pages repository
+   (file generated in `$mkdocs.buildDir`)
+4. `gitPublishCopy` copies everything according to `gitPublish.contents` (by default, everything from `build/mkdocs`)
+5. `gitPublishCommit`, `gitPublishPush` - commit changes and push to gh-pages repository (by default, `gh-pages` branch in current repo)
 
 You can configure additional folders for publication with `contents` (as shown above with javadoc) 
 and cleanup extra directories with `preserve` configuration. For example:

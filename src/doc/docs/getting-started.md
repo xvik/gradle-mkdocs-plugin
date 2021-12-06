@@ -97,7 +97,7 @@ navigation menus behavior (in `theme.features` section).
 
 !!! note
     Material theme supports docs version selector [natively](https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/#versioning),
-    requiring [mike](https://github.com/jimporter/mike) tool. Gradle plugin provides its own
+    but requires [mike](https://github.com/jimporter/mike) tool. Gradle plugin provides its own
     publishing implementation (not requiring mike) with exactly the same features (but easier to configure from gradle).
     So if you want version switcher, just enable it as shown in docs and it will work.
 
@@ -137,6 +137,7 @@ By default, `mkdocsBuild` task will generate (suppose project version is '1.0-SN
 build/mkdocs/
     /1.0-SNAPSHOT/    - mkdocs site
     index.html        - redirect to correct site
+    versions.json     - versions descriptor for version switcher
 ```
 
 Plugin is configured for multi-version documentation publishing: each version is in it's own folder

@@ -43,6 +43,10 @@ Everything in `build/mkdocs/` is assumed to be published into github pages.
     mkdocs.publish.docPath = '1.0'
     ```
 
+For multi-module documentation, `mkdocsVersionsFile` may be called instead of `mkdocsBuild`
+in order to generate versions.json and be able to test version switcher
+(ofc. it would not be able to actually switch version, but will correctly show all available versions (after publication list would be the same))
+
 ### Update old documentation
 
 When older documentation version needs to be updated switch off redirection `index.html` generation

@@ -7,6 +7,7 @@
 ## 2.2.0 
 
 Guides:
+
 * Mkdocs 1.2.x [breaking changes list](https://www.mkdocs.org/about/release-notes/#backward-incompatible-changes-in-12)
 * Material 8.x [migration notes](https://squidfunk.github.io/mkdocs-material/upgrade/#upgrading-from-7x-to-8x)
 
@@ -26,8 +27,7 @@ extra:
 
 Not required (yet), but advised to replace `codehilite` extension with `pymdownx.highlight`.
 
-Even better, replace your extensions list with the [recommended configuration](https://squidfunk.github.io/mkdocs-material/setup/extensions/#recommended-configuration).
-`mkdocsInit` task would also produce recommended list in the generated config:
+Even better, replace your extensions list with the [recommended configuration](https://squidfunk.github.io/mkdocs-material/setup/extensions/#recommended-configuration):
 
 ```yaml
 markdown_extensions:
@@ -79,7 +79,7 @@ Could be useful for:
   published bugfix.
 
 !!! note
-Feature implemented exactly the same as in [mike](https://github.com/jimporter/mike).
+    Feature implemented exactly the same as in [mike](https://github.com/jimporter/mike).
   
 To enable aliases simply specify one or more of them:
 
@@ -116,8 +116,6 @@ generate such file (following mike syntax):
   new version with enabled versions support and you'll see all of them in the version switcher.
 - Theme folders are detected by using `\d+(\..*)?` regexp (version folder must start with a number)
   and it must contain 404.html file.
-- Deeper versions folders are also supported: e.g. if `mkdocs.publish.docPath = 'en/1.0/'` then 
-  `en/1.0' folder would be recognized as version
 - Existing records in versions.json file are preserved for found version folders.
     - You can modify file manually (e.g. to modify version title) and will not be overridden on next publication
     - You can manually remove version folder in repository and on next publication versions.json would be corrected 

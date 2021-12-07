@@ -37,6 +37,11 @@ class VersionsFileTest extends AbstractKitTest {
         prjRepo.add(patterns: ['*'])
         prjRepo.commit(message: 'initial commit')
         prjRepo.push()
+        prjRepo.close()
+    }
+
+    void cleanup() {
+        repo.close()
     }
 
     def "Check first version publishing"() {
@@ -374,6 +379,7 @@ class VersionsFileTest extends AbstractKitTest {
         assert prjRepo.status().staged.allChanges.size() > 0
         prjRepo.commit(message: 'initial versions')
         prjRepo.push()
+        prjRepo.close()
 
         assert repo.branch.list().size() == 2
     }
@@ -396,5 +402,6 @@ class VersionsFileTest extends AbstractKitTest {
         assert prjRepo.status().staged.allChanges.size() > 0
         prjRepo.commit(message: 'add versions file')
         prjRepo.push()
+        prjRepo.close()
     }
 }

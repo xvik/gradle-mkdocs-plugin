@@ -56,7 +56,7 @@ class VersionsTask extends DefaultTask {
         int start = repo.absolutePath.length() + 1
         repo.listFiles()
                 .findAll { it.directory && !it.name.startsWith('.') }
-                .forEach { File it ->
+                .each { File it ->
                     List<File> roots = []
                     findRoots(roots, it)
                     roots.each {
@@ -194,7 +194,7 @@ class VersionsTask extends DefaultTask {
             if (extension.publish.rootRedirect) {
                 errors.append("\troot redirect override to '${extension.resolveRootRedirectionPath()}'\n")
             }
-            (file.get(currentVersion).get(ALIASES) as List<String>).forEach { String alias ->
+            (file.get(currentVersion).get(ALIASES) as List<String>).each { String alias ->
                 if ((new File(repo, alias)).exists()) {
                     errors.append("\texisting alias '$alias' override\n")
                 }

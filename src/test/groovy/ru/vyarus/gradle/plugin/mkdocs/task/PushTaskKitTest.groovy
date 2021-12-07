@@ -32,9 +32,14 @@ class PushTaskKitTest extends AbstractKitTest {
         prjRepo.add(patterns: ['*'])
         prjRepo.commit(message: 'initial commit')
         prjRepo.push()
+        prjRepo.close()
 
         assert repo.log().size() == 1
         assert repo.branch.list().size() == 1
+    }
+
+    void cleanup() {
+        repo.close()
     }
 
     def "Check default publish"() {

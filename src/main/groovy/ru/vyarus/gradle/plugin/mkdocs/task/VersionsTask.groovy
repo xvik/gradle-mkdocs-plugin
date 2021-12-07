@@ -24,7 +24,7 @@ class VersionsTask extends DefaultTask {
     private static final String ALIASES = 'aliases'
     // assume version must start with a digit, followed by dot (no matter what ending)
     private static final Pattern VERSION_FOLDER = Pattern.compile('\\d+(\\..+)?')
-    private static final Comparator<String> VERSIONS_COMPARATOR = VersionsComparator.instance
+    private static final Comparator<String> VERSIONS_COMPARATOR = VersionsComparator.comparingVersions(false)
 
     @TaskAction
     void run() {

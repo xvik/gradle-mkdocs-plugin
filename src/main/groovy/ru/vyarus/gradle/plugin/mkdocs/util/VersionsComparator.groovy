@@ -15,10 +15,161 @@ import groovy.transform.CompileStatic
 @SuppressWarnings('CodeNarc')
 class VersionsComparator {
 
-    static AlphaDecimalComparator<String> getInstance() {
+    static Comparator<String> comparingVersions(boolean leadingZeroesFirst) {
         return new AlphaDecimalComparator<String>(Comparator
-                .comparing({ it.toString() }, Comparator.naturalOrder()), false)
+                .comparing({ it.toString() }, Comparator.naturalOrder()), leadingZeroesFirst)
     }
+
+    // adding methods as suggested in https://bugs.openjdk.java.net/browse/JDK-8213167 to store proper docs.
+    // methods commented because groovy fails to resolve types correctly with them
+
+    /**
+     * The returned comparator compares two character sequences as though each
+     * of them would be first transformed into a tuple of the form:
+     * <pre>{@code (A0, N0, A1, N1, ..., An-1, Nn-1, An, Nn)}</pre>
+     * where:
+     * <p>{@code A0} and {@code An} are (possibly empty) sub-sequences
+     * consisting of non-decimal-digit characters,
+     * <p>{@code A1 ... An-1} are non-empty sub-sequences consisting of
+     * non-decimal-digit characters,
+     * <p>{@code N0 ... Nn-1} are non-empty sub-sequences consisting of
+     * decimal-digit characters, and
+     * <p>{@code Nn} is a (possibly empty) sub-sequence consisting of
+     * decimal-digit characters.
+     *
+     * <p>All sub-sequences concatenated together in order as they appear in the
+     * tuple yield the original character sequence.
+     *
+     * After transformation, the tuples are compared by their elements (from
+     * left to right) so that corresponding {@code Ax} elements are compared
+     * using the provided comparator {@code alphaComparator} and {@code Nx}
+     * elements are compared as non negative decimal integers.
+     *
+     * The first pair of compared elements that is different with respect to the
+     * used comparator (either {@code alphaComparator}, or special decimal
+     * comparator) if any, provides the result produced by this comparator.
+     * The arguments are treated equal, if and only if all the subsequences,
+     * both decimal and non-decimal, compare equal.
+     *
+     * <p>For example, the following array was sorted using such comparator:
+     * <pre>{@code
+     * { "1ab", "5ab", "10ab",
+     *   "a1b", "a5b", "a10b",
+     *   "ab1", "ab5", "ab10" };}</pre>
+     *
+     * <p>When comparing numerical parts, an empty character sequence is
+     * considered less than any non-empty sequence of decimal digits.
+     *
+     * <p>If the numeric values of two compared character sub-sequences are
+     * equal, but their string representations have different number of leading
+     * zeroes, the comparator treats the number with less leading zeros as
+     * smaller.
+     * For example, {@code "abc 1" < "abc 01" < "abc 001"}.
+     *
+     * @apiNote For example, to sort a collection of {@code String} based on
+     * case-insensitive ordering, and treating numbers with more leading
+     * zeroes as greater, one could use
+     *
+     * <pre>{@code
+     *     Comparator<String> cmp = Comparator.comparingAlphaDecimal(
+     *             Comparator.comparing(CharSequence::toString,
+     *                                  String::compareToIgnoreCase));
+     *}</pre>
+     *
+     * @implSpec To test if the given code point represents a decimal digit,
+     * the comparator checks if {@link java.lang.Character#getType(int)}
+     * returns value {@link java.lang.Character#DECIMAL_DIGIT_NUMBER}.
+     * The comparator uses {@link java.lang.Character#digit(int, int)} with
+     * the second argument set to {@code 10} to determine the numeric
+     * value of a digit represented by the given code point.
+     *
+     * @param alphaComparator the comparator that compares sub-sequences
+     *                         consisting of non-decimal-digits
+     * @param <T>  the type of elements to be compared; normally
+     * {@link java.lang.CharSequence}
+     * @return a comparator that compares character sequences, following the
+     *                         rules described above
+     * @throws NullPointerException if the argument is null
+     */
+//    static <T extends CharSequence> Comparator<T> comparingAlphaDecimal(
+//            Comparator<? super CharSequence> alphaComparator) {
+//        return new AlphaDecimalComparator<T>(
+//                Objects.requireNonNull(alphaComparator), false)
+//    }
+
+    /**
+     * The returned comparator compares two character sequences as though each
+     * of them would be first transformed into a tuple of the form:
+     * <pre>{@code (A0, N0, A1, N1, ..., An-1, Nn-1, An, Nn)}</pre>
+     * where:
+     * <p>{@code A0} and {@code An} are (possibly empty) sub-sequences
+     * consisting of non-decimal-digit characters,
+     * <p>{@code A1 ... An-1} are non-empty sub-sequences consisting of
+     * non-decimal-digit characters,
+     * <p>{@code N0 ... Nn-1} are non-empty sub-sequences consisting of
+     * decimal-digit characters, and
+     * <p>{@code Nn} is a (possibly empty) sub-sequence consisting of
+     * decimal-digit characters.
+     *
+     * <p>All sub-sequences concatenated together in order as they appear in the
+     * tuple yield the original character sequence.
+     *
+     * After transformation, the tuples are compared by their elements (from
+     * left to right) so that corresponding {@code Ax} elements are compared
+     * using the provided comparator {@code alphaComparator} and {@code Nx}
+     * elements are compared as non negative decimal integers.
+     *
+     * The first pair of compared elements that is different with respect to the
+     * used comparator (either {@code alphaComparator}, or special decimal
+     * comparator) if any, provides the result produced by this comparator.
+     * The arguments are treated equal, if and only if all the subsequences,
+     * both decimal and non-decimal, compare equal.
+     *
+     * <p>For example, the following array was sorted using such comparator:
+     * <pre>{@code
+     * { "1ab", "5ab", "10ab",
+     *   "a1b", "a5b", "a10b",
+     *   "ab1", "ab5", "ab10" };}</pre>
+     *
+     * <p>When comparing numerical parts, an empty character sequence is
+     * considered less than any non-empty sequence of decimal digits.
+     *
+     * <p>If the numeric values of two compared character sub-sequences are
+     * equal, but their string representations have different number of leading
+     * zeroes, the comparator treats the number with more leading zeros as
+     * smaller.
+     * For example, {@code "abc 001" < "abc 01" < "abc 1"}.
+     *
+     * @apiNote For example, to sort a collection of {@code String} based on
+     * case-insensitive ordering, and treating numbers with less leading
+     * zeroes as greater, one could use
+     *
+     * <pre>{@code
+     *       Comparator<String> cmp = Comparator.comparingAlphaDecimalLeadingZeroesFirst(
+     *             Comparator.comparing(CharSequence::toString,
+     *                                  String::compareToIgnoreCase));
+     *}</pre>
+     *
+     * @implSpec To test if the given code point represents a decimal digit,
+     * the comparator checks if {@link java.lang.Character#getType(int)}
+     * returns value {@link java.lang.Character#DECIMAL_DIGIT_NUMBER}.
+     * The comparator uses {@link java.lang.Character#digit(int, int)} with
+     * the second argument set to {@code 10} to determine the numeric
+     * value of a digit represented by the given code point.
+     *
+     * @param alphaComparator the comparator that compares sub-sequences
+     *                         consisting of non-decimal-digits
+     * @param <T>  the type of elements to be compared; normally
+     * {@link java.lang.CharSequence}
+     * @return a comparator that compares character sequences, following the
+     *                         rules described above
+     * @throws NullPointerException if the argument is null
+     */
+//    static <T extends CharSequence> Comparator<T> comparingAlphaDecimalLeadingZeroesFirst(
+//            Comparator<? super CharSequence> alphaComparator) {
+//        return new AlphaDecimalComparator<T>(
+//                Objects.requireNonNull(alphaComparator), true)
+//    }
 
     /**
      * Compares char sequences, taking into account their numeric part if one exists.
@@ -104,46 +255,46 @@ class VersionsComparator {
     static class DecimalComparator implements Comparator<CharSequence> {
 
         private static final Comparator<CharSequence> DECIMAL_COMPARATOR_LEADING_ZEROES_FIRST =
-                        new DecimalComparator(true) {
-                            @Override
-                            Comparator<CharSequence> reversed() {
-                                return DECIMAL_COMPARATOR_LEADING_ZEROES_FIRST_REVERSED
-                            }
-                        }
+                new DecimalComparator(true) {
+                    @Override
+                    Comparator<CharSequence> reversed() {
+                        return DECIMAL_COMPARATOR_LEADING_ZEROES_FIRST_REVERSED
+                    }
+                }
 
         private static final Comparator<CharSequence> DECIMAL_COMPARATOR_LEADING_ZEROES_LAST =
-                        new DecimalComparator(false) {
-                            @Override
-                            Comparator<CharSequence> reversed() {
-                                return DECIMAL_COMPARATOR_LEADING_ZEROES_LAST_REVERSED
-                            }
-                        }
+                new DecimalComparator(false) {
+                    @Override
+                    Comparator<CharSequence> reversed() {
+                        return DECIMAL_COMPARATOR_LEADING_ZEROES_LAST_REVERSED
+                    }
+                }
 
         private static final Comparator<CharSequence> DECIMAL_COMPARATOR_LEADING_ZEROES_FIRST_REVERSED =
-                        new DecimalComparator(true) {
-                            @Override
-                            Comparator<CharSequence> reversed() {
-                                return DECIMAL_COMPARATOR_LEADING_ZEROES_FIRST
-                            }
+                new DecimalComparator(true) {
+                    @Override
+                    Comparator<CharSequence> reversed() {
+                        return DECIMAL_COMPARATOR_LEADING_ZEROES_FIRST
+                    }
 
-                            @Override
-                            int compare(CharSequence cs1, CharSequence cs2) {
-                                return super.compare(cs2, cs1)
-                            }
-                        }
+                    @Override
+                    int compare(CharSequence cs1, CharSequence cs2) {
+                        return super.compare(cs2, cs1)
+                    }
+                }
 
         private static final Comparator<CharSequence> DECIMAL_COMPARATOR_LEADING_ZEROES_LAST_REVERSED =
-                        new DecimalComparator(false) {
-                            @Override
-                            Comparator<CharSequence> reversed() {
-                                return DECIMAL_COMPARATOR_LEADING_ZEROES_LAST
-                            }
+                new DecimalComparator(false) {
+                    @Override
+                    Comparator<CharSequence> reversed() {
+                        return DECIMAL_COMPARATOR_LEADING_ZEROES_LAST
+                    }
 
-                            @Override
-                            int compare(CharSequence cs1, CharSequence cs2) {
-                                return super.compare(cs2, cs1)
-                            }
-                        }
+                    @Override
+                    int compare(CharSequence cs1, CharSequence cs2) {
+                        return super.compare(cs2, cs1)
+                    }
+                }
 
         private final boolean leadingZeroesFirst
 
@@ -186,7 +337,7 @@ class VersionsComparator {
             }
             int cmp = 0
             int i1 = 0
-            for (int i2 = 0; i1 < cs1.length(); ) {
+            for (int i2 = 0; i1 < cs1.length();) {
                 int cp1 = Character.codePointAt(cs1, i1)
                 int cp2 = Character.codePointAt(cs2, i2)
                 if (cp1 != cp2) {

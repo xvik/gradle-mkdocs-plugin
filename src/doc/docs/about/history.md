@@ -1,4 +1,4 @@
-### [2.2.0](http://xvik.github.io/gradle-mkdocs-plugin/2.2.0) (2021-12-07)
+### [2.2.0](http://xvik.github.io/gradle-mkdocs-plugin/2.2.0) (2021-12-08)
 * Update packages:
   - mkdocs 1.1.2 -> 1.2.3
     See [breaking changes](https://www.mkdocs.org/about/release-notes/#backward-incompatible-changes-in-12):

@@ -91,6 +91,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting started: getting-started.md
+  - Examples: examples.md
   - User guide:
       - Configuration: guide/configuration.md
       - Pip: guide/pip.md

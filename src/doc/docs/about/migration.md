@@ -87,12 +87,32 @@ To enable aliases simply specify one or more of them:
 mkdocs.publish.versionAliases = ['latest']
 ```
 
-!!! important
-    Keep in mind that alias folder contains a *copy* of generated documentation, which means
-    that sitemap or root page link would lead to path of exact version. 
-    It does not limit usage, just might be unexpected.
+!!! note
+    Alias folder contains a *copy* of generated documentation, which means
+    that sitemap links would lead to path of exact version.
 
 If same version is re-published - aliases would be correctly updated too.
+
+It is also possible now to *redirect root into alias* instead of exact version with new `rootRedirectTo` option:
+
+```groovy
+mkdocs.publish {
+    versionAliases = ['latest']
+    rootRedirectTo = 'latest'
+}
+```
+
+!!! tip
+    In case of root redirection to alias it is better to enable version switcher to clearly show what version
+    is active now (otherwise it would be not obvious)
+
+!!! warning
+    Be careful when publishing old version: `versionAliases` option must be removed to not override
+    existing aliases!
+    Use `mkdocsVersionsFile` task instead of `mkdocsBuild` to validate correctness: it would
+    try to detect such dangerous cases and put a warning for you (but this warning could be
+    false-positive because used versions comparison could be wrong - and that's why
+    it's a warning and not exception).      
 
 ### Version switcher
 

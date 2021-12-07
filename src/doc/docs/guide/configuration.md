@@ -26,6 +26,8 @@ mkdocs {
         versionAliases = []
         // generate index.html' for root redirection to the last published version 
         rootRedirect = true
+        // allows changing root redirection to alias folder instead of exact version 
+        rootRedirectTo = '$docPath'
         // publish repository uri (bu default the same as current repository)
         repoUri = null
         // publication branch

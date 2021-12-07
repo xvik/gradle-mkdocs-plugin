@@ -18,8 +18,11 @@ Ideal for open source projects:
     - Mobile friendly
     - Embedded search
     - Syntax highlighting
+    - Dark theme switcher
 * Easy documentation contribution (jump to source)
 * Multi-version documentation publishing to github pages 
+    - Support version aliases (latest, dev, etc)
+    - Support mkdocs-material version switcher without mike tool usage
 * Variables support
 
 ##### Summary
@@ -30,6 +33,7 @@ Ideal for open source projects:
     - `mkdocsServe` - livereload server (dev)
     - `mkdocsBuild` - build documentation
     - `mkdocsPublish` - publish to github pages
+    - `mkdocsVersionsFile` - generate versions.json file for version switcher
     - `type:MkdocsTask` to call custom mdocs commands   
 * Enable plugins: [git-publish](https://github.com/ajoberstar/gradle-git-publish),
 [use-python](https://github.com/xvik/gradle-use-python-plugin)
@@ -45,7 +49,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.1.2'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.2.0'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -55,7 +59,7 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '2.1.2'
+    id 'ru.vyarus.mkdocs' version '2.2.0'
 }
 ```
 
@@ -65,7 +69,7 @@ Plugin compiled for java 8, compatible with java 11
 
 Gradle | Version
 --------|-------
-5-6     | 2.1.2
+5-6     | 2.2.0
 4.x     | [1.1.0](https://github.com/xvik/gradle-mkdocs-plugin/tree/1.1.0)
 
 **Requires installed python** 2.7 or 3.6 and above with pip.
@@ -137,6 +141,7 @@ Read [documentation](https://xvik.github.io/gradle-mkdocs-plugin/)
 * [pom-plugin](https://github.com/xvik/gradle-pom-plugin) - improves pom generation
 * [java-lib-plugin](https://github.com/xvik/gradle-java-lib-plugin) - avoid boilerplate for java or groovy library project
 * [github-info-plugin](https://github.com/xvik/gradle-github-info-plugin) - pre-configure common plugins with github related info
+* [yaml-updater](https://github.com/xvik/yaml-updater) - yaml configuration update tool, preserving comments and whitespaces
 
 
 ---

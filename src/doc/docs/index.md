@@ -20,7 +20,11 @@
     - Support mkdocs-material version switcher without mike tool usage
 * Variables support
 
+**[Common configurations](examples.md)** (cheat sheet)
+
 ## Example usages:
 
+* [mkdocs-gradle-plugin](http://xvik.github.io/mkdocs-gradle-plugin/) (self)
 * [dropwizard-guicey](http://xvik.github.io/dropwizard-guicey/)
 * [gradle-quality-plugin](http://xvik.github.io/gradle-quality-plugin/) 
+

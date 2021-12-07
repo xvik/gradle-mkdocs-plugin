@@ -8,6 +8,7 @@ Configuration, responsible for versioning:
 mkdocs.publish {
     docPath = '$version'  
     rootRedirect = true 
+    rootRedirectTo = '$docPath'
     
     versionTitle = '$docPath'
     versionAliases = []
@@ -47,7 +48,25 @@ Will build (without root index.html):
 ```
 build/mkdocs/
     /0.9/    - mkdocs site for old version
-``` 
+```
+
+Also, do not use `versionAliases` when publishing old version because it may override
+more recent docs version. Plugin would try to warn you in such cases:
+
+```java
+WARNING: Publishing version '1.0' is older then the latest published '1.1' and the following overrides might not be desired: 
+	root redirect override to '1.0'
+	existing alias 'latest' override
+	existing alias '1.x' override
+```
+
+!!! important
+    This warning is produced by `mkdocsVersionsFile` file and only when versions.json file 
+    generation is not disabled. This check can't be done under `mkdocsBuild` because publishing repository is required
+    for validation.
+
+    So please, when releasing an **old** version use `mkdocsVersionsFile` to see all possible
+    warnings before actual publication.
     
 ## Publication layouts
 
@@ -96,12 +115,25 @@ build/mkdocs/
     index.html
 ```
 
-!!! important
-    Keep in mind that alias folder contains a *copy* of generated documentation, which means
-    that sitemap or root page link would lead to path of exact version.
-    It does not limit usage, just might be unexpected.
+!!! note
+    Alias folder contains a *copy* of generated documentation, which means
+    that sitemap links would lead to path of exact version.
 
 If same version is re-published - aliases would be correctly updated too.
+
+It is also possible to *redirect root into alias* instead of exact version with `rootRedirectTo` option:
+
+```groovy
+mkdocs.publish {
+    versionAliases = ['latest']
+    rootRedirectTo = 'latest'
+}
+```
+
+!!! tip
+    In case of root redirection to alias it is better to enable version switcher to clearly show what version
+    is active now (otherwise it would be not obvious)
+
 
 ## Doc version switcher
 

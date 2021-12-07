@@ -164,6 +164,12 @@ mkdocs.publish.docPath = '1.0'
 !!! tip
     See [multi-version](guide/multi-version.md) section for how to publish older docs version
 
+!!! tip
+    You can also use [version aliases](guide/multi-version.md#aliases) like latest or dev or 1.x and perform root redirection
+    to alias instead of exact version (common case, show 'latest')
+
+See [examples](examples.md) section with most common configurations.
+
 ## Single version site
 
 If you don't want to use multi-version support at all then:

@@ -3,6 +3,7 @@ package ru.vyarus.gradle.plugin.mkdocs.task
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
@@ -91,10 +92,17 @@ class MkdocsBuildTask extends MkdocsTask {
 
     private void copyRedirect(String path) {
         if (extension.publish.rootRedirect) {
+            String target = extension.resolveRootRedirectionPath()
+            List<String> possible = [path]
+            possible.addAll(extension.publish.versionAliases ?: [] as String[])
+            if (!possible.contains(target)) {
+                throw new GradleException("Invalid mkdocs.publish.rootRedirectTo option value: '$target'. " +
+                        "Possible values are: ${possible.join(', ')} ('\$docPath' for actual version)")
+            }
             // create root redirection file
             TemplateUtils.copy(project, '/ru/vyarus/gradle/plugin/mkdocs/template/publish/',
-                    extension.buildDir, [docPath: path])
-            logger.lifecycle('Root redirection enabled for version')
+                    extension.buildDir, [docPath: target])
+            logger.lifecycle('Root redirection enabled to: {}', target)
         } else {
             // remove stale index.html (to avoid unintentional redirect override)
             // of course, build always must be called after clean, but at least minimize damage on incorrect usage

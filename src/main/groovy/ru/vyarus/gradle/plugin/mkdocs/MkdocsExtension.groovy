@@ -147,6 +147,11 @@ class MkdocsExtension {
     }
 
     @Memoized
+    String resolveRootRedirectionPath() {
+        render(publish.rootRedirectTo, [docPath: resolveDocPath() ?: ''])
+    }
+
+    @Memoized
     String resolveComment() {
         render(publish.comment, [docPath: resolveDocPath() ?: ''])
     }
@@ -158,6 +163,7 @@ class MkdocsExtension {
     /**
      * Publication configuration.
      */
+    @SuppressWarnings('CodeNarc.DuplicateStringLiteral')
     static class Publish {
         /**
          * Documentation publishing path (relative to github pages root). By default set to project version
@@ -202,6 +208,16 @@ class MkdocsExtension {
          * Ignored if {@link #docPath} set to null or empty (multi version publishing not used).
          */
         boolean rootRedirect = true
+
+        /**
+         * Specifies where root redirection should lead. By default, to just published version.
+         * Option is useful when aliases used and you want to open alias by default instead of exact version (for
+         * example, `latest` alias).
+         * <p>
+         * Plugin would verify that redirect path points to new version folder or one of its aliases and fail
+         * otherwise (to prevent incorrect redirections).
+         */
+        String rootRedirectTo = '$docPath'
 
         /**
          * Publish repository url. If not set, then the same repository will be used (with different branch).

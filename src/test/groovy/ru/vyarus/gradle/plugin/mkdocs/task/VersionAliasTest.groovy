@@ -122,6 +122,81 @@ class VersionAliasTest extends AbstractKitTest {
         }
     }
 
+    def "Check root redirection to alias"() {
+
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            version = '1.0'
+            
+            python.scope = USER
+            
+            mkdocs.publish {
+              versionAliases = ['latest']
+              rootRedirect = true
+              rootRedirectTo = 'latest'
+            }
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "publish"
+        result = run('mkdocsPublish')
+
+        then: "published"
+        result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
+        repo.branch.list().size() == 2
+
+        then: "content available"
+        file('/.gradle/gh-pages/1.0/index.html').exists()
+        file('/.gradle/gh-pages/latest/index.html').exists()
+        file('/.gradle/gh-pages/index.html').exists()
+
+        and: "redirection correct"
+        file('/.gradle/gh-pages/index.html').text.contains('URL=\'latest\'')
+    }
+
+    def "Check invalid root redirection to alias"() {
+
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            version = '1.0'
+            
+            python.scope = USER
+            
+            mkdocs.publish {
+              versionAliases = ['latest']
+              rootRedirect = true
+              rootRedirectTo = 'dummy'
+            }
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "publish"
+        result = runFailed('mkdocsPublish')
+
+        then: "failed"
+        result.output.contains("Invalid mkdocs.publish.rootRedirectTo option value: 'dummy'. Possible values are: 1.0, latest ('\$docPath' for actual version)")
+    }
+
     def "Check version update publishing"() {
 
         setup:

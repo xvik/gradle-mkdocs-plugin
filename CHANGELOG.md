@@ -15,6 +15,7 @@
 * Add support for version switcher (without mike tool usage), by generating versions.json from publish repository folders (#10)
   - New option mkdocs.publish.generateVersionsFile could disable versions.json file generation
 * Add aliases support (same way as in mike), declared with new option mkdocs.publish.versionAliases
+* Add mkdocs.publish.rootRedirectTo option to be able to configure root redirection into alias
 
 ### 2.1.2 (2021-12-01)
 * Fix java 8 support, dropped due to jgit 6 transitive dependency (#13)

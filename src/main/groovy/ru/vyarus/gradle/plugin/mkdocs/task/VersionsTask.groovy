@@ -38,10 +38,11 @@ class VersionsTask extends DefaultTask {
 
         List<String> versions = listRepoVersions(repo)
         // read file stored in repository
-        File oldFile = new File(project.file(extension.publish.repoDir), VERSIONS_FILE)
+        File oldFile = new File(repo, VERSIONS_FILE)
         Map<String, Map<String, Object>> index = parseExistingFile(oldFile)
         cleanupAliases(index, versions, extension)
         Report report = updateVersions(index, versions, extension)
+        validateUpdate(index, repo, extension)
 
         // write into build directory (it would be incorrect to write directly to repo dir)
         File file = new File(project.file(extension.buildDir), VERSIONS_FILE)
@@ -171,6 +172,38 @@ class VersionsTask extends DefaultTask {
         report.survived.addAll(actual)
         report.survived.removeAll(report.added)
         return report
+    }
+
+    /**
+     * Using versions file, plugin could warn about older version overrides root redirect or alias folder.
+     * It does not stop process with an error because versions comparison logic is way not ideal and plugin
+     * could be simply wrong about this warnings.
+     * <p>
+     * Must be called after update so versions file would be completely ready.
+     * <p>
+     * NOTE: this validation will not be performed if versions file creation is disabled.
+     */
+    private void validateUpdate(Map<String, Map<String, Object>> file,
+                                File repo,
+                                MkdocsExtension extension) {
+        String lastVersion = file.keySet().iterator().next()
+        String currentVersion = extension.resolveDocPath()
+        if (lastVersion != currentVersion) {
+            StringBuilder errors = new StringBuilder()
+            // then publishing version is not the latest
+            if (extension.publish.rootRedirect) {
+                errors.append("\troot redirect override to '${extension.resolveRootRedirectionPath()}'\n")
+            }
+            (file.get(currentVersion).get(ALIASES) as List<String>).forEach { String alias ->
+                if ((new File(repo, alias)).exists()) {
+                    errors.append("\texisting alias '$alias' override\n")
+                }
+            }
+            if (errors.size() > 0) {
+                logger.warn("\nWARNING: Publishing version '$currentVersion' is older then the latest published " +
+                        "'$lastVersion' and the following overrides might not be desired: \n{}", errors.toString())
+            }
+        }
     }
 
     private void writeVersions(Map<String, Map<String, Object>> content, File file) {

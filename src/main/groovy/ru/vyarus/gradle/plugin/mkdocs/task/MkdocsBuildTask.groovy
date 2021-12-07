@@ -19,6 +19,7 @@ import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
  * @since 14.11.2017
  */
 @CompileStatic
+@SuppressWarnings('DuplicateStringLiteral')
 class MkdocsBuildTask extends MkdocsTask {
 
     private static final String SITE_URL = 'site_url'
@@ -116,12 +117,16 @@ class MkdocsBuildTask extends MkdocsTask {
     @CompileStatic(TypeCheckingMode.SKIP)
     private void copyAliases(String version) {
         File baseDir = project.file(extension.buildDir)
-        extension.publish.versionAliases?.each { String alias ->
-            project.copy {
-                from new File(baseDir, version)
-                into new File(baseDir, alias)
+
+        String[] aliases = extension.publish.versionAliases
+        if (aliases) {
+            aliases.each { String alias ->
+                project.copy {
+                    from new File(baseDir, version)
+                    into new File(baseDir, alias)
+                }
             }
-            logger.lifecycle('Version alias added: {}', alias)
+            logger.lifecycle('Version aliases added: {}', aliases.join(', '))
         }
     }
 }

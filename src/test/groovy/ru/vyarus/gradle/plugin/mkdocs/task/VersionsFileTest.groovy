@@ -177,7 +177,9 @@ class VersionsFileTest extends AbstractKitTest {
 
         then: "versions file correct"
         result.output.contains("Versions file generated with 1 versions:")
+        result.output.contains("Version aliases added: one, two")
         result.output.contains("new versions: 1.0")
+        !result.output.contains("WARNING: Publishing version")
         file('/build/mkdocs/versions.json').exists()
         with(new JsonSlurper().parse(file('/build/mkdocs/versions.json')) as List) {
             it.size() == 1
@@ -316,6 +318,45 @@ class VersionsFileTest extends AbstractKitTest {
             // yes, snapshots and rc go before released version - it's OK (because version format is unknown)
             it.collect {it['version']} == ['1.22', '1.21.1', '1.21', '1.11', '1.2-rc.2', '1.2-rc.1', '1.2', '1.1-SNAPSHOT', '1.1']
         }
+    }
+
+    def "Check old version warnings"() {
+
+        setup:
+        initVersions('1.1', 'latest', '1.x')
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            version = '1.0'
+            
+            python.scope = USER   
+            
+            mkdocs.publish {
+                rootRedirect = true
+                versionAliases = ['latest', '1.x']
+            }        
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "build versions"
+        result = run('mkdocsVersionsFile')
+
+        then: "published"
+        result.task(':mkdocsVersionsFile').outcome == TaskOutcome.SUCCESS
+
+        then: "versions file correct"
+        result.output.contains('WARNING: Publishing version \'1.0\' is older then the latest published \'1.1\' and the following overrides might not be desired: ')
+        result.output.contains('root redirect override to \'1.0\'')
+        result.output.contains('existing alias \'latest\' override')
+        result.output.contains('existing alias \'1.x\' override')
     }
 
     private void initVersions(String... paths) {

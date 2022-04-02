@@ -1,3 +1,10 @@
+### [2.3.0](http://xvik.github.io/gradle-mkdocs-plugin/2.3.0) (2022-04-02)
+* Update packages:
+  - mkdocs 1.2.3 -> 1.3.0 (fixes #29: jinja2 3.1.0 support)
+  - mkdocs-material 8.0.2 -> 8.2.8
+  - pygments 2.10.0 -> 2.11.2
+  - mkdocs-markdownextradata-plugin 0.2.4 -> 0.2.5
+
 ### [2.2.0](http://xvik.github.io/gradle-mkdocs-plugin/2.2.0) (2021-12-08)
 * Update packages:
   - mkdocs 1.1.2 -> 1.2.3

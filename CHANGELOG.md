@@ -1,3 +1,4 @@
+### 2.3.0 (2022-04-02)
 * Update packages:
   - mkdocs 1.2.3 -> 1.3.0 (fixes #29: jinja2 3.1.0 support)
   - mkdocs-material 8.0.2 -> 8.2.8

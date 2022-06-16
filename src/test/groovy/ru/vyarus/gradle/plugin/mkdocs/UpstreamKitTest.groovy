@@ -9,7 +9,7 @@ import org.gradle.testkit.runner.TaskOutcome
  */
 class UpstreamKitTest extends AbstractKitTest {
 
-    String GRADLE_VERSION = '7.3'
+    String GRADLE_VERSION = '7.4.2'
 
     def "Check workflow"() {
         setup:
@@ -52,6 +52,48 @@ class UpstreamKitTest extends AbstractKitTest {
                 command = '--help'
             }            
         """
+
+        when: "run help"
+        BuildResult result = runVer(GRADLE_VERSION, 'mkHelp', '--warning-mode', 'all')
+
+        then: "executed"
+        result.task(':mkHelp').outcome == TaskOutcome.SUCCESS
+        result.output.contains('-V, --version  Show the version and exit.')
+    }
+
+    def "Check extra props"() {
+
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            python.scope = USER
+            
+            mkdocs { 
+                sourcesDir = 'doc'
+                extras = [
+                    'version': "\${-> project.version}",
+                ]
+            }       
+            
+            task mkHelp(type: MkdocsTask) {
+                command = '--help'
+            }            
+        """
+
+        file('doc').mkdir()
+        file('doc/mkdocs.yml') << """
+site_name: test
+
+plugins:
+    - search
+    - markdownextradata
+
+nav:
+  - Home: index.md    
+"""
 
         when: "run help"
         BuildResult result = runVer(GRADLE_VERSION, 'mkHelp', '--warning-mode', 'all')

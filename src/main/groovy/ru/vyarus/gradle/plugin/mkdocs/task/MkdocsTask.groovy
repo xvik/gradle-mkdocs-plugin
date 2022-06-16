@@ -2,6 +2,7 @@ package ru.vyarus.gradle.plugin.mkdocs.task
 
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
@@ -28,9 +29,23 @@ class MkdocsTask extends PythonTask {
     /**
      * Extra gradle-provided variables to use in documentation.
      */
-    @Nested
-    @Optional
+    @Internal
+    // marked as internal because since gradle 7.4 it is impossible to have map property (see getExtrasCacheKey)
+    // note that MapProperty can't be used too as it has its own problems
     Map<String, Serializable> extras
+
+    /**
+     * Used ONLY to provide gradle a cache key for extras property, which has to be internal because since gradle
+     * 7.4 it is impossible to use {@link Nested} with {@link Map} property (all properties must have explicit
+     * annotation, which is impossible in case of map).
+     *
+     * @return extras map manual serialization for caching
+     */
+    @Input
+    @Optional
+    String getExtrasCacheKey() {
+        getExtras() != null ? getExtras().collect { k, v -> k + '=' + v }.join(', ') : null
+    }
 
     @Override
     @SuppressWarnings('UnnecessaryGetter')

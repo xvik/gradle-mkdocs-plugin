@@ -389,4 +389,70 @@ Version: 0.1
         !file('doc/docs/_data/gradle.yml').exists()
     }
 
+    def "Check proper caching"() {
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                                              
+            }     
+            
+            version = '1.0'                   
+            
+            python.scope = USER
+            
+            mkdocs {
+                sourcesDir 'doc' 
+                extras = [ 
+                    'some': "\$some"
+                ]                
+            }
+        """
+
+        file('doc').mkdir()
+        file('doc/mkdocs.yml') << """
+site_name: test
+
+plugins:
+    - search
+    - markdownextradata
+
+nav:
+  - Home: index.md    
+"""
+        file('doc/docs').mkdir()
+        file('doc/docs/index.md') << """
+# Index page
+
+Some: {{ gradle.some }}
+"""
+        file('gradle.properties') << """
+some=foo
+"""
+
+        when: "run build"
+        BuildResult result = run('mkdocsBuild')
+
+        then: "build success"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        file('build/mkdocs/1.0/index.html').exists()
+        def idx = file('build/mkdocs/1.0/index.html').text
+        idx.contains('Some: foo')
+
+        when: "run build again"
+        result = run('mkdocsBuild')
+
+        then: "cached"
+        result.task(":mkdocsBuild").outcome == TaskOutcome.UP_TO_DATE
+
+        when: "changing property"
+        file('gradle.properties') << """
+some=bar
+"""
+        result = run('mkdocsBuild')
+        
+        then: "build success"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        file('build/mkdocs/1.0/index.html').text.contains('Some: bar')
+    }
+
 }

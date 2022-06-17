@@ -1,7 +1,7 @@
 ### [2.4.0](http://xvik.github.io/gradle-mkdocs-plugin/2.4.0) (2022-06-17)
 * Fix variables support for gradle 7.4 (#34)
 * Update packages:
-  - mkdocs-material 8.2.8 -> 8.3.6
+  - mkdocs-material 8.2.8 -> 8.3.6 (drops python 3.6 support)
   - pygments 2.11.2 -> 2.12.0
   - pymdown-extensions 9.1 ->  9.4
 

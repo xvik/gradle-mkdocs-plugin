@@ -27,7 +27,7 @@ plugins {
 
 ### Python
 
-**Requires installed python** 2.7 or 3.6 and above with pip.
+**Requires installed python** 3.7 and above with pip.
 
 [Check and install python if required](https://github.com/xvik/gradle-use-python-plugin#python--pip).
 

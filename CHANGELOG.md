@@ -1,3 +1,4 @@
+### 2.4.0 (2022-06-17)
 * Fix variables support for gradle 7.4 (#34)
 * Update packages:
   - mkdocs-material 8.2.8 -> 8.3.6

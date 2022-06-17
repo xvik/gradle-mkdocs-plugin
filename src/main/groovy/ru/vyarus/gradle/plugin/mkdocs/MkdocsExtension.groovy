@@ -30,9 +30,9 @@ class MkdocsExtension {
      */
     static final String[] DEFAULT_MODULES = [
             'mkdocs:1.3.0',
-            'mkdocs-material:8.2.8',
-            'pygments:2.11.2',
-            'pymdown-extensions:9.1',
+            'mkdocs-material:8.3.6',
+            'pygments:2.12.0',
+            'pymdown-extensions:9.4',
             'mkdocs-markdownextradata-plugin:0.2.5',
     ]
 

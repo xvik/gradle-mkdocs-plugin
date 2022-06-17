@@ -1,4 +1,8 @@
 * Fix variables support for gradle 7.4 (#34)
+* Update packages:
+  - mkdocs-material 8.2.8 -> 8.3.6
+  - pygments 2.11.2 -> 2.12.0
+  - pymdown-extensions 9.1 ->  9.4
 
 ### 2.3.0 (2022-04-02)
 * Update packages:

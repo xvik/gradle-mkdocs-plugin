@@ -64,7 +64,7 @@ For example, to include javadoc:
 gitPublish.contents {
     from(javadoc) {
         // need to use resolveDocPath because by default it's a template 
-        into "\${mkdocs.resolveDocPath()}/javadoc"
+        into "${mkdocs.resolveDocPath()}/javadoc"
     }
 }
 

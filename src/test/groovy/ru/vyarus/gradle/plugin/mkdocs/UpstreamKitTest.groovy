@@ -9,7 +9,7 @@ import org.gradle.testkit.runner.TaskOutcome
  */
 class UpstreamKitTest extends AbstractKitTest {
 
-    String GRADLE_VERSION = '7.4.2'
+    String GRADLE_VERSION = '7.5'
 
     def "Check workflow"() {
         setup:

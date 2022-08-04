@@ -11,7 +11,7 @@ import spock.lang.TempDir
  */
 class UpstreamPublishKitTest extends AbstractKitTest {
 
-    String GRADLE_VERSION = '7.4.2'
+    String GRADLE_VERSION = '7.5'
 
     @TempDir File repoDir
 

@@ -1,7 +1,9 @@
 package ru.vyarus.gradle.plugin.mkdocs
 
+import org.ajoberstar.grgit.Grgit
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.TempDir
 
 /**
  * @author Vyacheslav Rusakov
@@ -9,7 +11,38 @@ import org.gradle.testkit.runner.TaskOutcome
  */
 class DocsInModuleAndRootTest extends AbstractKitTest {
 
+    @TempDir File repoDir
+
+    Grgit repo
+
+    @Override
+    def setup() {
+        // local repo used for push
+        println 'init fake gh-pages repo'
+        repo = Grgit.init(dir: repoDir, bare: true)
+        assert repo.branch.list().size() == 0
+        // connect with project folder
+        println 'associate project with fake repo'
+        Grgit prjRepo = Grgit.init(dir: testProjectDir)
+        prjRepo.remote.add(name: 'origin', url: repoDir.canonicalPath, pushUrl: repoDir.canonicalPath)
+        // init remote repo
+        file('readme.txt') << 'sample'
+        prjRepo.add(patterns: ['*'])
+        prjRepo.commit(message: 'initial commit')
+        prjRepo.push()
+        prjRepo.close()
+
+        assert repo.log().size() == 1
+        assert repo.branch.list().size() == 1
+    }
+
+    void cleanup() {
+        repo.close()
+    }
+
     def "Check docs in root and submodule"() {
+
+        // both published into the same git, but with different naming scheme
 
         setup:
         file('settings.gradle') << ' include "doc"'
@@ -30,6 +63,11 @@ class DocsInModuleAndRootTest extends AbstractKitTest {
                 
                 mkdocs {
                     sourcesDir = 'src'
+                    
+                    publish {
+                        docPath = 'sub-\$version'
+                        rootRedirect = false
+                    }
                 }
             }
                         
@@ -64,12 +102,12 @@ submodule index page
 """
 
         when: "build site"
-        BuildResult result = run('mkdocsBuild')
+        BuildResult result = run('mkdocsPublish')
 
         then: "built"
-        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
-        result.task(':doc:mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
+        result.task(':doc:mkdocsPublish').outcome == TaskOutcome.SUCCESS
         file('build/mkdocs/1.0-SNAPSHOT/index.html').text.contains('root index page')
-        file('doc/build/mkdocs/1.0-SNAPSHOT/index.html').text.contains('submodule index page')
+        file('doc/build/mkdocs/sub-1.0-SNAPSHOT/index.html').text.contains('submodule index page')
     }
 }

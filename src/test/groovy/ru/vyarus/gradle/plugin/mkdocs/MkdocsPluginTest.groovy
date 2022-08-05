@@ -135,4 +135,16 @@ class MkdocsPluginTest extends AbstractTest {
         ext.extras.bar == 1.1
 
     }
+
+    def "Check version validation"() {
+
+        when: "plugin applied"
+        Project project = ProjectBuilder.builder().build()
+        project.plugins.apply "ru.vyarus.mkdocs"
+        MkdocsExtension ext = project.extensions.findByType(MkdocsExtension)
+        
+        then: 'failed'
+        ext.resolveDocPath() == 'unspecified'
+
+    }
 }

@@ -123,6 +123,15 @@ class MkdocsExtension {
         project.configure(publish, config)
     }
 
+    /**
+     * Documentation folder is configured with {@code publish.docPath}, but it is a template which needs to be resolved
+     * into actual path.
+     * <p>
+     * IMPORTANT: when multi-docs publishing is not used ({@code publish.docPath} set to null) this method also
+     * returns null, so it should be used ONLY in case when multi-version publishing is enabled.
+     *
+     * @return resolved documentation folder or null
+     */
     @Memoized
     String resolveDocPath() {
         if (!publish.docPath) {

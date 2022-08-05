@@ -72,6 +72,11 @@ gitPublish.contents {
 gitPublishReset.dependsOn javadoc
 ```
 
+!!! note
+    When [multi-version publishing](multi-version.md) is not used (`mkdocs.publish.docPath` set to null) don't use
+    `${mkdocs.resolveDocPath()}/` prefix because `resolveDocPath()` will return null in this case.
+    Instead, use static target folder name: `into "javadoc"`. 
+
 With this configuration, calling `mkdocsPublish` will publish generated mkdocs site
 with extra `javadoc` folder inside (you can put relative link to it inside documentation).
 

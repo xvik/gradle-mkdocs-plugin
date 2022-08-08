@@ -123,7 +123,6 @@ class MkdocsPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             MkdocsExtension.Publish publish = extension.publish
-            String path = extension.resolveDocPath()
 
             project.configure(project) {
                 gitPublish {
@@ -138,12 +137,12 @@ class MkdocsPlugin implements Plugin<Project> {
                     }
 
                     // required only when multi-version publishing used
-                    if (path) {
+                    if (extension.multiVersion) {
                         // keep everything (all other versions) except publishing version
                         preserve {
                             include '**'
                             // remove publishing version
-                            exclude "${path}/**"
+                            exclude "${extension.resolveDocPath()}/**"
                             // remove publishing version aliases
                             publish.versionAliases?.each {
                                 exclude "$it/**"
@@ -202,8 +201,7 @@ class MkdocsPlugin implements Plugin<Project> {
     }
 
     private String getBuildOutputDir(MkdocsExtension extension) {
-        String path = extension.resolveDocPath()
-        return extension.buildDir + (path ? '/' + path : '')
+        return extension.buildDir + (extension.multiVersion ? '/' + extension.resolveDocPath() : '')
     }
 
     @SuppressWarnings('UnnecessaryCast')

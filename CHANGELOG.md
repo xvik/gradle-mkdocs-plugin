@@ -1,3 +1,6 @@
+* mkdocs.resolveDocPath() never return null:
+  for single version docs '.' is returned now instead of null (#41) 
+
 ### 2.4.0 (2022-06-17)
 * Fix variables support for gradle 7.4 (#34)
 * Update packages:

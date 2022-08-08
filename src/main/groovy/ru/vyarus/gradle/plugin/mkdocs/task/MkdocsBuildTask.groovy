@@ -33,17 +33,17 @@ class MkdocsBuildTask extends MkdocsTask {
     @Override
     void run() {
         String path = extension.resolveDocPath()
-        boolean isMultiVersion = path != null
+        boolean multiVersion = extension.multiVersion
         Closure action = { super.run() }
 
-        if (getUpdateSiteUrl() && isMultiVersion) {
+        if (getUpdateSiteUrl() && multiVersion) {
             // update mkdocs.yml site_url from global to published folder (in order to build correct sitemap)
             withModifiedConfig(path, action)
         } else {
             action.call()
         }
 
-        if (isMultiVersion) {
+        if (multiVersion) {
             // add root index.html
             copyRedirect(path)
             copyAliases(path)

@@ -36,6 +36,11 @@ class MkdocsExtension {
             'mkdocs-markdownextradata-plugin:0.2.5',
     ]
 
+    /**
+     * To avoid returning null in docs path function, current dir shortcut is returned.
+     */
+    static final String SINGLE_VERSION_PATH = '.'
+
     private final Project project
 
     MkdocsExtension(Project project) {
@@ -127,15 +132,16 @@ class MkdocsExtension {
      * Documentation folder is configured with {@code publish.docPath}, but it is a template which needs to be resolved
      * into actual path.
      * <p>
-     * IMPORTANT: when multi-docs publishing is not used ({@code publish.docPath} set to null) this method also
-     * returns null, so it should be used ONLY in case when multi-version publishing is enabled.
+     * For single version publishing ({@code publish.docPath} set to null and so no version sub-folders created) this
+     * method returns '.' (current folder reference) in order unify {@link #resolveDocPath()} method usages in both
+     * modes.
      *
-     * @return resolved documentation folder or null
+     * @return resolved documentation folder, never null
      */
     @Memoized
     String resolveDocPath() {
         if (!publish.docPath) {
-            return null
+            return SINGLE_VERSION_PATH
         }
         String path = render(publish.docPath, [version: project.rootProject.version])
         String slash = '/'
@@ -152,17 +158,26 @@ class MkdocsExtension {
 
     @Memoized
     String resolveVersionTitle() {
-        render(publish.versionTitle, [docPath: resolveDocPath() ?: ''])
+        render(publish.versionTitle, [docPath: resolveDocPath()])
     }
 
     @Memoized
     String resolveRootRedirectionPath() {
-        render(publish.rootRedirectTo, [docPath: resolveDocPath() ?: ''])
+        render(publish.rootRedirectTo, [docPath: resolveDocPath()])
+    }
+
+    /**
+     * @return true when multi-version publishing enabled, false when each publication override previous files
+     *          (no sub folders)
+     */
+    @Memoized
+    boolean isMultiVersion() {
+        return resolveDocPath() != SINGLE_VERSION_PATH
     }
 
     @Memoized
     String resolveComment() {
-        render(publish.comment, [docPath: resolveDocPath() ?: ''])
+        render(publish.comment, [docPath: multiVersion ? resolveDocPath() : ''])
     }
 
     private String render(String template, Map args) {

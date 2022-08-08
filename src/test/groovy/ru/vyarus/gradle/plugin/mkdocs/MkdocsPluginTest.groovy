@@ -92,7 +92,7 @@ class MkdocsPluginTest extends AbstractTest {
         ext.publish.docPath = null
 
         then: 'resolution correct'
-        ext.resolveDocPath() == null
+        ext.resolveDocPath() == MkdocsExtension.SINGLE_VERSION_PATH
         ext.resolveComment() == 'Publish  documentation'
 
     }
@@ -107,7 +107,7 @@ class MkdocsPluginTest extends AbstractTest {
         ext.publish.docPath = ''
 
         then: 'resolution correct'
-        ext.resolveDocPath() == null
+        ext.resolveDocPath() == MkdocsExtension.SINGLE_VERSION_PATH
         ext.resolveComment() == 'Publish  documentation'
 
     }

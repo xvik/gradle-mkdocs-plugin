@@ -673,13 +673,18 @@ This allows you to define credentials as global gradle properties in <code>~/.gr
 <div class="highlight"><pre><span></span><code><span class="n">gitPublish</span><span class="o">.</span><span class="na">contents</span><span class="w"> </span><span class="o">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">from</span><span class="o">(</span><span class="n">javadoc</span><span class="o">)</span><span class="w"> </span><span class="o">{</span><span class="w"></span>
 <span class="w">        </span><span class="c1">// need to use resolveDocPath because by default it&#39;s a template </span><span class="w"></span>
-<span class="w">        </span><span class="n">into</span><span class="w"> </span><span class="s2">&quot;\${mkdocs.resolveDocPath()}/javadoc&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="n">into</span><span class="w"> </span><span class="s2">&quot;${mkdocs.resolveDocPath()}/javadoc&quot;</span><span class="w"></span>
 <span class="w">    </span><span class="o">}</span><span class="w"></span>
 <span class="o">}</span><span class="w"></span>
 
 <span class="c1">// dependency will NOT be set automatically by copySpec above</span><span class="w"></span>
 <span class="n">gitPublishReset</span><span class="o">.</span><span class="na">dependsOn</span><span class="w"> </span><span class="n">javadoc</span><span class="w"></span>
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When <a href="../multi-version/">multi-version publishing</a> is not used (<code>mkdocs.publish.docPath</code> set to null) 
+<code>${mkdocs.resolveDocPath()}/</code> would be resolved as <code>./</code> and so path would work properly in both modes. </p>
+</div>
 <p>With this configuration, calling <code>mkdocsPublish</code> will publish generated mkdocs site
 with extra <code>javadoc</code> folder inside (you can put relative link to it inside documentation).</p>
 <h2 id="advanced-publishing-configuration">Advanced publishing configuration<a class="headerlink" href="#advanced-publishing-configuration" title="Permanent link">&para;</a></h2>

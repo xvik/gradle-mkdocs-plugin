@@ -65,7 +65,7 @@ plugins {
 
 #### Compatibility
 
-Plugin compiled for java 8, compatible with java 11
+Plugin compiled for java 8, compatible with java 11. Works with python 2 and 3
 
 Gradle | Version
 --------|-------
@@ -74,7 +74,7 @@ Gradle | Version
 
 **Requires installed python** 3.7 and above with pip.
 
-[Check and install python if required](https://github.com/xvik/gradle-use-python-plugin#python--pip).
+[Check and install python if required](https://xvik.github.io/gradle-use-python-plugin/2.3.0/guide/python/).
 
 
 #### Snapshots

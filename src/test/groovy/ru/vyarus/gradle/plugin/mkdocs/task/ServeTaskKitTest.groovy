@@ -18,6 +18,7 @@ class ServeTaskKitTest extends AbstractKitTest {
             }
             
             python.scope = USER
+            mkdocs.devPort = 3001
         """
         file('src/doc/').mkdirs()
 
@@ -26,7 +27,7 @@ class ServeTaskKitTest extends AbstractKitTest {
 
         then: "command correct"
         result.task(':mkdocsServe').outcome == TaskOutcome.FAILED
-        result.output =~ /\[python] python(3)? -m mkdocs serve -s/
+        result.output =~ /\[python] python(3)? -m mkdocs serve -s --dev-addr 127.0.0.1:3001/
     }
 
     def "Check non strict serve"() {
@@ -47,7 +48,7 @@ class ServeTaskKitTest extends AbstractKitTest {
 
         then: "command correct"
         result.task(':mkdocsServe').outcome == TaskOutcome.FAILED
-        !(result.output =~ /\[python] python(3)? -m mkdocs serve -s/)
+        result.output =~ /\[python] python(3)? -m mkdocs serve --dev-addr 127.0.0.1:3000/
     }
 
     def "Check different source folder"() {

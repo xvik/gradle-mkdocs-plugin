@@ -51,6 +51,9 @@ class MkdocsPlugin implements Plugin<Project> {
     private static final String GIT_RESET_TASK = 'gitPublishReset'
     private static final String GIT_COPY_TASK = 'gitPublishCopy'
 
+    private static final List<String> STRICT = ['-s']
+    private static final String DEV_ADDR = '--dev-addr'
+
     @Override
     void apply(Project project) {
         MkdocsExtension extension = project.extensions.create('mkdocs', MkdocsExtension, project)
@@ -59,13 +62,14 @@ class MkdocsPlugin implements Plugin<Project> {
 
         applyDefaults(project, extension)
         configureMkdocsTasks(project, extension)
+        configureServe(project, extension)
         configurePublish(project, extension)
     }
 
     private void applyDefaults(Project project, MkdocsExtension extension) {
         // apply default mkdocs, material and minimal plugins
         // user will be able to override versions, if required
-        project.extensions.getByType(PythonExtension).modules.addAll(MkdocsExtension.DEFAULT_MODULES)
+        project.extensions.getByType(PythonExtension).pip(MkdocsExtension.DEFAULT_MODULES)
 
         project.afterEvaluate {
             // set publish repository to the current project by default
@@ -75,26 +79,15 @@ class MkdocsPlugin implements Plugin<Project> {
 
     @CompileStatic(TypeCheckingMode.SKIP)
     private void configureMkdocsTasks(Project project, MkdocsExtension extension) {
-        Closure strictConvention = { extension.strict ? ['-s'] : null }
-
         project.tasks.register(MKDOCS_BUILD_TASK, MkdocsBuildTask) {
             it.with {
                 description = 'Build mkdocs documentation'
                 group = DOCUMENTATION_GROUP
                 conventionMapping.with {
-                    it.extraArgs = strictConvention
+                    it.extraArgs = { extension.strict ? STRICT : null }
                     it.outputDir = { project.file("${getBuildOutputDir(extension)}") }
                     it.updateSiteUrl = { extension.updateSiteUrl }
                 }
-            }
-        }
-
-        project.tasks.register('mkdocsServe', MkdocsTask) {
-            it.with {
-                description = 'Start mkdocs live reload server'
-                group = DOCUMENTATION_GROUP
-                command = 'serve'
-                conventionMapping.extraArgs = strictConvention
             }
         }
 
@@ -114,6 +107,30 @@ class MkdocsPlugin implements Plugin<Project> {
 
         // simplify direct task usage
         project.extensions.extraProperties.set(MkdocsTask.simpleName, MkdocsTask)
+    }
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private void configureServe(Project project, MkdocsExtension extension) {
+        project.tasks.register('mkdocsServe', MkdocsTask) {
+            it.with {
+                description = 'Start mkdocs live reload server'
+                group = DOCUMENTATION_GROUP
+                command = 'serve'
+                if (dockerUsed) {
+                    // mkdocs in strict mode does not allow external mappings, so avoid strict, event if configured
+                    // also ip must be changed, otherwise server would be invisible outside docker
+                    extraArgs = [DEV_ADDR, "0.0.0.0:${extension.devPort}"]
+                } else {
+                    List<String> args = extension.strict ? new ArrayList<>(STRICT) : []
+                    args += [DEV_ADDR, "127.0.0.1:${extension.devPort}"]
+                    extraArgs = args
+                }
+                // docker activation is still up to global configuration - here just required tuning
+                // task would be started in exclusive container in order to stream output immediately
+                docker.exclusive = true
+                docker.ports extension.devPort
+            }
+        }
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)

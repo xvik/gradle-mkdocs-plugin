@@ -120,6 +120,18 @@ class MkdocsExtension {
     Map<String, Serializable> extras = [:]
 
     /**
+     * Port for serving docs with mkdocsServe command. This overrides 'dev_addr' configuration from mkdocs.yml!
+     * This option required to automate proper mkdocs configuration so it could work the same in all cases.
+     * <p>
+     * This configuration is extremely important for docker environment when mkdocs must be bound on external ip
+     * 0.0.0.0 instead of default (local) 127.0.0.1. Also, port must be mapped for docker container
+     * (so plugin must know exact port).
+     * <p>
+     * Also, plugin would disable strict mode under docker because, otherwise, server would not start at all).
+     */
+    int devPort = 3000
+
+    /**
      * Publication configuration.
      */
     final Publish publish = new Publish()

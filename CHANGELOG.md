@@ -1,3 +1,10 @@
+* (breaking) Drop gradle 5.0-5.2 support (minimum required gradle is 5.3)
+* Python plugin related changes: 
+  - Add docker support (with raw python container by default)
+  - Add python requirements.txt file support
+  - Add cleanPython task to easily cleanup local environment 
+* Dev server port number is now configurable: devPort property
+  (this required for proper docker support when non-local ip must be specified)
 * mkdocs.resolveDocPath() never return null:
   for single version docs '.' is returned now instead of null (#41) 
 

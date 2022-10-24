@@ -43,6 +43,9 @@ class MkdocsBuildTask extends MkdocsTask {
             action.call()
         }
 
+        // output directory must be owned by current user, not root, otherwise clean would fail
+        dockerChown(getOutputDir())
+
         if (multiVersion) {
             // add root index.html
             copyRedirect(path)

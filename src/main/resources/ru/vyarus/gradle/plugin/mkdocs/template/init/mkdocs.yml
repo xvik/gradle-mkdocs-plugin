@@ -92,9 +92,6 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
-# Dev server binding
-#dev_addr: 127.0.0.1:3001
-
 nav:
   - Home: index.md
   - User guide:

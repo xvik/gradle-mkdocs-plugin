@@ -29,10 +29,10 @@ class MkdocsExtension {
      * {@code python.pip 'mkdocs:0.18.0'} (note that version could be also downgraded).
      */
     static final String[] DEFAULT_MODULES = [
-            'mkdocs:1.3.0',
-            'mkdocs-material:8.3.6',
-            'pygments:2.12.0',
-            'pymdown-extensions:9.4',
+            'mkdocs:1.4.1',
+            'mkdocs-material:8.5.7',
+            'pygments:2.13.0',
+            'pymdown-extensions:9.7',
             'mkdocs-markdownextradata-plugin:0.2.5',
     ]
 

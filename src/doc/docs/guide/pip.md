@@ -30,4 +30,14 @@ And even downgrade:
 python.pip 'mkdocs:1.0.3'
 ```
 
+!!! tip
+    All default modules are simply implicitly configured in `python.pip` and any 
+    manual module declaration will override the default.
+    Read more about possible pip modules configuration in 
+    [python plugin documentation](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/guide/modules/) 
+
+!!! note
+    You can also use requirements.txt file for version management.
+    Read more in [python plugin documentation](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/guide/modules/#requirementstxt)
+
 You can use `pipUpdates` task to check if newer module [versions are available](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/guide/pip/#check-modules-updates).

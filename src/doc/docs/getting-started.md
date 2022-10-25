@@ -27,7 +27,16 @@ plugins {
 
 ### Python
 
-**Requires installed python** 3.7 and above with pip.
+!!! important
+    Plugin based on [python plugin](https://github.com/xvik/gradle-use-python-plugin) which implements
+    all python-related staff like virtualenv creation, pip modules installation and python commands execution. 
+    Mkdocs plugin just provides mkdocs-specific tasks above it. For all python-related configuration see
+    [python plugin documentation](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/)
+
+    It was an *initial goal* to write two plugins instead of one in order to be able to easilly
+    create plugins for other python modules (if required).
+
+**Requires installed python** 3.8 and above with pip.
 
 [Check and install python if required](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/guide/python/).
 
@@ -39,6 +48,19 @@ plugins {
 !!! tip
     It is completely normal to manually remove virtualenv folder (`.gradle/python`) in case of problems
     to re-create environment.
+
+#### Docker
+
+If you have docker installed, you can use python from [docker container](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/docker.md):
+
+```groovy
+python.docker.use = true
+```
+
+In this case global python installation is not required.
+
+!!! tip
+    To learn how docker used read [python plugin documentation](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/docker.md#behaviour)
 
 ## Usage
 
@@ -64,16 +86,15 @@ src/doc/
 Call `mkdocsServe` task to start live reload server to see default site: [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
 !!! tip
-    Used port may be changed in mkdocs.yml with [dev_addr](https://www.mkdocs.org/user-guide/configuration/#dev_addr):
-    
-    ```yaml
-    dev_addr: 127.0.0.1:3000
-    ```
+    Used port may be changed: `mkdocs.devPort = 4000`.
+    Note that this setting overrides [dev_addr](https://www.mkdocs.org/user-guide/configuration/#dev_addr) in mkdocs.yml! 
 
 !!! warning 
-    Python process will not be killed after you stop gradle execution (search and kill python process manually). This is a [known gradle problem](https://github.com/gradle/gradle/issues/1128) 
+    Python process **may not be killed** after you stop gradle execution (search and kill python process manually). This is a [known gradle problem](https://github.com/gradle/gradle/issues/1128) 
     and the only known workaround is to start task without daemon: `gradlew mkdocsServe --no-daemon`. 
-    Another alternative is to start serve command directly: copy console command from task execution log and use it directly. 
+    Another alternative is to start serve command directly: copy console command from task execution log and use it directly.
+
+    When docker used, container should be properly shut down, but not immediately (about 10s).
 
 ## Initial site configuration
 

@@ -16,9 +16,11 @@ Task will do nothing if target folder exists and not empty.
  [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
 !!! warning 
-    Python process will not be killed after you stop gradle execution (search and kill python process manually). This is a [known gradle problem](https://github.com/gradle/gradle/issues/1128) 
+    Python process may not be killed after you stop gradle execution (search and kill python process manually). This is a [known gradle problem](https://github.com/gradle/gradle/issues/1128) 
     and the only known workaround is to start task without daemon: `gradlew mkdocsServe --no-daemon`. 
-    Another alternative is to start serve command directly: copy console command from task execution log and use it directly. 
+    Another alternative is to start serve command directly: copy console command from task execution log and use it directly.
+    
+    When docker used, container should be properly shut down, but not immediately (about 10s).
 
 ## Build
 

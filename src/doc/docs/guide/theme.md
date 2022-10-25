@@ -132,7 +132,6 @@ nav:
       - Migration notes: about/migration.md
       - License: about/license.md
 
-dev_addr: 127.0.0.1:3001
 ```
 
 !!! note

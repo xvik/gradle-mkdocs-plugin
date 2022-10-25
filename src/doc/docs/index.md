@@ -19,12 +19,15 @@
     - Support version aliases (latest, dev, etc)
     - Support mkdocs-material version switcher without mike tool usage
 * Variables support
+* Could work with direct python or docker. 
+* Could use requirements.txt file  
 
 **[Common configurations](examples.md)** (cheat sheet)
 
 ## Example usages:
 
-* [mkdocs-gradle-plugin](http://xvik.github.io/mkdocs-gradle-plugin/) (self)
+* [mkdocs-gradle-plugin](http://xvik.github.io/gradle-mkdocs-plugin/) (self)
+* [use-python-gradle-plugin](http://xvik.github.io/gradle-use-python-plugin/) (base plugin)
 * [dropwizard-guicey](http://xvik.github.io/dropwizard-guicey/)
 * [gradle-quality-plugin](http://xvik.github.io/gradle-quality-plugin/) 
 

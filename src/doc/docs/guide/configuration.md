@@ -1,5 +1,13 @@
 # Configuration
 
+!!! important
+    Plugin based on [python plugin](https://github.com/xvik/gradle-use-python-plugin) which manage all 
+    python-relates staff like virtualenv creation, pip installation and python executions.
+    For python-related configurations refer to [python plugin documentation](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/) 
+
+!!! tip
+    For docker configuration see [python plugin documentation](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/guide/docker)  
+
 Configuration properties with default values:
  
 ```groovy
@@ -14,6 +22,8 @@ mkdocs {
     updateSiteUrl = true
     // optional variables declaration (to bypass gradle data to docs)
     extras = [:]
+    // dev server port (mkdocsServe task), overrides dev_addr from mkdocs.yml
+    devPort = 3000
     
     publish {
         // publication sub-folder (by default project version)

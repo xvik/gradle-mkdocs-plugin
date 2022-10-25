@@ -8,7 +8,7 @@ Plugin will install by default the following pip modules:
 * [pymdown-extensions:{{ gradle.pymdown_extensions }}](https://pypi.python.org/pypi/pymdown-extensions)
 * [mkdocs-markdownextradata-plugin:{{ gradle.mkdocs_markdownextradata_plugin }}](https://pypi.org/project/mkdocs-markdownextradata-plugin/)
 
-By default, modules are installed into project specific [virtualenv](https://xvik.github.io/gradle-use-python-plugin/2.3.0/guide/configuration/#virtualenv)
+By default, modules are installed into project specific [virtualenv](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/guide/configuration/#virtualenv)
 (located in `.gradle/python`). 
 You can see all installed modules with `pipList` task.
 
@@ -30,4 +30,4 @@ And even downgrade:
 python.pip 'mkdocs:1.0.3'
 ```
 
-You can use `pipUpdates` task to check if newer module [versions are available](https://xvik.github.io/gradle-use-python-plugin/2.3.0/guide/pip/#check-modules-updates).
+You can use `pipUpdates` task to check if newer module [versions are available](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/guide/pip/#check-modules-updates).

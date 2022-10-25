@@ -20,9 +20,11 @@ wrapper {
     gradleVersion = '6.9'
 }
 
+ext.pythonPlugin = '3.0.0'
+
 repositories { mavenLocal(); mavenCentral(); gradlePluginPortal() }
 dependencies {
-    implementation 'ru.vyarus:gradle-use-python-plugin:3.0.0'
+    implementation "ru.vyarus:gradle-use-python-plugin:$pythonPlugin"
 
     // plugin require latest version of grgit-core, fixing to exact version to avoid surprises
     implementation ('org.ajoberstar:gradle-git-publish:3.0.0') {
@@ -44,15 +46,16 @@ github {
 }
 
 mkdocs {
+    extras = [
+            'version': '2.4.0',
+            'pythonPlugin': pythonPlugin
+    ]
     publish {
-        docPath = '2.4.0'
+        docPath = mkdocs.extras['version']
         rootRedirect = true
         rootRedirectTo = 'latest'
         versionAliases = ['latest']
     }
-    extras = [
-        'version': '2.4.0'
-    ]
 }
 afterEvaluate {
     python.modules.each {

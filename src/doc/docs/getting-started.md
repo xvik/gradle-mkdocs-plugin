@@ -29,7 +29,7 @@ plugins {
 
 **Requires installed python** 3.7 and above with pip.
 
-[Check and install python if required](https://xvik.github.io/gradle-use-python-plugin/2.3.0/guide/python/).
+[Check and install python if required](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/guide/python/).
 
 !!! note
     Plugin will not affect global python: it will create project-specific virtualenv (in `.gradle/python`) 

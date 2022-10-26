@@ -9,7 +9,6 @@ import org.ajoberstar.grgit.Configurable
 import org.ajoberstar.grgit.Grgit
 import org.ajoberstar.grgit.operation.BranchChangeOp
 import org.ajoberstar.grgit.operation.OpenOp
-import org.eclipse.jgit.errors.RepositoryNotFoundException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
@@ -226,7 +225,7 @@ class MkdocsPlugin implements Plugin<Project> {
         try {
             Grgit repo = Grgit.open({ OpenOp op -> op.dir = project.rootDir } as Configurable<OpenOp>)
             return repo.remote.list().find { it.name == 'origin' }?.url
-        } catch (RepositoryNotFoundException ignored) {
+        } catch (Exception ignored) {
             // repository not initialized case - do nothing (most likely user is just playing with the plugin)
         }
         return null

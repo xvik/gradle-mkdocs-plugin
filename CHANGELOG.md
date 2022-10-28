@@ -12,6 +12,10 @@
   - mkdocs-material 8.3.6 -> 8.5.7
   - pygments 2.12.0 -> 2.13.0 
   - pymdown-extensions 9.4 ->  9.7
+* Ignore all git errors during plugin initialization (git used to resolve repoUrl on initialization) (#45)
+* Split plugin into 2 plugins to let users use plugin without custom publication implementation:
+  - mkdocs-build - everything without publication (and no grgit plugin activation)
+  - mkdocs - same as before (registers mkdocs-build plugin and configures publication tasks)
 
 WARNING: minimum recommended python is 3.8
 

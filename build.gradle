@@ -100,12 +100,18 @@ gradlePlugin {
         mkdocsPlugin {
             id = 'ru.vyarus.mkdocs'
             displayName = project.description
+            description = 'Mkdocs documentation generation and publishing plugin'
             implementationClass = 'ru.vyarus.gradle.plugin.mkdocs.MkdocsPlugin'
+        }
+        mkdocsBuildPlugin {
+            id = 'ru.vyarus.mkdocs-build'
+            displayName = "${project.description} (without publication)"
+            description = 'Mkdocs documentation generation plugin'
+            implementationClass = 'ru.vyarus.gradle.plugin.mkdocs.MkdocsBuildPlugin'
         }
     }
 }
 pluginBundle {
-    description = 'Mkdocs documentation generation and publishing plugin'
     tags = ['documentation', 'mkdocs']
 
     mavenCoordinates {

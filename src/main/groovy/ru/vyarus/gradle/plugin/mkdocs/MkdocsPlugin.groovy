@@ -12,15 +12,17 @@ import org.ajoberstar.grgit.operation.OpenOp
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
-import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsBuildTask
-import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsInitTask
-import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsTask
 import ru.vyarus.gradle.plugin.mkdocs.task.VersionsTask
-import ru.vyarus.gradle.plugin.python.PythonExtension
-import ru.vyarus.gradle.plugin.python.PythonPlugin
+
+import static MkdocsBuildPlugin.DOCUMENTATION_GROUP
+import static MkdocsBuildPlugin.MKDOCS_BUILD_TASK
 
 /**
- * Mkdocs plugin. Provides tasks:
+ * Mkdocs plugin. All build-related mkdocs tasks implemented with {@link MkdocsBuildPlugin}. This plugin only
+ * configures publication tasks. This plugin considered as default and so will copy build plugin's javadoc here to
+ * reflect complete functionality.
+ * <p>
+ * Provides tasks:
  * <ul>
  *     <li>mkdocsInit - create documentation site
  *     <li>mkdocsBuild - build site
@@ -36,6 +38,9 @@ import ru.vyarus.gradle.plugin.python.PythonPlugin
  * <p>
  * Plugin will also apply all required pip modules to use mkdocks with material theme and basic plugins
  * (see {@link ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension#DEFAULT_MODULES}).
+ * <p>
+ * NOTE: this exact plugin applies only grgit plugin and configures publication tasks. If you don't need publication
+ * then you can use {@link MkdocsBuildPlugin} containing everything without publication.
  *
  * @author Vyacheslav Rusakov
  * @since 29.10.2017
@@ -43,93 +48,21 @@ import ru.vyarus.gradle.plugin.python.PythonPlugin
 @CompileStatic
 class MkdocsPlugin implements Plugin<Project> {
 
-    private static final String DOCUMENTATION_GROUP = 'documentation'
-    private static final String MKDOCS_BUILD_TASK = 'mkdocsBuild'
-
     private static final String GIT_PUSH_TASK = 'gitPublishPush'
     private static final String GIT_RESET_TASK = 'gitPublishReset'
     private static final String GIT_COPY_TASK = 'gitPublishCopy'
 
-    private static final List<String> STRICT = ['-s']
-    private static final String DEV_ADDR = '--dev-addr'
-
     @Override
     void apply(Project project) {
-        MkdocsExtension extension = project.extensions.create('mkdocs', MkdocsExtension, project)
-
-        project.plugins.apply(PythonPlugin)
-
-        applyDefaults(project, extension)
-        configureMkdocsTasks(project, extension)
-        configureServe(project, extension)
-        configurePublish(project, extension)
-    }
-
-    private void applyDefaults(Project project, MkdocsExtension extension) {
-        // apply default mkdocs, material and minimal plugins
-        // user will be able to override versions, if required
-        project.extensions.getByType(PythonExtension).pip(MkdocsExtension.DEFAULT_MODULES)
+        project.plugins.apply(MkdocsBuildPlugin)
+        MkdocsExtension extension = project.extensions.getByType(MkdocsExtension)
 
         project.afterEvaluate {
             // set publish repository to the current project by default
             extension.publish.repoUri = extension.publish.repoUri ?: getProjectRepoUri(project)
         }
-    }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
-    private void configureMkdocsTasks(Project project, MkdocsExtension extension) {
-        project.tasks.register(MKDOCS_BUILD_TASK, MkdocsBuildTask) {
-            it.with {
-                description = 'Build mkdocs documentation'
-                group = DOCUMENTATION_GROUP
-                conventionMapping.with {
-                    it.extraArgs = { extension.strict ? STRICT : null }
-                    it.outputDir = { project.file("${getBuildOutputDir(extension)}") }
-                    it.updateSiteUrl = { extension.updateSiteUrl }
-                }
-            }
-        }
-
-        project.tasks.register('mkdocsInit', MkdocsInitTask) {
-            it.with {
-                description = 'Create mkdocs documentation'
-                group = DOCUMENTATION_GROUP
-            }
-        }
-
-        project.tasks.withType(MkdocsTask).configureEach { task ->
-            task.conventionMapping.with {
-                it.workDir = { extension.sourcesDir }
-                it.extras = { extension.extras }
-            }
-        }
-
-        // simplify direct task usage
-        project.extensions.extraProperties.set(MkdocsTask.simpleName, MkdocsTask)
-    }
-
-    @CompileStatic(TypeCheckingMode.SKIP)
-    private void configureServe(Project project, MkdocsExtension extension) {
-        project.tasks.register('mkdocsServe', MkdocsTask) {
-            it.with {
-                description = 'Start mkdocs live reload server'
-                group = DOCUMENTATION_GROUP
-                command = 'serve'
-                if (dockerUsed) {
-                    // mkdocs in strict mode does not allow external mappings, so avoid strict, event if configured
-                    // also ip must be changed, otherwise server would be invisible outside docker
-                    extraArgs = [DEV_ADDR, "0.0.0.0:${extension.devPort}"]
-                } else {
-                    List<String> args = extension.strict ? new ArrayList<>(STRICT) : []
-                    args += [DEV_ADDR, "127.0.0.1:${extension.devPort}"]
-                    extraArgs = args
-                }
-                // docker activation is still up to global configuration - here just required tuning
-                // task would be started in exclusive container in order to stream output immediately
-                docker.exclusive = true
-                docker.ports extension.devPort
-            }
-        }
+        configurePublish(project, extension)
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)
@@ -216,11 +149,7 @@ class MkdocsPlugin implements Plugin<Project> {
         }
     }
 
-    private String getBuildOutputDir(MkdocsExtension extension) {
-        return extension.buildDir + (extension.multiVersion ? '/' + extension.resolveDocPath() : '')
-    }
-
-    @SuppressWarnings('UnnecessaryCast')
+    @SuppressWarnings(['UnnecessaryCast', 'CatchException'])
     private String getProjectRepoUri(Project project) {
         try {
             Grgit repo = Grgit.open({ OpenOp op -> op.dir = project.rootDir } as Configurable<OpenOp>)

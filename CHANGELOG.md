@@ -16,6 +16,11 @@
 * Split plugin into 2 plugins to let users use plugin without custom publication implementation:
   - mkdocs-build - everything without publication (and no grgit plugin activation)
   - mkdocs - same as before (registers mkdocs-build plugin and configures publication tasks)
+* mkdocsBuild task could now update existing versions file (even download from URL) (#31)
+  - To enable specify existing versions file location: mkdocs.publish.existingVersionsFile = '...'
+  - When target file not found new (empty) one would be created
+  - Ideal for incremental publishing when each publication just adds a new version to existing file
+    (when git publication is not used)
 
 WARNING: minimum recommended python is 3.8
 

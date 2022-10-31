@@ -1,27 +1,31 @@
 package ru.vyarus.gradle.plugin.mkdocs.task
 
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 import ru.vyarus.gradle.plugin.mkdocs.util.VersionsComparator
+import ru.vyarus.gradle.plugin.mkdocs.util.VersionsFileUtils
 
 import java.util.regex.Pattern
 
+import static ru.vyarus.gradle.plugin.mkdocs.util.VersionsFileUtils.ALIASES
+import static ru.vyarus.gradle.plugin.mkdocs.util.VersionsFileUtils.VERSIONS_FILE
+
 /**
- * Generate versions.json file in documentation root folder. File use mike (https://github.com/jimporter/mike)
- * format and required for version switcher activation (mike itself is not required - theme just requires this file).
+ * Generate versions.json file in documentation root folder by analyzing existing folders in git branch. File use
+ * mike (https://github.com/jimporter/mike) format and required for version switcher activation (mike itself is not
+ * required - theme just requires this file).
+ * <p>
+ * Task takes into account existing versions.json file, but removes all versions not actually present in branch
+ * and adds all missed versions. Also, versions might be re-ordered. All custom version titles would survive update.
  *
  * @author Vyacheslav Rusakov
  * @since 03.12.2021
  */
 @CompileStatic
-class VersionsTask extends DefaultTask {
+class GitVersionsTask extends DefaultTask {
 
-    private static final String VERSIONS_FILE = 'versions.json'
-    private static final String ALIASES = 'aliases'
     // assume version must start with a digit, followed by dot (no matter what ending)
     private static final Pattern VERSION_FOLDER = Pattern.compile('\\d+(\\..+)?')
     private static final Comparator<String> VERSIONS_COMPARATOR = VersionsComparator.comparingVersions(false)
@@ -39,14 +43,14 @@ class VersionsTask extends DefaultTask {
         List<String> versions = listRepoVersions(repo)
         // read file stored in repository
         File oldFile = new File(repo, VERSIONS_FILE)
-        Map<String, Map<String, Object>> index = parseExistingFile(oldFile)
+        Map<String, Map<String, Object>> index = VersionsFileUtils.parse(oldFile)
         cleanupAliases(index, versions, extension)
         Report report = updateVersions(index, versions, extension)
         validateUpdate(index, repo, extension)
 
         // write into build directory (it would be incorrect to write directly to repo dir)
-        File file = new File(project.file(extension.buildDir), VERSIONS_FILE)
-        writeVersions(index, file)
+        File file = VersionsFileUtils.getTarget(project, extension)
+        VersionsFileUtils.write(index, file)
         logger.lifecycle('Versions file generated with {} versions: {} \n{}',
                 index.size(), file.absolutePath, composeReport(report))
     }
@@ -79,18 +83,6 @@ class VersionsTask extends DefaultTask {
                 }
             }
         }
-    }
-
-    private Map<String, Map<String, Object>> parseExistingFile(File file) {
-        // self-sorted
-        Map<String, Map<String, Object>> res =
-                new TreeMap<String, Map<String, Object>>(VERSIONS_COMPARATOR.reversed())
-
-        if (file.exists()) {
-            ((List<Map<String, Object>>) new JsonSlurper().parse(file))
-                    .each { ver -> res.put((String) ver['version'], ver) }
-        }
-        return res
     }
 
     private boolean isValidDirectory(File file) {
@@ -132,7 +124,6 @@ class VersionsTask extends DefaultTask {
      * @param extension version configuration
      * @return report of versions file modifications
      */
-    @SuppressWarnings('SpaceAroundMapEntryColon')
     private Report updateVersions(Map<String, Map<String, Object>> file,
                                   List<String> actual,
                                   MkdocsExtension extension) {
@@ -150,24 +141,15 @@ class VersionsTask extends DefaultTask {
         }
 
         actual.each { ver ->
-            if (!file.containsKey(ver)) {
-                // assume custom title for other versions will survive in file
-
-                file.put(ver, ['version': ver,
-                               'title'  : ver,
-                               (ALIASES): [],])
+            // assume custom title for other versions will survive in file
+            if (VersionsFileUtils.addVersion(file, ver)) {
                 report.added.add(ver)
             }
         }
 
         // update custom title (to handle case when existing version re-generated)
         String currenTitle = extension.resolveVersionTitle() ?: currentVer
-        file.get(currentVer).with {
-            it.put('title', currenTitle)
-            if (extension.publish.versionAliases) {
-                it.put(VersionsTask.ALIASES, extension.publish.versionAliases)
-            }
-        }
+        VersionsFileUtils.updateVersion(file, currentVer, currenTitle, extension.publish.versionAliases)
 
         report.survived.addAll(actual)
         report.survived.removeAll(report.added)
@@ -203,19 +185,6 @@ class VersionsTask extends DefaultTask {
                 logger.warn("\nWARNING: Publishing version '$currentVersion' is older then the latest published " +
                         "'$lastVersion' and the following overrides might not be desired: \n{}", errors.toString())
             }
-        }
-    }
-
-    private void writeVersions(Map<String, Map<String, Object>> content, File file) {
-        List<Map<String, Object>> res = []
-        // map was sorted
-        res.addAll(content.values())
-
-        String json = JsonOutput.toJson(res)
-        // create parent dirs
-        file.parentFile.mkdirs()
-        file.newWriter().withWriter { w ->
-            w << json
         }
     }
 

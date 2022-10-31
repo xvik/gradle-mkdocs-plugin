@@ -12,7 +12,7 @@ import org.ajoberstar.grgit.operation.OpenOp
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
-import ru.vyarus.gradle.plugin.mkdocs.task.VersionsTask
+import ru.vyarus.gradle.plugin.mkdocs.task.GitVersionsTask
 
 import static MkdocsBuildPlugin.DOCUMENTATION_GROUP
 import static MkdocsBuildPlugin.MKDOCS_BUILD_TASK
@@ -126,7 +126,7 @@ class MkdocsPlugin implements Plugin<Project> {
             }
         }
 
-        TaskProvider versionsTask = project.tasks.register('mkdocsVersionsFile', VersionsTask) {
+        TaskProvider versionsTask = project.tasks.register('mkdocsVersionsFile', GitVersionsTask) {
             it.with {
                 group = DOCUMENTATION_GROUP
                 description = 'Generate/actualize versions.json file from publish repository'

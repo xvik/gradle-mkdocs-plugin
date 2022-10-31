@@ -9,6 +9,7 @@ import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import ru.vyarus.gradle.plugin.mkdocs.util.MkdocsConfig
 import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
+import ru.vyarus.gradle.plugin.mkdocs.util.VersionsFileUtils
 
 /**
  * Builds mkdocs site. If version is configured as default for publication, then generate extra index.html.
@@ -45,6 +46,9 @@ class MkdocsBuildTask extends MkdocsTask {
 
         // output directory must be owned by current user, not root, otherwise clean would fail
         dockerChown(getOutputDir())
+
+        // optional remote versions file update
+        updateVersions()
 
         if (multiVersion) {
             // add root index.html
@@ -92,6 +96,43 @@ class MkdocsBuildTask extends MkdocsTask {
             conf.restoreBackup(backup)
             logger.lifecycle("Original ${project.relativePath(conf.config)} restored")
         }
+    }
+
+    private void updateVersions() {
+        String versions = extension.publish.existingVersionsFile
+        if (versions) {
+            File target
+            if (versions.contains(':')) {
+                target = new File(project.buildDir, 'old-versions.json')
+                download(versions, target)
+            } else {
+                target = project.file(versions)
+            }
+            File res = VersionsFileUtils.getTarget(project, extension)
+            logger.lifecycle('Creating versions file: {}', project.relativePath(res))
+            Map<String, Map<String, Object>> parse = VersionsFileUtils.parse(target)
+            if (target.exists()) {
+                logger.lifecycle("\tExisting versions file '{}' loaded with {} versions", versions, parse.size())
+            } else {
+                logger.warn("\tWARNING: configured versions file '{}' does not exist - creating new file instead",
+                        versions)
+            }
+
+            String currentVersion = extension.resolveDocPath()
+            if (VersionsFileUtils.addVersion(parse, currentVersion)) {
+                logger.lifecycle('\tNew version added: {}', currentVersion)
+            }
+            VersionsFileUtils.updateVersion(parse,
+                    currentVersion, extension.resolveVersionTitle(), extension.publish.versionAliases)
+            VersionsFileUtils.write(parse, res)
+            logger.lifecycle('\tVersions written to file: {}', parse.keySet().join(', '))
+        }
+    }
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private void download(String src, File target) {
+        // ignore all errors (create new file if failed to load)
+        ant.get(src: src, dest: target, maxtime: 5, skipexisting: true, ignoreerrors: true)
     }
 
     private void copyRedirect(String path) {

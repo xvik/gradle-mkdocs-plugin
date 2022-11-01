@@ -32,7 +32,7 @@ build/mkdocs/
     index.html        - redirect to correct site
 ```
 
-Plugin is configured for multi-version documentation publishing: each version is in it's own folder
+Plugin is configured for multi-version documentation publishing: each version is in its own folder
 and special `index.html` at the root will redirect to the latest version (when published).
 
 Everything in `build/mkdocs/` is assumed to be published into github pages. 
@@ -48,6 +48,11 @@ Everything in `build/mkdocs/` is assumed to be published into github pages.
 For multi-module documentation, `mkdocsVersionsFile` may be called instead of `mkdocsBuild`
 in order to generate versions.json and be able to test version switcher
 (ofc. it would not be able to actually switch version, but will correctly show all available versions (after publication list would be the same))
+
+!!! note
+    `mkdocsVersionsFile` task if available only if full plugin version used (with git publication task),
+    for `mkdocs-build` plugin it would not be available. With lightweight plugin, versions.json file could
+    be generated in incremental way [from existing one](multi-version.md#incremental-versions)
 
 ### Update old documentation
 

@@ -146,7 +146,16 @@ mkdocs {
 }
 ```
 
-And yes, this means specifying version two times.
+Or, to avoid duplication:
+
+```groovy
+mkdocs {
+    extras = [
+            'version': '1.0'
+    ]
+    publish.docPath = mkdocs.extras['version']
+}
+```
 
 ## Old version publish
 
@@ -161,3 +170,31 @@ EXCEPT:
   otherwise alias folders would be overridden (e.g. latest would contain old version)
 * **Use** `mkdocsVersionsFile` task to validate old version correctness:
   It would try to warn you if it can detect more recent versions override
+
+## Incremental versions update
+
+When plugin used only for documentation generation and publication task is not used, then
+versions.json file can be updated incrementally (by adding new version on each release):
+
+```groovy
+mkdocs.publish {
+    docPath = '1.0'  
+    rootRedirect = true
+    rootRedirectTo = 'latest'
+    versionAliases = ['latest']
+    existingVersionsFile = 'https://xvik.github.io/gradle-mkdocs-plugin/versions.json'
+}
+```
+
+On `mkdocsBuild` it would load remote json (it might be local path) and add new version, so build dir would contain:
+
+```
+build/mkdocs/
+    /1.0/            - mkdocs site
+    /latest/         - alias (copy)
+    index.html       - redirect to 'latest'
+    versions.json    - updated remote versions file    
+```
+
+After that built folder might be simply uploaded, for example into some ftp with other versions
+(append).

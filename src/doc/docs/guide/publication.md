@@ -10,6 +10,10 @@
     customizable (as gradle plugin). Material theme would still be able to show version switcher because
     plugin generates required versions.json file.
 
+!!! tip
+    There is a special lightweight plugin version without publication tasks (and git-publish plugin registration):
+    `ru.vyarus.mkdocs-build`. Might be useful if you publish docs in a different way (e.g. with ftp). 
+
 By default, no configuration is required. Only project itself must be published to git so that plugin could calculate default url 
 (or `mkdocs.publish.repoUrl` manually specified).
 

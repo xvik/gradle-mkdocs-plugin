@@ -8,6 +8,14 @@
 !!! tip
     For docker configuration see [python plugin documentation](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/guide/docker)  
 
+!!! important
+    There are two plugin versions:
+
+    - `ru.vyarus.mkdocs` - full plugin
+    - `ru.vyarus.mkdocs-build` - without publication tasks (lightweight)
+
+    Both versions are equal in functionality, except publication stage.
+
 Configuration properties with default values:
  
 ```groovy
@@ -29,7 +37,11 @@ mkdocs {
         // publication sub-folder (by default project version)
         docPath = '$version'
         // generate versions.json file for versions switcher
+        // [used by publication task]
         generateVersionsFile = true
+        // specify path to or URL to existing versions.json file in order to update it (add new version); 
+        // executed by mkdocsBuild, suitable when git publication not used
+        existingVersionsFile
         // custom version name shown in version switcher (by default version folder name)
         versionTitle = '$docPath'
         // one or more alias folders to copy generated docs to (e.g. 'latest' or 'dev')
@@ -39,16 +51,26 @@ mkdocs {
         // allows changing root redirection to alias folder instead of exact version 
         rootRedirectTo = '$docPath'
         // publish repository uri (bu default the same as current repository)
+        // [used by publication task]
         repoUri = null
         // publication branch
+        // [used by publication task]
         branch = 'gh-pages'
         // publication comment
+        // [used by publication task]
         comment = 'Publish $docPath documentation'
         // directory publication repository checkout, update and push
+        // [used by publication task]
         repoDir = '.gradle/gh-pages'
     }
 }
 ```
+
+!!! tip
+    Options marked as `[used by publication task]` used ONLY during publication and so
+    would be ignored when build-only plugin version (`ru.vyarus.mkdocs-build`) used.
+    
+    Not marked publication propeties used by `mkdocsBuild`
 
 By default:
 
@@ -59,7 +81,7 @@ By default:
 - Variables plugin is not configured. See [variables section](vars.md) for details.
     
 !!! note
-    In order to include something else into published docks (e.g. javadoc) see [publication](publication.md).    
+    In order to include something else into published docks (e.g. javadoc) see [publication](publication.md).
 
 ## Single version site
 

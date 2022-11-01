@@ -24,6 +24,8 @@ Ideal for open source projects:
     - Support version aliases (latest, dev, etc)
     - Support mkdocs-material version switcher without mike tool usage
 * Variables support
+* Could work with direct python or docker.
+* Could use requirements.txt file
 
 ##### Summary
 
@@ -38,6 +40,9 @@ Ideal for open source projects:
 * Enable plugins: [git-publish](https://github.com/ajoberstar/gradle-git-publish),
 [use-python](https://github.com/xvik/gradle-use-python-plugin)
 
+NOTE: plugin is based on [use-python plugin](https://github.com/xvik/gradle-use-python-plugin) see python-specific 
+tasks there.  
+
 ### Setup
 
 [![Maven Central](https://img.shields.io/maven-central/v/ru.vyarus/gradle-mkdocs-plugin.svg)](https://maven-badges.herokuapp.com/maven-central/ru.vyarus/gradle-mkdocs-plugin)
@@ -49,7 +54,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:2.4.0'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:3.0.0'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -59,20 +64,34 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '2.4.0'
+    id 'ru.vyarus.mkdocs' version '3.0.0'
 }
 ```
 
+#### Lightweight setup
+
+There is also a lightweight plugin version without publication task and git-publish plugin enabling:
+
+```groovy
+plugins {
+    id 'ru.vyarus.mkdocs-build' version '3.0.0'
+}
+```
+
+Lightweight plugin is suitable if you don't need git publication and don't want extra
+tasks to appear.
+
 #### Compatibility
 
-Plugin compiled for java 8, compatible with java 11. Works with python 2 and 3
+Plugin compiled for java 8, compatible with java 11.
 
 Gradle | Version
 --------|-------
-5-7     | 2.4.0
+5.3-7   | 3.0.0
+5-5.2   | 2.3.0
 4.x     | [1.1.0](https://github.com/xvik/gradle-mkdocs-plugin/tree/1.1.0)
 
-**Requires installed python** 3.7 and above with pip.
+**Requires installed python** 3.8 and above with pip.
 
 [Check and install python if required](https://xvik.github.io/gradle-use-python-plugin/2.3.0/guide/python/).
 

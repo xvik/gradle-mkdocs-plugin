@@ -103,6 +103,7 @@ nav:
   - About:
       - Release notes: about/history.md
       - Migration notes: about/migration.md
+      - Compatibility: about/compatibility.md
       - License: about/license.md
 
 dev_addr: 127.0.0.1:3001

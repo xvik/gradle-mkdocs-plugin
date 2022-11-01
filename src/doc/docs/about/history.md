@@ -1,3 +1,28 @@
+### [3.0.0](http://xvik.github.io/gradle-mkdocs-plugin/3.0.0) (2022-11-01)
+* (breaking) Drop gradle 5.0-5.2 support (minimum required gradle is 5.3)
+* Python plugin related changes:
+  - Add docker support (with raw python container by default)
+  - Add python requirements.txt file support
+  - Add cleanPython task to easily cleanup local environment
+* Dev server port number is now configurable: devPort property
+  (this required for proper docker support when non-local ip must be specified)
+* mkdocs.resolveDocPath() never return null:
+  for single version docs '.' is returned now instead of null (#41)
+* Update packages:
+  - mkdocs 1.3.0 -> 1.4.1
+  - mkdocs-material 8.3.6 -> 8.5.7
+  - pygments 2.12.0 -> 2.13.0
+  - pymdown-extensions 9.4 ->  9.7
+* Ignore all git errors during plugin initialization (git used to resolve repoUrl on initialization) (#45)
+* Split plugin into 2 plugins to let users use plugin without custom publication implementation:
+  - mkdocs-build - everything without publication (and no grgit plugin activation)
+  - mkdocs - same as before (registers mkdocs-build plugin and configures publication tasks)
+* mkdocsBuild task could now update existing versions file (even download from URL) (#31)
+  - To enable specify existing versions file location: mkdocs.publish.existingVersionsFile = '...'
+  - When target file not found new (empty) one would be created
+  - Ideal for incremental publishing when each publication just adds a new version to existing file
+    (when git publication is not used)
+
 ### [2.4.0](http://xvik.github.io/gradle-mkdocs-plugin/2.4.0) (2022-06-17)
 * Fix variables support for gradle 7.4 (#34)
 * Update packages:

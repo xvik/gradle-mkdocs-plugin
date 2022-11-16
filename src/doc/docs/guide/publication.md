@@ -62,8 +62,11 @@ ext['org.ajoberstar.grgit.auth.password'] = 'pass'
 If you want to publish not only generated site, but something else too then configure
 [git-publish](https://github.com/ajoberstar/gradle-git-publish) plugin to include additional content.
 
-For example, to include javadoc:
+Examples:
+<details open>
+    <summary>javadoc</summary>
 
+Here is how you add javadoc:
 ```groovy
 gitPublish.contents {
     from(javadoc) {
@@ -75,6 +78,44 @@ gitPublish.contents {
 // dependency will NOT be set automatically by copySpec above
 gitPublishReset.dependsOn javadoc
 ```
+</details>
+
+<details>
+    <summary>dokka</summary>
+
+Here is how you add dokka for a single module:
+```groovy
+gitPublish.contents {
+    from(dokkaHtml) {
+        // need to use resolveDocPath because by default it's a template 
+        into "${mkdocs.resolveDocPath()}/dokka"
+    }
+}
+
+// dependency will NOT be set automatically by copySpec above
+gitPublishReset.dependsOn dokkaHtml
+```
+</details>
+
+<details>
+    <summary>dokkaMultiModule</summary>
+
+Here is how you add dokka for multiple modules:
+```groovy
+gitPublish.contents {
+    // You cannot use use dokkaHtmlMultiModule directly like with javadoc or dokkaHtml
+    from(dokkaHtmlMultiModule.map(task -> task.outputDirectory)) {
+        // need to use resolveDocPath because by default it's a template 
+        into "${mkdocs.resolveDocPath()}/dokka"
+    }
+}
+
+// dependency will NOT be set automatically by copySpec above
+gitPublishReset.dependsOn dokkaHtmlMultiModule
+```
+</details>
+
+To publish 
 
 !!! note
     When [multi-version publishing](multi-version.md) is not used (`mkdocs.publish.docPath` set to null) 

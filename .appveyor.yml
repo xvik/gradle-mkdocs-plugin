@@ -17,7 +17,6 @@ install:
   - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
   - python --version
   - python -m pip install -U virtualenv==20.4.2
-  - pip install codecov --user
 
 build_script:
   - ./gradlew assemble --no-daemon
@@ -26,7 +25,10 @@ test_script:
 
 on_success:
   - ./gradlew jacocoTestReport --no-daemon
-  - python -m codecov -f build\reports\jacoco\test\jacocoTestReport.xml -F windows
+  - ps: |
+      $ProgressPreference = 'SilentlyContinue'
+      Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
+      .\codecov.exe -f build\reports\jacoco\test\jacocoTestReport.xml -F windows
 
 cache:
   - C:\Users\appveyor\.gradle\caches

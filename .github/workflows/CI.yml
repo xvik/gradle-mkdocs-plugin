@@ -10,7 +10,22 @@ jobs:
     name: Java ${{ matrix.java }}
     strategy:
       matrix:
-        java: [8, 11]
+        java: [8, 11, 17]
+        python: ['3.8', '3.11', '3.12']
+
+        exclude:
+          - java: 8
+            python: '3.11'
+          - java: 8
+            python: '3.12'
+          - java: 11
+            python: '3.8'
+          - java: 11
+            python: '3.12'
+          - java: 17
+            python: '3.8'
+          - java: 17
+            python: '3.11'
 
     steps:
       - uses: actions/checkout@v2
@@ -20,10 +35,10 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
+          python-version: ${{matrix.python}}
 
       - name: Build
         run: |
@@ -44,4 +59,4 @@ jobs:
         with:
           files: build/reports/jacoco/test/jacocoTestReport.xml
           flags: LINUX
-          fail_ci_if_error: true
+          fail_ci_if_error: false

@@ -176,7 +176,7 @@ class MkdocsPlugin implements Plugin<Project> {
     }
 
     private void fixOrphanBranch(Project project, String repoDir, String branchName) {
-        //https://github.com/ajoberstar/gradle-git-publish/issues/82
+        // https://github.com/ajoberstar/gradle-git-publish/issues/82
         // if remote branch not exists gitPublishReset will create orphan local branch and gitPublishPush
         // will not set tracking after push! (also gitPublishReset will not set tracking on next execution and so
         // branch will remain orphan on next run, even though remote branch already exists (and plugin knows it!)

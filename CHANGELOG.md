@@ -1,3 +1,5 @@
+* (breaking) Drop gradle 5 and 6 support
+
 ### 3.0.0 (2022-11-01)
 * (breaking) Drop gradle 5.0-5.2 support (minimum required gradle is 5.3)
 * Python plugin related changes: 

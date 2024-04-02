@@ -1,23 +1,26 @@
 plugins {
-    id 'com.gradle.plugin-publish' version '0.21.0'
+    id 'com.gradle.plugin-publish' version '1.2.1'
     id 'java-gradle-plugin'
     id 'groovy'
     id 'jacoco'
     id 'signing'
     id 'net.researchgate.release' version '3.0.2'
-    id 'ru.vyarus.quality' version '4.9.0'
+    id 'ru.vyarus.quality' version '5.0.0'
     id 'io.github.gradle-nexus.publish-plugin' version '1.3.0'
-    id 'ru.vyarus.java-lib' version '2.4.0'
-    id 'ru.vyarus.github-info' version '1.5.0'
+    id 'ru.vyarus.java-lib' version '3.0.0'
+    id 'ru.vyarus.github-info' version '2.0.0'
     id 'com.github.ben-manes.versions' version '0.51.0'
     id "pl.droidsonroids.jacoco.testkit" version "1.0.12"
     id 'ru.vyarus.mkdocs' version '3.0.0'
 }
 
-sourceCompatibility = 1.8
+java {
+    sourceCompatibility = 1.8
+}
 
 wrapper {
-    gradleVersion = '6.9'
+    gradleVersion = '8.6'
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 ext.pythonPlugin = '3.0.0'
@@ -32,7 +35,7 @@ dependencies {
     }
     implementation 'org.ajoberstar.grgit:grgit-core:4.1.1'
 
-    testImplementation('org.spockframework:spock-core:2.1-groovy-2.5') {
+    testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
 }
@@ -64,12 +67,12 @@ afterEvaluate {
     }
 }
 
-pom {
+maven.pom {
     developers {
         developer {
-            id 'xvik'
-            name 'Vyacheslav Rusakov'
-            email 'vyarus@gmail.com'
+            id = 'xvik'
+            name = 'Vyacheslav Rusakov'
+            email = 'vyarus@gmail.com'
         }
     }
 }
@@ -101,22 +104,16 @@ gradlePlugin {
             id = 'ru.vyarus.mkdocs'
             displayName = project.description
             description = 'Mkdocs documentation generation and publishing plugin'
+            tags.set(['documentation', 'mkdocs'])
             implementationClass = 'ru.vyarus.gradle.plugin.mkdocs.MkdocsPlugin'
         }
         mkdocsBuildPlugin {
             id = 'ru.vyarus.mkdocs-build'
             displayName = "${project.description} (without publication)"
             description = 'Mkdocs documentation generation plugin'
+            tags.set(['documentation', 'mkdocs'])
             implementationClass = 'ru.vyarus.gradle.plugin.mkdocs.MkdocsBuildPlugin'
         }
-    }
-}
-pluginBundle {
-    tags = ['documentation', 'mkdocs']
-
-    mavenCoordinates {
-        groupId = project.group
-        artifactId = project.name
     }
 }
 

@@ -2,11 +2,9 @@ package ru.vyarus.gradle.plugin.mkdocs.task
 
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Nested
-import org.gradle.api.tasks.Optional
-import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 import ru.vyarus.gradle.plugin.mkdocs.util.MkdocsConfig
 import ru.vyarus.gradle.plugin.python.task.PythonTask
 
@@ -27,50 +25,32 @@ import ru.vyarus.gradle.plugin.python.task.PythonTask
 @SuppressWarnings(['AbstractClassWithoutAbstractMethod', 'AbstractClassWithPublicConstructor'])
 abstract class MkdocsTask extends PythonTask {
 
-    /**
-     * Extra gradle-provided variables to use in documentation.
-     */
-    @Internal
-    // marked as internal because since gradle 7.4 it is impossible to have map property (see getExtrasCacheKey)
-    // note that MapProperty can't be used too as it has its own problems
-    Map<String, Serializable> extras
-
     MkdocsTask() {
         // restrict commands to mkdocs module
         module.set('mkdocs')
     }
-/**
-     * Used ONLY to provide gradle a cache key for extras property, which has to be internal because since gradle
-     * 7.4 it is impossible to use {@link Nested} with {@link Map} property (all properties must have explicit
-     * annotation, which is impossible in case of map).
-     *
-     * @return extras map manual serialization for caching
+
+    /**
+     * Documentation sources folder (mkdocs sources root folder).
      */
     @Input
-    @Optional
-    String getExtrasCacheKey() {
-        getExtras() != null ? getExtras().collect { k, v -> k + '=' + v }.join(', ') : null
-    }
+    abstract Property<String> getSourcesDir()
+
+    /**
+     * Extra gradle-provided variables to use in documentation.
+     */
+    @Input
+    abstract MapProperty<String, Serializable> getExtras()
 
     @Override
     @SuppressWarnings('UnnecessaryGetter')
     void run() {
-        if (getExtras() == null || getExtras().isEmpty()) {
+        if (extras.get().isEmpty()) {
             // no vars - simple run
             super.run()
         } else {
             runWithVariables()
         }
-    }
-
-    /**
-     * For use in specialized tasks.
-     *
-     * @return mkdocs extension object
-     */
-    @Internal
-    protected MkdocsExtension getExtension() {
-        project.extensions.findByType(MkdocsExtension)
     }
 
     private void runWithVariables() {
@@ -88,7 +68,7 @@ abstract class MkdocsTask extends PythonTask {
             logger.lifecycle('Generating mkdocs data file: {}', getFilePath(gen))
             String report = ''
             gen.withWriter { BufferedWriter writer ->
-                getExtras().each { k, v ->
+                extras.get().each { k, v ->
                     // Object value used for deferred evaluation (GString may use lazy placeholders)
                     String line = k.replaceAll('[ -]', '_') + ': ' + (v ?: '')
                     writer.writeLine(line)
@@ -106,7 +86,7 @@ abstract class MkdocsTask extends PythonTask {
     }
 
     private File resolveDataDir() {
-        MkdocsConfig config = new MkdocsConfig(project, extension.sourcesDir)
+        MkdocsConfig config = new MkdocsConfig(project, sourcesDir.get())
 
         if (!config.contains('plugins.markdownextradata')) {
             throw new GradleException(
@@ -119,7 +99,7 @@ abstract class MkdocsTask extends PythonTask {
         }
 
         // mkdocs.yml location
-        File root = project.file(extension.sourcesDir)
+        File root = project.file(sourcesDir.get())
 
         // configuration may override default "docs" location
         String docsPath = config.find('docs_dir') ?: 'docs'

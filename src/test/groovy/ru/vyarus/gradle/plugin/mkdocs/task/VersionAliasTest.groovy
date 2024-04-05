@@ -262,7 +262,7 @@ class VersionAliasTest extends AbstractKitTest {
         file('/.gradle/gh-pages/index.html').exists()
 
         then: "versions file correct"
-        result.output.contains("Versions file generated with 1 versions:")
+        result.task(':mkdocsVersionsFile').outcome == TaskOutcome.UP_TO_DATE
         file('/.gradle/gh-pages/versions.json').exists()
         with(new JsonSlurper().parse(file('/.gradle/gh-pages/versions.json')) as List) {
             it.size() == 1

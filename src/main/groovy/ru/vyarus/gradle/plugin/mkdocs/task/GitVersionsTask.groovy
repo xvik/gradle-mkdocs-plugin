@@ -2,6 +2,11 @@ package ru.vyarus.gradle.plugin.mkdocs.task
 
 import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 import ru.vyarus.gradle.plugin.mkdocs.util.VersionsComparator
@@ -24,32 +29,78 @@ import static ru.vyarus.gradle.plugin.mkdocs.util.VersionsFileUtils.VERSIONS_FIL
  * @since 03.12.2021
  */
 @CompileStatic
-class GitVersionsTask extends DefaultTask {
+abstract class GitVersionsTask extends DefaultTask {
 
     // assume version must start with a digit, followed by dot (no matter what ending)
     private static final Pattern VERSION_FOLDER = Pattern.compile('\\d+(\\..+)?')
     private static final Comparator<String> VERSIONS_COMPARATOR = VersionsComparator.comparingVersions(false)
 
+    /**
+     * Version directory path. "." if no version directories used.
+     * @see {@link MkdocsExtension.Publish#docPath}
+     */
+    @Input
+    abstract Property<String> getVersionPath()
+
+    /**
+     * Version name (what to show in version dropdown).
+     * @see {@link MkdocsExtension.Publish#versionTitle}
+     */
+    @Input
+    @Optional
+    abstract Property<String> getVersionName()
+
+    /**
+     * Enables versions file generation.
+     */
+    @Input
+    abstract Property<Boolean> getGenerateVersionsFile()
+
+    /**
+     * Repository location.
+     */
+    @Input
+    abstract Property<File> getRepoDir()
+
+    /**
+     * Root redirection path or null to disable root redirection.
+     */
+    @Input
+    @Optional
+    abstract Property<String> getRootRedirectPath()
+
+    /**
+     * Version aliases.
+     */
+    @Input
+    @Optional
+    abstract ListProperty<String> getVersionAliases()
+
+    /**
+     * Mkdocs build directory.
+     */
+    @OutputDirectory
+    abstract Property<File> getBuildDir()
+
     @TaskAction
     void run() {
-        MkdocsExtension extension = project.extensions.findByType(MkdocsExtension)
-        if (!extension.publish.docPath || !extension.publish.generateVersionsFile) {
+        if (versionPath.get() == MkdocsExtension.SINGLE_VERSION_PATH || !generateVersionsFile.get()) {
             // single version doc or versions generation disabled
             return
         }
 
-        File repo = project.file(extension.publish.repoDir)
+        File repo = repoDir.get()
 
         List<String> versions = listRepoVersions(repo)
         // read file stored in repository
         File oldFile = new File(repo, VERSIONS_FILE)
         Map<String, Map<String, Object>> index = VersionsFileUtils.parse(oldFile)
-        cleanupAliases(index, versions, extension)
-        Report report = updateVersions(index, versions, extension)
-        validateUpdate(index, repo, extension)
+        cleanupAliases(index, versions)
+        Report report = updateVersions(index, versions)
+        validateUpdate(index, repo)
 
         // write into build directory (it would be incorrect to write directly to repo dir)
-        File file = VersionsFileUtils.getTarget(project, extension)
+        File file = VersionsFileUtils.getTarget(buildDir.get())
         VersionsFileUtils.write(index, file)
         logger.lifecycle('Versions file generated with {} versions: {} \n{}',
                 index.size(), file.absolutePath, composeReport(report))
@@ -97,12 +148,10 @@ class GitVersionsTask extends DefaultTask {
      *
      * @param file current versions file content
      * @param actual version folders found in repo
-     * @param extension version configuration
      */
     private void cleanupAliases(Map<String, Map<String, Object>> file,
-                                List<String> actual,
-                                MkdocsExtension extension) {
-        String[] currentAliases = extension.publish.versionAliases
+                                List<String> actual) {
+        List<String> currentAliases = versionAliases.get()
         file.values().each {
             List aliases = it[ALIASES] as List
             // remove aliases from found repo directories
@@ -121,12 +170,10 @@ class GitVersionsTask extends DefaultTask {
      *
      * @param file current versions file content
      * @param actual version folders found in repo
-     * @param extension version configuration
      * @return report of versions file modifications
      */
     private Report updateVersions(Map<String, Map<String, Object>> file,
-                                  List<String> actual,
-                                  MkdocsExtension extension) {
+                                  List<String> actual) {
         Report report = new Report()
         report.removed.addAll(file.keySet())
 
@@ -134,7 +181,7 @@ class GitVersionsTask extends DefaultTask {
         file.keySet().removeIf { !actual.contains(it) }
         report.removed.removeAll(file.keySet())
 
-        String currentVer = extension.resolveDocPath()
+        String currentVer = versionPath.get()
         // version would always be absent due to gitReset task (removing all outdated content before copying)
         if (!actual.contains(currentVer)) {
             actual.add(currentVer)
@@ -148,8 +195,8 @@ class GitVersionsTask extends DefaultTask {
         }
 
         // update custom title (to handle case when existing version re-generated)
-        String currenTitle = extension.resolveVersionTitle() ?: currentVer
-        VersionsFileUtils.updateVersion(file, currentVer, currenTitle, extension.publish.versionAliases)
+        String currenTitle = versionName.get() ?: currentVer
+        VersionsFileUtils.updateVersion(file, currentVer, currenTitle, versionAliases.get())
 
         report.survived.addAll(actual)
         report.survived.removeAll(report.added)
@@ -166,15 +213,14 @@ class GitVersionsTask extends DefaultTask {
      * NOTE: this validation will not be performed if versions file creation is disabled.
      */
     private void validateUpdate(Map<String, Map<String, Object>> file,
-                                File repo,
-                                MkdocsExtension extension) {
+                                File repo) {
         String lastVersion = file.keySet().iterator().next()
-        String currentVersion = extension.resolveDocPath()
+        String currentVersion = versionPath.get()
         if (lastVersion != currentVersion) {
             StringBuilder errors = new StringBuilder()
             // then publishing version is not the latest
-            if (extension.publish.rootRedirect) {
-                errors.append("\troot redirect override to '${extension.resolveRootRedirectionPath()}'\n")
+            if (rootRedirectPath.orNull) {
+                errors.append("\troot redirect override to '${rootRedirectPath.get()}'\n")
             }
             (file.get(currentVersion).get(ALIASES) as List<String>).each { String alias ->
                 if ((new File(repo, alias)).exists()) {

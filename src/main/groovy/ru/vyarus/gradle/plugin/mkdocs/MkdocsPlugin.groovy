@@ -126,12 +126,20 @@ class MkdocsPlugin implements Plugin<Project> {
             }
         }
 
-        TaskProvider versionsTask = project.tasks.register('mkdocsVersionsFile', GitVersionsTask) {
-            it.with {
-                group = DOCUMENTATION_GROUP
-                description = 'Generate/actualize versions.json file from publish repository'
-                dependsOn GIT_RESET_TASK
-            }
+        TaskProvider versionsTask = project.tasks.register('mkdocsVersionsFile', GitVersionsTask) { task ->
+            task.group = DOCUMENTATION_GROUP
+            task.description = 'Generate/actualize versions.json file from publish repository'
+            task.dependsOn GIT_RESET_TASK
+
+            task.versionPath.convention(extension.resolveDocPath())
+            task.versionName.convention(extension.resolveVersionTitle())
+            task.generateVersionsFile.convention(extension.publish.generateVersionsFile)
+            task.repoDir.convention(project.file(extension.publish.repoDir))
+            task.rootRedirectPath
+                    .convention(extension.publish.rootRedirect ? extension.resolveRootRedirectionPath() : null)
+            task.versionAliases.convention(extension.publish.versionAliases
+                    ? extension.publish.versionAliases as List : [])
+            task.buildDir.convention(project.file(extension.buildDir))
         }
 
         // versions generation before copy because all updated files must be correctly registered in git (by copy task)

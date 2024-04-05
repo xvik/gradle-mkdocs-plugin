@@ -3,8 +3,6 @@ package ru.vyarus.gradle.plugin.mkdocs.util
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
-import org.gradle.api.Project
-import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 
 /**
  * Versions file utilities.
@@ -62,7 +60,7 @@ class VersionsFileUtils {
      * @param aliases version aliases (may be null)
      */
     static void updateVersion(Map<String, Map<String, Object>> file,
-                              String version, String title, String[] aliases) {
+                              String version, String title, List<String> aliases) {
         // remove current version aliases from all versions (avoid alias duplication)
         if (aliases) {
             file.values().each {
@@ -73,17 +71,16 @@ class VersionsFileUtils {
         // update custom title (to handle case when existing version re-generated)
         file.get(version).with {
             it.put('title', title)
-            it.put(VersionsFileUtils.ALIASES, aliases ?: [])
+            it.put(VersionsFileUtils.ALIASES, aliases as String[] ?: [])
         }
     }
 
     /**
-     * @param project project object
-     * @param extension plugin extension object
+     * @param buildDir mkdocs build dir
      * @return versions file in mkdocs build directory
      */
-    static File getTarget(Project project, MkdocsExtension extension) {
-        return new File(project.file(extension.buildDir), VERSIONS_FILE)
+    static File getTarget(File buildDir) {
+        return new File(buildDir, VERSIONS_FILE)
     }
 
     /**

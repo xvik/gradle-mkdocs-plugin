@@ -54,30 +54,41 @@ class MkdocsBuildPlugin implements Plugin<Project> {
         project.extensions.getByType(PythonExtension).pip(MkdocsExtension.DEFAULT_MODULES)
     }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @SuppressWarnings('AbcMetric')
     private void configureMkdocsTasks(Project project, MkdocsExtension extension) {
         project.tasks.register(MKDOCS_BUILD_TASK, MkdocsBuildTask) { task ->
             task.description = 'Build mkdocs documentation'
             task.group = DOCUMENTATION_GROUP
             task.extraArgs.convention project.provider { extension.strict ? STRICT : null }
-            conventionMapping.with {
-                it.outputDir = { project.file("${getBuildOutputDir(extension)}") }
-                it.updateSiteUrl = { extension.updateSiteUrl }
-            }
+            task.outputDir.convention(project.file("${getBuildOutputDir(extension)}"))
+            task.updateSiteUrl.convention(extension.updateSiteUrl)
+            task.versionPath.convention(extension.resolveDocPath())
+            task.versionName.convention(extension.resolveVersionTitle())
+            task.rootRedirectPath
+                    .convention(extension.publish.rootRedirect ? extension.resolveRootRedirectionPath() : null)
+            task.versionAliases.convention(extension.publish.versionAliases
+                    ? extension.publish.versionAliases as List : [])
+            task.buildDir.convention(project.file(extension.buildDir))
+            task.existingVersionFile.convention(extension.publish.existingVersionsFile)
         }
 
-        project.tasks.register('mkdocsInit', MkdocsInitTask) {
-            it.with {
-                description = 'Create mkdocs documentation'
-                group = DOCUMENTATION_GROUP
-            }
+        project.tasks.register('mkdocsInit', MkdocsInitTask) { task ->
+            task.description = 'Create mkdocs documentation'
+            task.group = DOCUMENTATION_GROUP
+            task.sourcesDir.convention(extension.sourcesDir)
         }
 
         project.tasks.withType(MkdocsTask).configureEach { task ->
             task.workDir.convention(extension.sourcesDir)
-            task.conventionMapping.with {
-                it.extras = { extension.extras }
-            }
+            task.sourcesDir.convention(extension.sourcesDir)
+            task.extras.convention(project.provider {
+                // resolving lazy gstrings ("${-> something}") because they can't be serialized
+                Map<String, Serializable> res = [:]
+                extension.extras.each {
+                    res.put(it.key, it.value?.toString())
+                }
+                res
+            })
         }
 
         // simplify direct task usage
@@ -86,25 +97,23 @@ class MkdocsBuildPlugin implements Plugin<Project> {
 
     @CompileStatic(TypeCheckingMode.SKIP)
     private void configureServe(Project project, MkdocsExtension extension) {
-        project.tasks.register('mkdocsServe', MkdocsTask) {
-            it.with {
-                description = 'Start mkdocs live reload server'
-                group = DOCUMENTATION_GROUP
-                command = 'serve'
-                if (dockerUsed) {
-                    // mkdocs in strict mode does not allow external mappings, so avoid strict, event if configured
-                    // also ip must be changed, otherwise server would be invisible outside docker
-                    extraArgs = [DEV_ADDR, "0.0.0.0:${extension.devPort}"]
-                } else {
-                    List<String> args = extension.strict ? new ArrayList<>(STRICT) : []
-                    args += [DEV_ADDR, "127.0.0.1:${extension.devPort}"]
-                    extraArgs = args
-                }
-                // docker activation is still up to global configuration - here just required tuning
-                // task would be started in exclusive container in order to stream output immediately
-                docker.exclusive = true
-                docker.ports extension.devPort
+        project.tasks.register('mkdocsServe', MkdocsTask) { task ->
+            task.description = 'Start mkdocs live reload server'
+            task.group = DOCUMENTATION_GROUP
+            task.command.set('serve')
+            if (dockerUsed) {
+                // mkdocs in strict mode does not allow external mappings, so avoid strict, event if configured
+                // also ip must be changed, otherwise server would be invisible outside docker
+                task.extraArgs DEV_ADDR, "0.0.0.0:${extension.devPort}"
+            } else {
+                List<String> args = extension.strict ? new ArrayList<>(STRICT) : []
+                args += [DEV_ADDR, "127.0.0.1:${extension.devPort}"]
+                task.extraArgs.addAll(args)
             }
+            // docker activation is still up to global configuration - here just required tuning
+            // task would be started in exclusive container in order to stream output immediately
+            task.docker.exclusive.set(true)
+            task.docker.ports extension.devPort
         }
     }
 

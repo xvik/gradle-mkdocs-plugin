@@ -4,9 +4,13 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
+import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 import ru.vyarus.gradle.plugin.mkdocs.util.MkdocsConfig
 import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
 import ru.vyarus.gradle.plugin.mkdocs.util.VersionsFileUtils
@@ -26,16 +30,65 @@ abstract class MkdocsBuildTask extends MkdocsTask {
 
     private static final String SITE_URL = 'site_url'
 
+    /**
+     * Output directory.
+     */
     @OutputDirectory
-    File outputDir
+    abstract Property<File> getOutputDir()
 
+    /**
+     * Update 'site_url' in mkdocs configuration to correct path. Required for multi-version publishing to
+     * correctly update version url.
+     */
     @Input
-    boolean updateSiteUrl
+    abstract Property<Boolean> getUpdateSiteUrl()
+
+    /**
+     * Version directory path. "." if no version directories used.
+     * @see {@link ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension.Publish#docPath}
+     */
+    @Input
+    abstract Property<String> getVersionPath()
+
+    /**
+     * Version name (what to show in version dropdown).
+     * @see {@link ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension.Publish#versionTitle}
+     */
+    @Input
+    @Optional
+    abstract Property<String> getVersionName()
+
+    /**
+     * Root redirection path or null to disable root redirection.
+     */
+    @Input
+    @Optional
+    abstract Property<String> getRootRedirectPath()
+
+    /**
+     * Version aliases.
+     */
+    @Input
+    @Optional
+    abstract ListProperty<String> getVersionAliases()
+
+    /**
+     * Mkdocs build directory.
+     */
+    @OutputDirectory
+    abstract Property<File> getBuildDir()
+
+    /**
+     * Versions file to update (when publish tasks not used).
+     */
+    @Input
+    @Optional
+    abstract Property<String> getExistingVersionFile()
 
     MkdocsBuildTask() {
         command.set(project.provider {
             boolean isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-            String path = getOutputDir().canonicalPath
+            String path = outputDir.get().canonicalPath
             if (isWindows) {
                 // always wrap into quotes for windows
                 path = "\"$path\""
@@ -47,11 +100,11 @@ abstract class MkdocsBuildTask extends MkdocsTask {
 
     @Override
     void run() {
-        String path = extension.resolveDocPath()
-        boolean multiVersion = extension.multiVersion
+        String path = versionPath.get()
+        boolean multiVersion = path != MkdocsExtension.SINGLE_VERSION_PATH
         Closure action = { super.run() }
 
-        if (getUpdateSiteUrl() && multiVersion) {
+        if (updateSiteUrl.get() && multiVersion) {
             // update mkdocs.yml site_url from global to published folder (in order to build correct sitemap)
             withModifiedConfig(path, action)
         } else {
@@ -59,7 +112,7 @@ abstract class MkdocsBuildTask extends MkdocsTask {
         }
 
         // output directory must be owned by current user, not root, otherwise clean would fail
-        dockerChown(getOutputDir().toPath())
+        dockerChown(outputDir.get().toPath())
 
         // optional remote versions file update
         updateVersions()
@@ -72,13 +125,12 @@ abstract class MkdocsBuildTask extends MkdocsTask {
     }
 
     @InputDirectory
-    @SuppressWarnings('UnnecessaryGetter')
-    File getSourcesDir() {
-        return project.file(getWorkDir())
+    File getSourcesDirectory() {
+        return project.file(sourcesDir.get())
     }
 
     private void withModifiedConfig(String path, Closure action) {
-        MkdocsConfig conf = new MkdocsConfig(project, extension.sourcesDir)
+        MkdocsConfig conf = new MkdocsConfig(project, sourcesDir.get())
         String url = conf.find(SITE_URL)
 
         // site_url not defined or already points to correct location
@@ -101,7 +153,7 @@ abstract class MkdocsBuildTask extends MkdocsTask {
     }
 
     private void updateVersions() {
-        String versions = extension.publish.existingVersionsFile
+        String versions = existingVersionFile.orNull
         if (versions) {
             File target
             if (versions.contains(':')) {
@@ -110,7 +162,7 @@ abstract class MkdocsBuildTask extends MkdocsTask {
             } else {
                 target = project.file(versions)
             }
-            File res = VersionsFileUtils.getTarget(project, extension)
+            File res = VersionsFileUtils.getTarget(buildDir.get())
             logger.lifecycle('Creating versions file: {}', project.relativePath(res))
             Map<String, Map<String, Object>> parse = VersionsFileUtils.parse(target)
             if (target.exists()) {
@@ -120,12 +172,12 @@ abstract class MkdocsBuildTask extends MkdocsTask {
                         versions)
             }
 
-            String currentVersion = extension.resolveDocPath()
+            String currentVersion = versionPath.get()
             if (VersionsFileUtils.addVersion(parse, currentVersion)) {
                 logger.lifecycle('\tNew version added: {}', currentVersion)
             }
             VersionsFileUtils.updateVersion(parse,
-                    currentVersion, extension.resolveVersionTitle(), extension.publish.versionAliases)
+                    currentVersion, versionName.get(), versionAliases.get())
             VersionsFileUtils.write(parse, res)
             logger.lifecycle('\tVersions written to file: {}', parse.keySet().join(', '))
         }
@@ -138,22 +190,22 @@ abstract class MkdocsBuildTask extends MkdocsTask {
     }
 
     private void copyRedirect(String path) {
-        if (extension.publish.rootRedirect) {
-            String target = extension.resolveRootRedirectionPath()
+        if (rootRedirectPath.orNull) {
+            String target = rootRedirectPath.get()
             List<String> possible = [path]
-            possible.addAll(extension.publish.versionAliases ?: [] as String[])
+            possible.addAll(versionAliases.get())
             if (!possible.contains(target)) {
                 throw new GradleException("Invalid mkdocs.publish.rootRedirectTo option value: '$target'. " +
                         "Possible values are: ${possible.join(', ')} ('\$docPath' for actual version)")
             }
             // create root redirection file
             TemplateUtils.copy(project, '/ru/vyarus/gradle/plugin/mkdocs/template/publish/',
-                    extension.buildDir, [docPath: target])
+                    gradleEnv.get().relativePath(buildDir.get()), [docPath: target])
             logger.lifecycle('Root redirection enabled to: {}', target)
         } else {
             // remove stale index.html (to avoid unintentional redirect override)
             // of course, build always must be called after clean, but at least minimize damage on incorrect usage
-            File index = project.file(extension.buildDir + '/index.html')
+            File index = new File(buildDir.get(), 'index.html')
             if (index.exists()) {
                 index.delete()
             }
@@ -162,9 +214,9 @@ abstract class MkdocsBuildTask extends MkdocsTask {
 
     @CompileStatic(TypeCheckingMode.SKIP)
     private void copyAliases(String version) {
-        File baseDir = project.file(extension.buildDir)
+        File baseDir = buildDir.get()
 
-        String[] aliases = extension.publish.versionAliases
+        List<String> aliases = versionAliases.get()
         if (aliases) {
             aliases.each { String alias ->
                 project.copy {

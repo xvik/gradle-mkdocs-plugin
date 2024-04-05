@@ -23,7 +23,7 @@ wrapper {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-ext.pythonPlugin = '3.0.0'
+ext.pythonPlugin = '4.0.0-SNAPSHOT'
 
 repositories { mavenLocal(); mavenCentral(); gradlePluginPortal() }
 dependencies {

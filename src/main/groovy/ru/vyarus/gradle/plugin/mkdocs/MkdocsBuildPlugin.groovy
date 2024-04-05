@@ -56,15 +56,13 @@ class MkdocsBuildPlugin implements Plugin<Project> {
 
     @CompileStatic(TypeCheckingMode.SKIP)
     private void configureMkdocsTasks(Project project, MkdocsExtension extension) {
-        project.tasks.register(MKDOCS_BUILD_TASK, MkdocsBuildTask) {
-            it.with {
-                description = 'Build mkdocs documentation'
-                group = DOCUMENTATION_GROUP
-                conventionMapping.with {
-                    it.extraArgs = { extension.strict ? STRICT : null }
-                    it.outputDir = { project.file("${getBuildOutputDir(extension)}") }
-                    it.updateSiteUrl = { extension.updateSiteUrl }
-                }
+        project.tasks.register(MKDOCS_BUILD_TASK, MkdocsBuildTask) { task ->
+            task.description = 'Build mkdocs documentation'
+            task.group = DOCUMENTATION_GROUP
+            task.extraArgs.convention project.provider { extension.strict ? STRICT : null }
+            conventionMapping.with {
+                it.outputDir = { project.file("${getBuildOutputDir(extension)}") }
+                it.updateSiteUrl = { extension.updateSiteUrl }
             }
         }
 
@@ -76,8 +74,8 @@ class MkdocsBuildPlugin implements Plugin<Project> {
         }
 
         project.tasks.withType(MkdocsTask).configureEach { task ->
+            task.workDir.convention(extension.sourcesDir)
             task.conventionMapping.with {
-                it.workDir = { extension.sourcesDir }
                 it.extras = { extension.extras }
             }
         }

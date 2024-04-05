@@ -24,7 +24,8 @@ import ru.vyarus.gradle.plugin.python.task.PythonTask
  * @see <a href="https://github.com/rosscdh/mkdocs-markdownextradata-plugin">markdownextradata plugin documentation</a>
  */
 @CompileStatic
-class MkdocsTask extends PythonTask {
+@SuppressWarnings(['AbstractClassWithoutAbstractMethod', 'AbstractClassWithPublicConstructor'])
+abstract class MkdocsTask extends PythonTask {
 
     /**
      * Extra gradle-provided variables to use in documentation.
@@ -34,7 +35,11 @@ class MkdocsTask extends PythonTask {
     // note that MapProperty can't be used too as it has its own problems
     Map<String, Serializable> extras
 
-    /**
+    MkdocsTask() {
+        // restrict commands to mkdocs module
+        module.set('mkdocs')
+    }
+/**
      * Used ONLY to provide gradle a cache key for extras property, which has to be internal because since gradle
      * 7.4 it is impossible to use {@link Nested} with {@link Map} property (all properties must have explicit
      * annotation, which is impossible in case of map).
@@ -56,13 +61,6 @@ class MkdocsTask extends PythonTask {
         } else {
             runWithVariables()
         }
-    }
-
-    @Override
-    @SuppressWarnings('GetterMethodCouldBeProperty')
-    String getModule() {
-        // restrict commands to mkdocs module
-        return 'mkdocs'
     }
 
     /**

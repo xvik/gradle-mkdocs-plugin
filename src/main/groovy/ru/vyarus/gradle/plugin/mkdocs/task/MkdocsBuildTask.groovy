@@ -20,8 +20,9 @@ import ru.vyarus.gradle.plugin.mkdocs.util.VersionsFileUtils
  * @since 14.11.2017
  */
 @CompileStatic
-@SuppressWarnings('DuplicateStringLiteral')
-class MkdocsBuildTask extends MkdocsTask {
+@SuppressWarnings(['DuplicateStringLiteral', 'AbstractClassWithoutAbstractMethod',
+        'AbstractClassWithPublicConstructor'])
+abstract class MkdocsBuildTask extends MkdocsTask {
 
     private static final String SITE_URL = 'site_url'
 
@@ -30,6 +31,19 @@ class MkdocsBuildTask extends MkdocsTask {
 
     @Input
     boolean updateSiteUrl
+
+    MkdocsBuildTask() {
+        command.set(project.provider {
+            boolean isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+            String path = getOutputDir().canonicalPath
+            if (isWindows) {
+                // always wrap into quotes for windows
+                path = "\"$path\""
+            }
+            // use array to avoid escaping spaces in path (and consequent args parsing)
+            return ['build', '-c', '-d', path]
+        })
+    }
 
     @Override
     void run() {
@@ -45,7 +59,7 @@ class MkdocsBuildTask extends MkdocsTask {
         }
 
         // output directory must be owned by current user, not root, otherwise clean would fail
-        dockerChown(getOutputDir())
+        dockerChown(getOutputDir().toPath())
 
         // optional remote versions file update
         updateVersions()
@@ -55,18 +69,6 @@ class MkdocsBuildTask extends MkdocsTask {
             copyRedirect(path)
             copyAliases(path)
         }
-    }
-
-    @Override
-    Object getCommand() {
-        boolean isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-        String path = getOutputDir().canonicalPath
-        if (isWindows) {
-            // always wrap into quotes for windows
-            path = "\"$path\""
-        }
-        // use array to avoid escaping spaces in path (and consequent args parsing)
-        return ['build', '-c', '-d', path]
     }
 
     @InputDirectory

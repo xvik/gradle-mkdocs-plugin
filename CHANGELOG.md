@@ -1,4 +1,5 @@
 * (breaking) Drop gradle 5 and 6 support
+* (breaking) Drop java 8 support (java 11 required)
 * All tasks properties replaced with lazy properties
 
 ### 3.0.0 (2022-11-01)

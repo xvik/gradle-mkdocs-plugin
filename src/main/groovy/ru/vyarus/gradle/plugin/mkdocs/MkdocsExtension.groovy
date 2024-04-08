@@ -3,6 +3,7 @@ package ru.vyarus.gradle.plugin.mkdocs
 import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
+import org.gradle.api.Action
 import org.gradle.api.Project
 
 /**
@@ -136,8 +137,8 @@ class MkdocsExtension {
      */
     final Publish publish = new Publish()
 
-    void setPublish(@DelegatesTo(Publish) Closure config) {
-        project.configure(publish, config)
+    void publish(Action<Publish> config) {
+        config.execute(publish)
     }
 
     /**

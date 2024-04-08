@@ -2,7 +2,7 @@ package ru.vyarus.gradle.plugin.mkdocs.util
 
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
-import org.gradle.api.Project
+import org.gradle.api.internal.file.FileOperations
 
 import java.util.regex.Matcher
 
@@ -15,11 +15,11 @@ import java.util.regex.Matcher
 @CompileStatic
 class MkdocsConfig {
 
-    private final Project project
+    private final FileOperations fs
     private final String configLocation
 
-    MkdocsConfig(Project project, String sourceDir) {
-        this.project = project
+    MkdocsConfig(FileOperations fs, String sourceDir) {
+        this.fs = fs
         this.configLocation = (sourceDir ? "$sourceDir/" : '') + 'mkdocs.yml'
     }
 
@@ -28,9 +28,9 @@ class MkdocsConfig {
      * @throws GradleException if config does not exist
      */
     File getConfig() {
-        File config = project.file(configLocation)
+        File config = fs.file(configLocation)
         if (!config.exists()) {
-            throw new GradleException("Mkdocs config file not found: ${project.relativePath(config)}")
+            throw new GradleException("Mkdocs config file not found: ${fs.relativePath(config)}")
         }
         return config
     }
@@ -120,13 +120,13 @@ class MkdocsConfig {
      */
     void restoreBackup(File backup) {
         if (!backup.exists()) {
-            throw new IllegalStateException("No backup file found: ${project.relativePath(backup)}")
+            throw new IllegalStateException("No backup file found: ${fs.relativePath(backup)}")
         }
         File cfg = config
         cfg.delete()
         if (!backup.renameTo(cfg)) {
-            throw new IllegalStateException("Failed to rename ${project.relativePath(backup.absolutePath)} back " +
-                    "to ${project.relativePath(cfg.absolutePath)}. Please rename manually to recover.")
+            throw new IllegalStateException("Failed to rename ${fs.relativePath(backup.absolutePath)} back " +
+                    "to ${fs.relativePath(cfg.absolutePath)}. Please rename manually to recover.")
         }
     }
 }

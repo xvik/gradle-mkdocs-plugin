@@ -3,6 +3,7 @@ package ru.vyarus.gradle.plugin.mkdocs.util
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.internal.project.ProjectInternal
 import ru.vyarus.gradle.plugin.mkdocs.AbstractTest
 import spock.lang.IgnoreIf
 
@@ -16,7 +17,7 @@ class MkdocsConfigTest extends AbstractTest {
 
         setup:
         Project project = project()
-        MkdocsConfig config = new MkdocsConfig(project, null)
+        MkdocsConfig config = new MkdocsConfig((project as ProjectInternal).fileOperations, null)
 
         when: "config not exists"
         config.getConfig()
@@ -51,7 +52,7 @@ class MkdocsConfigTest extends AbstractTest {
 
         setup:
         Project project = project()
-        MkdocsConfig config = new MkdocsConfig(project, null)
+        MkdocsConfig config = new MkdocsConfig((project as ProjectInternal).fileOperations, null)
         file('mkdocs.yml').createNewFile()
 
         when: "config exists"
@@ -80,7 +81,7 @@ class MkdocsConfigTest extends AbstractTest {
 
         setup:
         Project project = project()
-        MkdocsConfig config = new MkdocsConfig(project, null)
+        MkdocsConfig config = new MkdocsConfig((project as ProjectInternal).fileOperations, null)
         file('mkdocs.yml').createNewFile()
         File back = config.backup()
 
@@ -97,7 +98,7 @@ class MkdocsConfigTest extends AbstractTest {
 
         setup:
         Project project = project()
-        MkdocsConfig config = new MkdocsConfig(project, 'dir/dr')
+        MkdocsConfig config = new MkdocsConfig((project as ProjectInternal).fileOperations, 'dir/dr')
 
         when: "config not exists"
         config.getConfig()
@@ -126,7 +127,7 @@ class MkdocsConfigTest extends AbstractTest {
         Project project = project()
         File conf = file('mkdocs.yml')
         conf.createNewFile()
-        MkdocsConfig config = new MkdocsConfig(project, null)
+        MkdocsConfig config = new MkdocsConfig((project as ProjectInternal).fileOperations, null)
 
         when: "value not exists"
         String val = config.find('ex')
@@ -176,7 +177,7 @@ class MkdocsConfigTest extends AbstractTest {
         Project project = project()
         File conf = file('mkdocs.yml')
         conf.createNewFile()
-        MkdocsConfig config = new MkdocsConfig(project, null)
+        MkdocsConfig config = new MkdocsConfig((project as ProjectInternal).fileOperations, null)
 
         when: "value not exists"
         String val = config.find('ex')
@@ -230,7 +231,7 @@ ex: http://other-url.com
         Project project = project()
         File conf = file('mkdocs.yml')
         conf.createNewFile()
-        MkdocsConfig config = new MkdocsConfig(project, null)
+        MkdocsConfig config = new MkdocsConfig((project as ProjectInternal).fileOperations, null)
 
         when: "quoted value"
         conf.delete()
@@ -260,7 +261,7 @@ ex: http://other-url.com
         Project project = project()
         File conf = file('mkdocs.yml')
         conf.createNewFile()
-        MkdocsConfig config = new MkdocsConfig(project, null)
+        MkdocsConfig config = new MkdocsConfig((project as ProjectInternal).fileOperations, null)
 
         when: "simple property"
         conf << 'sample:'
@@ -345,7 +346,7 @@ sample:
         Project project = project()
         File conf = file('mkdocs.yml')
         conf.createNewFile()
-        MkdocsConfig config = new MkdocsConfig(project, null)
+        MkdocsConfig config = new MkdocsConfig((project as ProjectInternal).fileOperations, null)
 
         when: "no target path"
         conf << """

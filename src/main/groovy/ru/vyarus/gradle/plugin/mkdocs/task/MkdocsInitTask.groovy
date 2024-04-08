@@ -5,6 +5,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
@@ -27,22 +28,25 @@ abstract class MkdocsInitTask extends DefaultTask {
     @Input
     abstract Property<String> getSourcesDir()
 
-    @Inject
-    protected abstract FileOperations getFs()
+    protected Provider<String> projectName = project.provider { project.name }
+    protected Provider<String> projectDesc = project.provider { project.description }
 
     @TaskAction
     void run() {
         String sourcesPath = sourcesDir.get()
-        File dir = project.file(sourcesPath)
+        File dir = fs.file(sourcesPath)
         if (dir.exists() && dir.listFiles().length > 0) {
             throw new GradleException("Can't init new mkdocs site because target directory is not empty: $dir")
         }
 
         TemplateUtils.copy(fs, '/ru/vyarus/gradle/plugin/mkdocs/template/init/', dir, [
-                projectName: project.name,
-                projectDescription: project.description ?: '',
+                projectName: projectName.get(),
+                projectDescription: projectDesc.orNull ?: '',
                 docDir: sourcesPath,
         ])
         logger.lifecycle("Mkdocs site initialized: $sourcesPath")
     }
+
+    @Inject
+    protected abstract FileOperations getFs()
 }

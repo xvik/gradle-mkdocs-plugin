@@ -4,19 +4,15 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
-import org.gradle.api.internal.file.FileOperations
+import org.gradle.api.file.Directory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.*
 import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 import ru.vyarus.gradle.plugin.mkdocs.util.MkdocsConfig
 import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
 import ru.vyarus.gradle.plugin.mkdocs.util.VersionsFileUtils
-
-import javax.inject.Inject
 
 /**
  * Builds mkdocs site. If version is configured as default for publication, then generate extra index.html.
@@ -88,8 +84,8 @@ abstract class MkdocsBuildTask extends MkdocsTask {
     @Optional
     abstract Property<String> getExistingVersionFile()
 
-    @Inject
-    protected abstract FileOperations getFs()
+    @Internal
+    Provider<Directory> projectBuildDir = project.layout.buildDirectory
 
     MkdocsBuildTask() {
         command.set(project.provider {
@@ -132,11 +128,11 @@ abstract class MkdocsBuildTask extends MkdocsTask {
 
     @InputDirectory
     File getSourcesDirectory() {
-        return project.file(sourcesDir.get())
+        return fs.file(sourcesDir.get())
     }
 
     private void withModifiedConfig(String path, Closure action) {
-        MkdocsConfig conf = new MkdocsConfig(project, sourcesDir.get())
+        MkdocsConfig conf = new MkdocsConfig(fs, sourcesDir.get())
         String url = conf.find(SITE_URL)
 
         // site_url not defined or already points to correct location
@@ -150,11 +146,11 @@ abstract class MkdocsBuildTask extends MkdocsTask {
             String slash = '/'
             String folderUrl = (url.endsWith(slash) ? url : (url + slash)) + path
             conf.set(SITE_URL, folderUrl)
-            logger.lifecycle("Modified ${project.relativePath(conf.config)}: '$SITE_URL: $folderUrl'")
+            logger.lifecycle("Modified ${fs.relativePath(conf.config)}: '$SITE_URL: $folderUrl'")
             action.call()
         } finally {
             conf.restoreBackup(backup)
-            logger.lifecycle("Original ${project.relativePath(conf.config)} restored")
+            logger.lifecycle("Original ${fs.relativePath(conf.config)} restored")
         }
     }
 
@@ -163,13 +159,13 @@ abstract class MkdocsBuildTask extends MkdocsTask {
         if (versions) {
             File target
             if (versions.contains(':')) {
-                target = new File(project.buildDir, 'old-versions.json')
+                target = new File(projectBuildDir.get().asFile, 'old-versions.json')
                 download(versions, target)
             } else {
-                target = project.file(versions)
+                target = fs.file(versions)
             }
             File res = VersionsFileUtils.getTarget(buildDir.get())
-            logger.lifecycle('Creating versions file: {}', project.relativePath(res))
+            logger.lifecycle('Creating versions file: {}', fs.relativePath(res))
             Map<String, Map<String, Object>> parse = VersionsFileUtils.parse(target)
             if (target.exists()) {
                 logger.lifecycle("\tExisting versions file '{}' loaded with {} versions", versions, parse.size())
@@ -206,7 +202,7 @@ abstract class MkdocsBuildTask extends MkdocsTask {
             }
             // create root redirection file
             TemplateUtils.copy(fs, '/ru/vyarus/gradle/plugin/mkdocs/template/publish/',
-                    gradleEnv.get().relativePath(buildDir.get()), [docPath: target])
+                    fs.relativePath(buildDir.get()), [docPath: target])
             logger.lifecycle('Root redirection enabled to: {}', target)
         } else {
             // remove stale index.html (to avoid unintentional redirect override)
@@ -225,9 +221,9 @@ abstract class MkdocsBuildTask extends MkdocsTask {
         List<String> aliases = versionAliases.get()
         if (aliases) {
             aliases.each { String alias ->
-                project.copy {
-                    from new File(baseDir, version)
-                    into new File(baseDir, alias)
+                fs.copy { spec ->
+                    spec.from new File(baseDir, version)
+                    spec.into new File(baseDir, alias)
                 }
             }
             logger.lifecycle('Version aliases added: {}', aliases.join(', '))

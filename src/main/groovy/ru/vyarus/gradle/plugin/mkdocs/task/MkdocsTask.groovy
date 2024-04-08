@@ -2,11 +2,14 @@ package ru.vyarus.gradle.plugin.mkdocs.task
 
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import ru.vyarus.gradle.plugin.mkdocs.util.MkdocsConfig
 import ru.vyarus.gradle.plugin.python.task.PythonTask
+
+import javax.inject.Inject
 
 /**
  * General mkdocs task.
@@ -53,6 +56,9 @@ abstract class MkdocsTask extends PythonTask {
         }
     }
 
+    @Inject
+    protected abstract FileOperations getFs()
+
     private void runWithVariables() {
         File data = resolveDataDir()
         boolean removeDataDir = !data.exists()
@@ -86,7 +92,7 @@ abstract class MkdocsTask extends PythonTask {
     }
 
     private File resolveDataDir() {
-        MkdocsConfig config = new MkdocsConfig(project, sourcesDir.get())
+        MkdocsConfig config = new MkdocsConfig(fs, sourcesDir.get())
 
         if (!config.contains('plugins.markdownextradata')) {
             throw new GradleException(
@@ -99,7 +105,7 @@ abstract class MkdocsTask extends PythonTask {
         }
 
         // mkdocs.yml location
-        File root = project.file(sourcesDir.get())
+        File root = fs.file(sourcesDir.get())
 
         // configuration may override default "docs" location
         String docsPath = config.find('docs_dir') ?: 'docs'
@@ -119,8 +125,8 @@ abstract class MkdocsTask extends PythonTask {
      * @return relative or absolute file path
      */
     private String getFilePath(File file) {
-        if (file.path.startsWith(project.rootDir.path)) {
-            return project.relativePath(file)
+        if (file.path.startsWith(gradleEnv.get().rootDir.path)) {
+            return fs.relativePath(file)
         }
         return file.absolutePath
     }

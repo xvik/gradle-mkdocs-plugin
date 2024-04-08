@@ -3,7 +3,6 @@ package ru.vyarus.gradle.plugin.mkdocs.util
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.gradle.api.Project
 import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.FileOperations
@@ -38,7 +37,7 @@ class TemplateUtils {
             tree = fs.fileTree(folder)
         }
 
-        fs.copy {spec ->
+        fs.copy { spec ->
             spec.from tree
             spec.into to
             if (isJar) {

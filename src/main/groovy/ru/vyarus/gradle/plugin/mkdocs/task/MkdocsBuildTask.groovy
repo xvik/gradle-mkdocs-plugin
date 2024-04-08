@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -14,6 +15,8 @@ import ru.vyarus.gradle.plugin.mkdocs.MkdocsExtension
 import ru.vyarus.gradle.plugin.mkdocs.util.MkdocsConfig
 import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
 import ru.vyarus.gradle.plugin.mkdocs.util.VersionsFileUtils
+
+import javax.inject.Inject
 
 /**
  * Builds mkdocs site. If version is configured as default for publication, then generate extra index.html.
@@ -84,6 +87,9 @@ abstract class MkdocsBuildTask extends MkdocsTask {
     @Input
     @Optional
     abstract Property<String> getExistingVersionFile()
+
+    @Inject
+    protected abstract FileOperations getFs()
 
     MkdocsBuildTask() {
         command.set(project.provider {
@@ -199,7 +205,7 @@ abstract class MkdocsBuildTask extends MkdocsTask {
                         "Possible values are: ${possible.join(', ')} ('\$docPath' for actual version)")
             }
             // create root redirection file
-            TemplateUtils.copy(project, '/ru/vyarus/gradle/plugin/mkdocs/template/publish/',
+            TemplateUtils.copy(fs, '/ru/vyarus/gradle/plugin/mkdocs/template/publish/',
                     gradleEnv.get().relativePath(buildDir.get()), [docPath: target])
             logger.lifecycle('Root redirection enabled to: {}', target)
         } else {

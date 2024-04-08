@@ -1,6 +1,7 @@
 package ru.vyarus.gradle.plugin.mkdocs.util
 
 import org.gradle.api.Project
+import org.gradle.api.internal.project.ProjectInternal
 import ru.vyarus.gradle.plugin.mkdocs.AbstractTest
 
 /**
@@ -13,26 +14,26 @@ class TemplateUtilsTest extends AbstractTest {
 
         when: "copy from classpath"
         Project project = project()
-        TemplateUtils.copy(project, '/ru/vyarus/gradle/plugin/mkdocs/template/init/', 'tp', [:])
+        TemplateUtils.copy((project as ProjectInternal).fileOperations, '/ru/vyarus/gradle/plugin/mkdocs/template/init/', 'tp', [:])
 
         then: "copied"
         file('tp/mkdocs.yml').exists()
         file('tp/docs/index.md').exists()
 
         when: "no trailing slash"
-        TemplateUtils.copy(project, '/ru/vyarus/gradle/plugin/mkdocs/template/init', 'tp2', [:])
+        TemplateUtils.copy((project as ProjectInternal).fileOperations, '/ru/vyarus/gradle/plugin/mkdocs/template/init', 'tp2', [:])
 
         then: "copied"
         file('tp2/mkdocs.yml').exists()
         file('tp2/docs/index.md').exists()
 
         when: "relative path"
-        TemplateUtils.copy(project, 'relative/path', 'tp', [:])
+        TemplateUtils.copy((project as ProjectInternal).fileOperations, 'relative/path', 'tp', [:])
         then: "error"
         thrown(IllegalArgumentException)
 
         when: "not existing path"
-        TemplateUtils.copy(project, '/not/existing', 'tp', [:])
+        TemplateUtils.copy((project as ProjectInternal).fileOperations, '/not/existing', 'tp', [:])
         then: "error"
         thrown(IllegalArgumentException)
     }
@@ -59,14 +60,14 @@ class TemplateUtilsTest extends AbstractTest {
         URLClassLoader extendedLoader = new URLClassLoader([jar.toURI().toURL()] as  URL[], TemplateUtils.getClassLoader())
         Thread.currentThread().setContextClassLoader(extendedLoader)
 
-        TemplateUtils.copy(project, '/template/init/', 'tp', [:])
+        TemplateUtils.copy((project as ProjectInternal).fileOperations, '/template/init/', 'tp', [:])
 
         then: "copied"
         file('tp/mkdocs.yml').exists()
         file('tp/docs/index.md').exists()
 
         when: "no trailing slash"
-        TemplateUtils.copy(project, '/template/init', 'tp2', [:])
+        TemplateUtils.copy((project as ProjectInternal).fileOperations, '/template/init', 'tp2', [:])
 
         then: "copied"
         file('tp2/mkdocs.yml').exists()

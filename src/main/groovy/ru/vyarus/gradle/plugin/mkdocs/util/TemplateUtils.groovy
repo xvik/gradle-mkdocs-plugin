@@ -6,6 +6,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.Project
 import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.file.FileTree
+import org.gradle.api.internal.file.FileOperations
 
 /**
  * Utility to extract templates from classpath (plugin jar) and copy to target location with placeholders processing.
@@ -21,34 +22,34 @@ class TemplateUtils {
     /**
      * Copies templates from classpath (inside the jar) with placeholders substitution.
      *
-     * @param project project instance
+     * @param fs file operations
      * @param path path to folder on classpath to copy (path must start with '/')
      * @param to target location (string, File)
      * @param tokens substitution tokens
      */
     @CompileStatic(TypeCheckingMode.SKIP)
-    static void copy(Project project, String path, Object to, Map<String, String> tokens) {
+    static void copy(FileOperations fs, String path, Object to, Map<String, String> tokens) {
         URL folder = getUrl(path)
         FileTree tree
         boolean isJar = folder.toString().startsWith('jar:')
         if (isJar) {
-            tree = project.zipTree(getJarUrl(folder))
+            tree = fs.zipTree(getJarUrl(folder))
         } else {
-            tree = project.fileTree(folder)
+            tree = fs.fileTree(folder)
         }
 
-        project.copy {
-            from tree
-            into to
+        fs.copy {spec ->
+            spec.from tree
+            spec.into to
             if (isJar) {
-                include pathToWildcard(path)
+                spec.include pathToWildcard(path)
                 // cut off path
-                eachFile { FileCopyDetails f ->
+                spec.eachFile { FileCopyDetails f ->
                     f.path = f.path.replaceFirst(pathToCutPrefix(path), '')
                 }
-                includeEmptyDirs = false
+                spec.includeEmptyDirs = false
             }
-            filter(ReplaceTokens, tokens: tokens)
+            spec.filter(ReplaceTokens, tokens: tokens)
         }
     }
 

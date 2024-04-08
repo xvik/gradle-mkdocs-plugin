@@ -3,10 +3,13 @@ package ru.vyarus.gradle.plugin.mkdocs.task
 import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import ru.vyarus.gradle.plugin.mkdocs.util.TemplateUtils
+
+import javax.inject.Inject
 
 /**
  * Generate initial mkdocs site. Does not use "mkdocs new" command. Custom template is used instead in order
@@ -24,6 +27,9 @@ abstract class MkdocsInitTask extends DefaultTask {
     @Input
     abstract Property<String> getSourcesDir()
 
+    @Inject
+    protected abstract FileOperations getFs()
+
     @TaskAction
     void run() {
         String sourcesPath = sourcesDir.get()
@@ -32,7 +38,7 @@ abstract class MkdocsInitTask extends DefaultTask {
             throw new GradleException("Can't init new mkdocs site because target directory is not empty: $dir")
         }
 
-        TemplateUtils.copy(project, '/ru/vyarus/gradle/plugin/mkdocs/template/init/', dir, [
+        TemplateUtils.copy(fs, '/ru/vyarus/gradle/plugin/mkdocs/template/init/', dir, [
                 projectName: project.name,
                 projectDescription: project.description ?: '',
                 docDir: sourcesPath,

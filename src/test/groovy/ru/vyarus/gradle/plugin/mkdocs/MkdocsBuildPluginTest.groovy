@@ -1,6 +1,5 @@
 package ru.vyarus.gradle.plugin.mkdocs
 
-import org.ajoberstar.gradle.git.publish.GitPublishPlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import ru.vyarus.gradle.plugin.python.PythonExtension
@@ -30,7 +29,7 @@ class MkdocsBuildPluginTest extends AbstractTest {
         task('mkdocsInit')
         !task('mkdocsPublish')
 
-        then: "publish plugin not applied"
-        !project.plugins.findPlugin(GitPublishPlugin)
+        then: "publish extension not applied"
+        !project.extensions.findByType(GitPublishExtension)
     }
 }

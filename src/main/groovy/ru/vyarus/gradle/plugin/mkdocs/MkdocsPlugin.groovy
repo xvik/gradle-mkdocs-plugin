@@ -2,17 +2,22 @@ package ru.vyarus.gradle.plugin.mkdocs
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.ajoberstar.gradle.git.publish.GitPublishPlugin
-import org.ajoberstar.gradle.git.publish.tasks.GitPublishReset
-import org.ajoberstar.grgit.Branch
 import org.ajoberstar.grgit.Configurable
 import org.ajoberstar.grgit.Grgit
-import org.ajoberstar.grgit.operation.BranchChangeOp
 import org.ajoberstar.grgit.operation.OpenOp
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.build.event.BuildEventsListenerRegistry
+import ru.vyarus.gradle.plugin.mkdocs.service.GrgitService
 import ru.vyarus.gradle.plugin.mkdocs.task.GitVersionsTask
+import ru.vyarus.gradle.plugin.mkdocs.task.publish.GitPublishCommit
+import ru.vyarus.gradle.plugin.mkdocs.task.publish.GitPublishPush
+import ru.vyarus.gradle.plugin.mkdocs.task.publish.GitPublishReset
+
+import javax.inject.Inject
 
 import static MkdocsBuildPlugin.DOCUMENTATION_GROUP
 import static MkdocsBuildPlugin.MKDOCS_BUILD_TASK
@@ -46,30 +51,32 @@ import static MkdocsBuildPlugin.MKDOCS_BUILD_TASK
  * @since 29.10.2017
  */
 @CompileStatic
-class MkdocsPlugin implements Plugin<Project> {
+abstract class MkdocsPlugin implements Plugin<Project> {
 
-    private static final String GIT_PUSH_TASK = 'gitPublishPush'
-    private static final String GIT_RESET_TASK = 'gitPublishReset'
-    private static final String GIT_COPY_TASK = 'gitPublishCopy'
+    static final String GIT_RESET_TASK = 'gitPublishReset'
+    static final String GIT_COPY_TASK = 'gitPublishCopy'
+    static final String GIT_COMMIT_TASK = 'gitPublishCommit'
+    static final String GIT_PUSH_TASK = 'gitPublishPush'
+    public static final String GROUP_PUBLISHING = 'publishing'
+
+    @Inject
+    abstract BuildEventsListenerRegistry getEventsListenerRegistry()
 
     @Override
     void apply(Project project) {
         project.plugins.apply(MkdocsBuildPlugin)
         MkdocsExtension extension = project.extensions.getByType(MkdocsExtension)
+        GitPublishExtension gitExt = project.extensions.create('gitPublish', GitPublishExtension, project)
 
-        project.afterEvaluate {
-            // set publish repository to the current project by default
-            extension.publish.repoUri = extension.publish.repoUri ?: getProjectRepoUri(project)
-        }
+        // set publish repository to the current project by default
+        extension.publish.repoUri = getProjectRepoUri(project)
 
-        configurePublish(project, extension)
+        configurePublish(project, extension, gitExt)
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)
     @SuppressWarnings('NestedBlockDepth')
-    private void configurePublish(Project project, MkdocsExtension extension) {
-        project.plugins.apply(GitPublishPlugin)
-
+    private void configurePublish(Project project, MkdocsExtension extension, GitPublishExtension gitExt) {
         project.afterEvaluate {
             MkdocsExtension.Publish publish = extension.publish
 
@@ -104,25 +111,29 @@ class MkdocsPlugin implements Plugin<Project> {
             }
         }
 
-        configurePublishTasks(project, extension)
+        configurePublishTasks(project, extension, gitExt)
     }
 
-    private void configurePublishTasks(Project project, MkdocsExtension extension) {
+    @SuppressWarnings(['AbcMetric', 'MethodSize'])
+    private void configurePublishTasks(Project project, MkdocsExtension extension, GitPublishExtension gitExt) {
         // mkdocsBuild <- gitPublishReset <- generateMkdocsVersionsFile <- gitPublishCopy <- gitPublishCommit
         // <- gitPublishPush <- mkdocsPublish
+
+        // service per project (no sharing)
+        Provider<GrgitService> service = createService(project)
+
+        TaskProvider<GitPublishReset> reset = createResetTask(project, gitExt, service)
+        TaskProvider copy = createCopyTask(project, gitExt)
+        TaskProvider commit = createCommitTask(project, gitExt, service)
+        TaskProvider push = createPushTask(project, gitExt, service)
+        push.configure { it.dependsOn(commit) }
+        commit.configure { it.dependsOn(copy) }
+        copy.configure { it.dependsOn(reset) }
+
         project.tasks.named(GIT_RESET_TASK).configure {
             it.with {
                 dependsOn MKDOCS_BUILD_TASK
                 applyGitCredentials((GitPublishReset) it)
-            }
-        }
-
-        project.tasks.named(GIT_PUSH_TASK).configure {
-            it.with {
-                doLast {
-                    // UP_TO_DATE fix
-                    fixOrphanBranch(project, extension.publish.repoDir, extension.publish.branch)
-                }
             }
         }
 
@@ -148,13 +159,21 @@ class MkdocsPlugin implements Plugin<Project> {
         }
 
         // create dummy task to simplify usage
-        project.tasks.register('mkdocsPublish') {
-            it.with {
-                group = DOCUMENTATION_GROUP
-                description = 'Publish documentation'
-                dependsOn GIT_PUSH_TASK
-            }
+        project.tasks.register('mkdocsPublish') { task ->
+            task.group = DOCUMENTATION_GROUP
+            task.description = 'Publish documentation'
+            task.dependsOn GIT_PUSH_TASK
         }
+    }
+
+    private Provider<GrgitService> createService(Project project) {
+        // service per project (no sharing)
+        Provider<GrgitService> service = project.gradle.sharedServices.registerIfAbsent(
+                'mkdocsGrgit' + (project.path == ':' ? '' : project.name.capitalize()) + 'Service', GrgitService) {
+        }
+        // it is not required, but used to prevent KILLING service too early under configuration cache
+        eventsListenerRegistry.onTaskCompletion(service)
+        return service
     }
 
     @SuppressWarnings(['UnnecessaryCast', 'CatchException'])
@@ -166,6 +185,52 @@ class MkdocsPlugin implements Plugin<Project> {
             // repository not initialized case - do nothing (most likely user is just playing with the plugin)
         }
         return null
+    }
+
+    private TaskProvider<GitPublishReset> createResetTask(Project project, GitPublishExtension extension,
+                                                          Provider<GrgitService> service) {
+        return project.tasks.register(GIT_RESET_TASK, GitPublishReset) { task ->
+            task.group = GROUP_PUBLISHING
+            task.description = 'Prepares a git repo for new content to be generated.'
+            task.repoDirectory.set(extension.repoDir)
+            task.repoUri.set(extension.repoUri)
+            task.referenceRepoUri.set(extension.referenceRepoUri)
+            task.branch.set(extension.branch)
+            task.grgit.set(service)
+            task.preserve = extension.preserve
+        }
+    }
+
+    private TaskProvider<Copy> createCopyTask(Project project, GitPublishExtension extension) {
+        return project.tasks.register(GIT_COPY_TASK, Copy) { task ->
+            task.group = GROUP_PUBLISHING
+            task.description = 'Copy contents to be published to git.'
+            task.with(extension.contents)
+            task.into(extension.repoDir)
+        }
+    }
+
+    private TaskProvider<GitPublishCommit> createCommitTask(Project project,
+                                                            GitPublishExtension extension,
+                                                            Provider<GrgitService> service) {
+        return project.tasks.register(GIT_COMMIT_TASK, GitPublishCommit) { task ->
+            task.group = GROUP_PUBLISHING
+            task.description = 'Commits changes to be published to git.'
+            task.grgit.set(service)
+            task.message.set(extension.commitMessage)
+            task.sign.set(extension.sign)
+        }
+    }
+
+    private TaskProvider<GitPublishPush> createPushTask(Project project,
+                                                        GitPublishExtension extension,
+                                                        Provider<GrgitService> service) {
+        return project.tasks.register(GIT_PUSH_TASK, GitPublishPush) { task ->
+            task.group = GROUP_PUBLISHING
+            task.description = 'Pushes changes to git.'
+            task.grgit.set(service)
+            task.branch.set(extension.branch)
+        }
     }
 
     private void applyGitCredentials(GitPublishReset task) {
@@ -180,28 +245,6 @@ class MkdocsPlugin implements Plugin<Project> {
                     System.setProperty(key, value)
                 }
             }
-        }
-    }
-
-    private void fixOrphanBranch(Project project, String repoDir, String branchName) {
-        // https://github.com/ajoberstar/gradle-git-publish/issues/82
-        // if remote branch not exists gitPublishReset will create orphan local branch and gitPublishPush
-        // will not set tracking after push! (also gitPublishReset will not set tracking on next execution and so
-        // branch will remain orphan on next run, even though remote branch already exists (and plugin knows it!)
-        // This leads to incorrect UP_TO_DATE behaviour: gitPublishPush will NEVER be SKIPPED (even on consequent
-        // task execution) because it tries to check branch status and fails (as branch does not have tracking)
-        // To workaround this behaviour (not terribly incorrect, ofc) setting branch tracking manually, if required
-        Grgit git = Grgit.open({ OpenOp op -> op.dir = project.file(repoDir) } as Configurable<OpenOp>)
-        Branch branch = git.branch.current()
-        // normally, this would be executed just once: after first publication, creating remote brnach; in all
-        // other cases, correct tracking would be set automatically
-        if (branch?.name == branchName && branch?.trackingBranch == null) {
-            // set update branch with remote tracking
-            git.branch.change({ BranchChangeOp op ->
-                op.name = branchName
-                op.startPoint = "origin/${branchName}"
-                op.mode = BranchChangeOp.Mode.TRACK
-            } as Configurable<BranchChangeOp>)
         }
     }
 }

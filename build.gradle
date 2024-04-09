@@ -29,10 +29,6 @@ repositories { mavenLocal(); mavenCentral(); gradlePluginPortal() }
 dependencies {
     implementation "ru.vyarus:gradle-use-python-plugin:$pythonPlugin"
 
-    // plugin require latest version of grgit-core, fixing to exact version to avoid surprises
-    implementation ('org.ajoberstar:gradle-git-publish:3.0.0') {
-        exclude module: 'grgit-core'
-    }
     implementation 'org.ajoberstar.grgit:grgit-core:5.2.2'
 
     testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {

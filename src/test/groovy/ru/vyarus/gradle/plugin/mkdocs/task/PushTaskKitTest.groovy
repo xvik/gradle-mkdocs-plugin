@@ -63,8 +63,6 @@ class PushTaskKitTest extends AbstractKitTest {
         file('src/doc/mkdocs.yml').exists()
 
         when: "publish"
-//        debug()
-//        println 'wait for debugger'
         result = run('mkdocsPublish')
 
         then: "published"

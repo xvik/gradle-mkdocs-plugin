@@ -22,6 +22,7 @@ import org.gradle.api.Project
  * @see <a href="https://squidfunk.github.io/mkdocs-material/">mkdocs-material site</a>
  */
 @CompileStatic
+@SuppressWarnings('ConfusingMethodName')
 class MkdocsExtension {
 
     /**

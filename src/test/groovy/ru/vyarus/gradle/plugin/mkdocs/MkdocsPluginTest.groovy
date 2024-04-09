@@ -1,6 +1,5 @@
 package ru.vyarus.gradle.plugin.mkdocs
 
-import org.ajoberstar.gradle.git.publish.GitPublishPlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import ru.vyarus.gradle.plugin.python.PythonExtension
@@ -31,7 +30,7 @@ class MkdocsPluginTest extends AbstractTest {
         task('mkdocsPublish')
 
         then: "publish plugin applied"
-        project.plugins.findPlugin(GitPublishPlugin)
+        project.extensions.findByType(GitPublishExtension)
 
         then: "task graph valid"
         task('mkdocsPublish').dependsOn.contains('gitPublishPush')

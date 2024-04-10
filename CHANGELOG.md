@@ -4,6 +4,9 @@
 * Remove git-publish plugin. Plugin functions added directly with required modifications
   so usage will be the same (compatible). The Author of the original plugin deprecated it
   (together with grgit). Still, grgit will be used for now (because of its feature completeness)
+  - Authorization properties support remains for backwards compatibility, but auth could
+    be specified now directly in gitPublish.username (and password). 
+* Configuration cache compatibility
 
 ### 3.0.0 (2022-11-01)
 * (breaking) Drop gradle 5.0-5.2 support (minimum required gradle is 5.3)

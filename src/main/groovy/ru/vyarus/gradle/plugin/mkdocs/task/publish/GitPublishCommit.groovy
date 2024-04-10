@@ -6,11 +6,12 @@ import org.ajoberstar.grgit.Grgit
 import org.ajoberstar.grgit.operation.AddOp
 import org.ajoberstar.grgit.operation.CommitOp
 import org.gradle.api.DefaultTask
+import org.gradle.api.Task
 import org.gradle.api.provider.Property
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import ru.vyarus.gradle.plugin.mkdocs.service.GrgitService
 
-import javax.inject.Inject
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
@@ -33,10 +34,9 @@ abstract class GitPublishCommit extends DefaultTask {
     @Optional
     abstract Property<Boolean> getSign()
 
-    @Inject
     GitPublishCommit() {
         // always consider this task out of date
-        this.outputs.upToDateWhen(t -> false)
+        this.outputs.upToDateWhen({ t -> false } as Spec<? super Task>)
     }
 
     @OutputDirectory

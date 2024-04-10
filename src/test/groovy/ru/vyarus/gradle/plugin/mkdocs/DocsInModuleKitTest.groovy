@@ -7,7 +7,7 @@ import org.gradle.testkit.runner.TaskOutcome
  * @author Vyacheslav Rusakov
  * @since 14.10.2018
  */
-class DocsInModuleTest extends AbstractKitTest {
+class DocsInModuleKitTest extends AbstractKitTest {
 
     def "Check docs submodule workflow"() {
         setup:

@@ -26,6 +26,10 @@ abstract class GitPublishExtension {
     abstract Property<String> getBranch()
     abstract Property<String> getCommitMessage()
     abstract Property<Boolean> getSign()
+
+    abstract Property<String> getUsername()
+    abstract Property<String> getPassword()
+
     CopySpec contents
     PatternFilterable preserve
 

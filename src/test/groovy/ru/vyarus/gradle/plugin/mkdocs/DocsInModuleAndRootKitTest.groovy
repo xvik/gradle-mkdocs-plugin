@@ -9,7 +9,7 @@ import spock.lang.TempDir
  * @author Vyacheslav Rusakov
  * @since 04.08.2022
  */
-class DocsInModuleAndRootTest extends AbstractKitTest {
+class DocsInModuleAndRootKitTest extends AbstractKitTest {
 
     @TempDir File repoDir
 

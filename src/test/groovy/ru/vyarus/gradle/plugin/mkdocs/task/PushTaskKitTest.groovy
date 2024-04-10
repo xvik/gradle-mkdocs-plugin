@@ -167,7 +167,7 @@ class PushTaskKitTest extends AbstractKitTest {
         result = run('mkdocsPublish')
 
         then: "no need publishing"
-        result.task(':mkdocsPublish').outcome == TaskOutcome.UP_TO_DATE
+        result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
 
         when: "publish with changes"
         file('src/doc/docs/index.md') << 'dummy file to indicate changes'
@@ -303,7 +303,7 @@ class PushTaskKitTest extends AbstractKitTest {
         result = run('mkdocsPublish')
 
         then: "version published"
-        result.task(':mkdocsPublish').outcome == TaskOutcome.UP_TO_DATE
+        result.task(':mkdocsPublish').outcome == TaskOutcome.SUCCESS
         file('/.gradle/gh-pages/1.0/index.html').exists()
         file('/.gradle/gh-pages/index.html').exists()
     }

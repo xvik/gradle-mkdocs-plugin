@@ -2,9 +2,6 @@ package ru.vyarus.gradle.plugin.mkdocs
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.ajoberstar.grgit.Configurable
-import org.ajoberstar.grgit.Grgit
-import org.ajoberstar.grgit.operation.OpenOp
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
@@ -12,6 +9,7 @@ import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.build.event.BuildEventsListenerRegistry
 import ru.vyarus.gradle.plugin.mkdocs.service.GrgitService
+import ru.vyarus.gradle.plugin.mkdocs.source.RepoUriValueSource
 import ru.vyarus.gradle.plugin.mkdocs.task.GitVersionsTask
 import ru.vyarus.gradle.plugin.mkdocs.task.publish.GitPublishCommit
 import ru.vyarus.gradle.plugin.mkdocs.task.publish.GitPublishPush
@@ -66,8 +64,6 @@ abstract class MkdocsPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.plugins.apply(MkdocsBuildPlugin)
         MkdocsExtension extension = project.extensions.getByType(MkdocsExtension)
-        // set publish repository to the current project by default
-        extension.publish.repoUri = getProjectRepoUri(project)
 
         GitPublishExtension gitExt = project.extensions.create('gitPublish', GitPublishExtension, project)
 
@@ -77,14 +73,28 @@ abstract class MkdocsPlugin implements Plugin<Project> {
 
     @CompileStatic(TypeCheckingMode.SKIP)
     private void configurePublish(Project project, MkdocsExtension extension, GitPublishExtension gitExt) {
+        // set publish repository to the current project by default (wrapped with value source for config cache)
+        gitExt.repoUri.convention(project.providers.of(RepoUriValueSource) { params ->
+            params.parameters.rootDir.set(project.rootDir)
+        })
+
         project.afterEvaluate {
             MkdocsExtension.Publish publish = extension.publish
 
-            gitExt.repoUri.set(publish.repoUri)
+            if (publish.repoUri) {
+                gitExt.repoUri.set(publish.repoUri)
+            }
             gitExt.branch.set(publish.branch)
             // folder to checkout branch, apply changes and commit
             gitExt.repoDir.set(project.file(publish.repoDir))
             gitExt.commitMessage.set(extension.resolveComment())
+
+            // allow to configure git auth with global gradle properties (instead of swing popup)
+            // https://ajoberstar.org/grgit/main/grgit-authentication.html
+            // Alternatively, custom credentials could be specified directly in git reset task
+            gitExt.username.convention(project.provider { project.findProperty('org.ajoberstar.grgit.auth.username') })
+            gitExt.password.convention(project.provider { project.findProperty('org.ajoberstar.grgit.auth.password') })
+
             gitExt.contents {
                 it.from("${extension.buildDir}")
             }
@@ -135,17 +145,6 @@ abstract class MkdocsPlugin implements Plugin<Project> {
         return service
     }
 
-    @SuppressWarnings(['UnnecessaryCast', 'CatchException'])
-    private String getProjectRepoUri(Project project) {
-        try {
-            Grgit repo = Grgit.open({ OpenOp op -> op.dir = project.rootDir } as Configurable<OpenOp>)
-            return repo.remote.list().find { it.name == 'origin' }?.url
-        } catch (Exception ignored) {
-            // repository not initialized case - do nothing (most likely user is just playing with the plugin)
-        }
-        return null
-    }
-
     private TaskProvider<GitPublishReset> createResetTask(Project project, GitPublishExtension extension,
                                                           Provider<GrgitService> service) {
         return project.tasks.register(GIT_RESET_TASK, GitPublishReset) { task ->
@@ -158,8 +157,10 @@ abstract class MkdocsPlugin implements Plugin<Project> {
             task.grgit.set(service)
             task.preserve = extension.preserve
 
+            task.username.set(extension.username)
+            task.password.set(extension.password)
+
             task.dependsOn MKDOCS_BUILD_TASK
-            applyGitCredentials(task)
         }
     }
 
@@ -219,21 +220,6 @@ abstract class MkdocsPlugin implements Plugin<Project> {
             task.versionAliases.convention(extension.publish.versionAliases
                     ? extension.publish.versionAliases as List : [])
             task.buildDir.convention(project.file(extension.buildDir))
-        }
-    }
-
-    protected void applyGitCredentials(GitPublishReset task) {
-        // allow to configure git auth with global gradle properties (instead of swing popup)
-        // http://ajoberstar.org/grgit/grgit-authentication.html
-        task.doFirst {
-            ['username', 'password', 'ssh.private', 'ssh.passphrase'].each {
-                String key = "org.ajoberstar.grgit.auth.$it"
-                String value = task.project.findProperty(key)
-                if (value) {
-                    task.logger.lifecycle("Git auth gradle property detected: $key")
-                    System.setProperty(key, value)
-                }
-            }
         }
     }
 }

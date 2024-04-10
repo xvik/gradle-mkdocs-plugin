@@ -7,12 +7,14 @@ import org.ajoberstar.grgit.Ref
 import org.ajoberstar.grgit.operation.*
 import org.eclipse.jgit.transport.URIish
 import org.gradle.api.DefaultTask
+import org.gradle.api.Task
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileVisitDetails
 import org.gradle.api.file.FileVisitor
 import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.Property
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternFilterable
 import ru.vyarus.gradle.plugin.mkdocs.service.GrgitService
@@ -54,6 +56,14 @@ abstract class GitPublishReset extends DefaultTask {
     @Input
     abstract Property<String> getBranch()
 
+    @Input
+    @Optional
+    abstract Property<String> getUsername()
+
+    @Input
+    @Optional
+    abstract Property<String> getPassword()
+
     @Inject
     abstract FileOperations getFs()
 
@@ -62,11 +72,12 @@ abstract class GitPublishReset extends DefaultTask {
 
     GitPublishReset() {
         // always consider this task out of date
-        this.outputs.upToDateWhen(t -> false)
+        this.outputs.upToDateWhen({ t -> false } as Spec<? super Task>)
     }
 
     @TaskAction
     void reset() {
+        setupAuth()
         Grgit git = findExistingRepo().orElseGet(() -> freshRepo())
         grgit.get().grgit = git
 
@@ -89,6 +100,17 @@ abstract class GitPublishReset extends DefaultTask {
             op.patterns = Stream.of('.').collect(Collectors.toSet())
             op.update = true
         } as Configurable<AddOp>)
+    }
+
+    private void setupAuth() {
+        // https://ajoberstar.org/grgit/main/grgit-authentication.html
+        // IMPORTANT: this will set system properties which ALL consequent tasks would use (including push)
+        if (username.present) {
+            System.setProperty('org.ajoberstar.grgit.auth.username', username.get())
+        }
+        if (password.present) {
+            System.setProperty('org.ajoberstar.grgit.auth.password', password.get())
+        }
     }
 
     @SuppressWarnings(['UnnecessaryPackageReference', 'CatchException'])

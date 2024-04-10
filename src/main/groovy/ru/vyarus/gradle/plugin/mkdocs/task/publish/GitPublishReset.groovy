@@ -11,6 +11,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileVisitDetails
 import org.gradle.api.file.FileVisitor
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternFilterable
@@ -22,7 +23,7 @@ import java.util.stream.Collectors
 import java.util.stream.Stream
 
 /**
- * Reset/checkout repo dir task. Copied from https://github.com/ajoberstar/gradle-git-publish.
+ * Reset/checkout repo dir task. Based on https://github.com/ajoberstar/gradle-git-publish.
  *
  * @author Vyacheslav Rusakov
  * @since 08.04.2024
@@ -53,104 +54,35 @@ abstract class GitPublishReset extends DefaultTask {
     @Input
     abstract Property<String> getBranch()
 
+    @Inject
+    abstract FileOperations getFs()
+
     @Internal
     PatternFilterable preserve
 
-    @Inject
     GitPublishReset() {
         // always consider this task out of date
         this.outputs.upToDateWhen(t -> false)
     }
 
     @TaskAction
-    @SuppressWarnings(['MethodSize', 'AbcMetric'])
     void reset() {
         Grgit git = findExistingRepo().orElseGet(() -> freshRepo())
         grgit.get().grgit = git
 
-        String pubBranch = branch.get()
+        fetchReference(git)
 
-        if (referenceRepoUri.present) {
-            Map<Ref, String> referenceBranches = git.lsremote({ LsRemoteOp op ->
-                op.remote = REFERENCE
-                op.heads = true
-            } as Configurable<LsRemoteOp>)
-
-            boolean referenceBranchExists = referenceBranches.keySet().stream()
-                    .anyMatch { ref -> (ref.fullName == HEAD_REFS + pubBranch) }
-
-            if (referenceBranchExists) {
-                logger.info('Fetching from reference repo: ' + referenceRepoUri.get())
-                git.fetch({ FetchOp op ->
-                    op.refSpecs = Arrays.asList(
-                            String.format('+refs/heads/%s:refs/remotes/reference/%s', pubBranch, pubBranch))
-                    op.tagMode = NONE
-                } as Configurable<FetchOp>)
-            }
-        }
-
-        Map<Ref, String> remoteBranches = git.lsremote({ LsRemoteOp op ->
-            op.remote = ORIGIN
-            op.heads = true
-        } as Configurable<LsRemoteOp>)
-
-        boolean remoteBranchExists = remoteBranches.keySet().stream()
-                .anyMatch { ref -> (ref.fullName == HEAD_REFS + pubBranch) }
-
-        if (remoteBranchExists) {
-            // fetch only the existing pages branch
-            git.fetch({ FetchOp op ->
-                logger.info('Fetching from remote repo: ' + repoUri.get())
-                op.refSpecs = Arrays.asList(
-                        String.format('+refs/heads/%s:refs/remotes/origin/%s', pubBranch, pubBranch))
-                op.tagMode = NONE
-            } as Configurable<FetchOp>)
-
-            // make sure local branch exists
-            if (!git.branch.list().stream().anyMatch { branch -> (branch.name == pubBranch) }) {
-                git.branch.add({ BranchAddOp op ->
-                    op.name = pubBranch
-                    op.startPoint = ORIGIN_ + pubBranch
-                } as Configurable<BranchAddOp>)
-            }
-
-            // get to the state the remote has
-            git.clean({ CleanOp op ->
-                op.directories = true
-                op.ignore = false
-            } as Configurable<CleanOp>)
-            git.checkout({ CheckoutOp op -> op.setBranch(pubBranch) } as Configurable<CheckoutOp>)
-            git.reset({ ResetOp op ->
-                op.commit = ORIGIN_ + pubBranch
-                op.mode = 'hard'
-            } as Configurable<ResetOp>)
+        if (isRemoteBranchExists(git, ORIGIN)) {
+            resetRemote(git)
         } else {
             // create a new orphan branch
             git.checkout({ CheckoutOp op ->
-                op.branch = pubBranch
+                op.branch = branch.get()
                 op.orphan = true
             } as Configurable<CheckoutOp>)
         }
 
-        // clean up unwanted files
-        FileTree repoTree = project.fileTree(git.repository.rootDir)
-        FileTree preservedTree = repoTree.matching(preserve)
-        FileTree unwantedTree = (repoTree - preservedTree).asFileTree
-        unwantedTree.visit(new FileVisitor() {
-            @Override
-            void visitDir(FileVisitDetails fileVisitDetails) {
-                // do nothing
-            }
-
-            @Override
-            void visitFile(FileVisitDetails fileVisitDetails) {
-                try {
-                    Files.delete(fileVisitDetails.file.toPath())
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e)
-                }
-            }
-        })
+        cleanupFiles(git)
 
         // stage the removals, relying on dirs not being tracked by git
         git.add({ AddOp op ->
@@ -182,7 +114,7 @@ abstract class GitPublishReset extends DefaultTask {
     }
 
     protected Grgit freshRepo() {
-        project.delete(repoDirectory.get().asFile)
+        fs.delete(repoDirectory.get().asFile)
 
         Grgit repo = Grgit.init({ InitOp op ->
             op.dir = repoDirectory.get().asFile
@@ -215,5 +147,82 @@ abstract class GitPublishReset extends DefaultTask {
         } catch (URISyntaxException e) {
             throw new RuntimeException('Invalid URI.', e)
         }
+    }
+
+    private boolean isRemoteBranchExists(Grgit git, String type) {
+        Map<Ref, String> referenceBranches = git.lsremote({ LsRemoteOp op ->
+            op.remote = type
+            op.heads = true
+        } as Configurable<LsRemoteOp>)
+
+        return referenceBranches.keySet().stream()
+                .anyMatch { ref -> (ref.fullName == HEAD_REFS + branch.get()) }
+    }
+
+    private void fetchReference(Grgit git) {
+        if (referenceRepoUri.present) {
+            String pubBranch = branch.get()
+
+            if (isRemoteBranchExists(git, REFERENCE)) {
+                logger.info('Fetching from reference repo: ' + referenceRepoUri.get())
+                git.fetch({ FetchOp op ->
+                    op.refSpecs = Arrays.asList(
+                            String.format('+refs/heads/%s:refs/remotes/reference/%s', pubBranch, pubBranch))
+                    op.tagMode = NONE
+                } as Configurable<FetchOp>)
+            }
+        }
+    }
+
+    private void resetRemote(Grgit git) {
+        String pubBranch = branch.get()
+        // fetch only the existing pages branch
+        git.fetch({ FetchOp op ->
+            logger.info('Fetching from remote repo: ' + repoUri.get())
+            op.refSpecs = Arrays.asList(
+                    String.format('+refs/heads/%s:refs/remotes/origin/%s', pubBranch, pubBranch))
+            op.tagMode = NONE
+        } as Configurable<FetchOp>)
+
+        // make sure local branch exists
+        if (!git.branch.list().stream().anyMatch { branch -> (branch.name == pubBranch) }) {
+            git.branch.add({ BranchAddOp op ->
+                op.name = pubBranch
+                op.startPoint = ORIGIN_ + pubBranch
+            } as Configurable<BranchAddOp>)
+        }
+
+        // get to the state the remote has
+        git.clean({ CleanOp op ->
+            op.directories = true
+            op.ignore = false
+        } as Configurable<CleanOp>)
+        git.checkout({ CheckoutOp op -> op.setBranch(pubBranch) } as Configurable<CheckoutOp>)
+        git.reset({ ResetOp op ->
+            op.commit = ORIGIN_ + pubBranch
+            op.mode = 'hard'
+        } as Configurable<ResetOp>)
+    }
+
+    private void cleanupFiles(Grgit git) {
+        // clean up unwanted files
+        FileTree repoTree = fs.fileTree(git.repository.rootDir)
+        FileTree preservedTree = repoTree.matching(preserve)
+        FileTree unwantedTree = (repoTree - preservedTree).asFileTree
+        unwantedTree.visit(new FileVisitor() {
+            @Override
+            void visitDir(FileVisitDetails fileVisitDetails) {
+                // do nothing
+            }
+
+            @Override
+            void visitFile(FileVisitDetails fileVisitDetails) {
+                try {
+                    Files.delete(fileVisitDetails.file.toPath())
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e)
+                }
+            }
+        })
     }
 }

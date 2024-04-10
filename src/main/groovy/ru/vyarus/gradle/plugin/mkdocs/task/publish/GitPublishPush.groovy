@@ -18,7 +18,7 @@ import ru.vyarus.gradle.plugin.mkdocs.service.GrgitService
 import javax.inject.Inject
 
 /**
- * Git push task. Copied from https://github.com/ajoberstar/gradle-git-publish.
+ * Git push task. Based on https://github.com/ajoberstar/gradle-git-publish.
  *
  * @author Vyacheslav Rusakov
  * @since 08.04.2024

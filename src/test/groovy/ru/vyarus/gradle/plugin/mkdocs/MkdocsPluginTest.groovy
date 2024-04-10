@@ -1,7 +1,9 @@
 package ru.vyarus.gradle.plugin.mkdocs
 
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.testfixtures.ProjectBuilder
+import ru.vyarus.gradle.plugin.mkdocs.task.publish.GitPublishPush
 import ru.vyarus.gradle.plugin.python.PythonExtension
 
 /**
@@ -33,7 +35,7 @@ class MkdocsPluginTest extends AbstractTest {
         project.extensions.findByType(GitPublishExtension)
 
         then: "task graph valid"
-        task('mkdocsPublish').dependsOn.contains('gitPublishPush')
+        (task('mkdocsPublish').dependsOn[0] as TaskProvider).get() instanceof GitPublishPush
         task('gitPublishReset').dependsOn.contains('mkdocsBuild')
     }
 

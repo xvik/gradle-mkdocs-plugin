@@ -10,8 +10,8 @@ import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 
 /**
- * Git publication extension. Copied from https://github.com/ajoberstar/gradle-git-publish.
- * Note: plugin preserved almost entirely to keep backwards compatibility for customization cases.
+ * Git publication extension. Based on https://github.com/ajoberstar/gradle-git-publish.
+ * Note: plugin features preserved almost entirely to keep backwards compatibility for customization cases.
  *
  * @author Vyacheslav Rusakov
  * @since 08.04.2024

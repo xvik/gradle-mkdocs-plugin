@@ -15,7 +15,7 @@ import java.util.stream.Collectors
 import java.util.stream.Stream
 
 /**
- * Git commit task. Copied from https://github.com/ajoberstar/gradle-git-publish.
+ * Git commit task. Based on https://github.com/ajoberstar/gradle-git-publish.
  *
  * @author Vyacheslav Rusakov
  * @since 08.04.2024

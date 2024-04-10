@@ -66,55 +66,44 @@ abstract class MkdocsPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.plugins.apply(MkdocsBuildPlugin)
         MkdocsExtension extension = project.extensions.getByType(MkdocsExtension)
-        GitPublishExtension gitExt = project.extensions.create('gitPublish', GitPublishExtension, project)
-
         // set publish repository to the current project by default
         extension.publish.repoUri = getProjectRepoUri(project)
 
+        GitPublishExtension gitExt = project.extensions.create('gitPublish', GitPublishExtension, project)
+
         configurePublish(project, extension, gitExt)
+        configurePublishTasks(project, extension, gitExt)
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)
-    @SuppressWarnings('NestedBlockDepth')
     private void configurePublish(Project project, MkdocsExtension extension, GitPublishExtension gitExt) {
         project.afterEvaluate {
             MkdocsExtension.Publish publish = extension.publish
 
-            project.configure(project) {
-                gitPublish {
-                    repoUri = publish.repoUri
-                    branch = publish.branch
-
-                    // folder to checkout branch, apply changes and commit
-                    repoDir = file(publish.repoDir)
-
-                    contents {
-                        from("${extension.buildDir}")
+            gitExt.repoUri.set(publish.repoUri)
+            gitExt.branch.set(publish.branch)
+            // folder to checkout branch, apply changes and commit
+            gitExt.repoDir.set(project.file(publish.repoDir))
+            gitExt.commitMessage.set(extension.resolveComment())
+            gitExt.contents {
+                it.from("${extension.buildDir}")
+            }
+            // required only when multi-version publishing used
+            if (extension.multiVersion) {
+                // keep everything (all other versions) except publishing version
+                gitExt.preserve { pat ->
+                    pat.include '**'
+                    // remove publishing version
+                    pat.exclude "${extension.resolveDocPath()}/**"
+                    // remove publishing version aliases
+                    publish.versionAliases?.each { alias ->
+                        pat.exclude "$alias/**"
                     }
-
-                    // required only when multi-version publishing used
-                    if (extension.multiVersion) {
-                        // keep everything (all other versions) except publishing version
-                        preserve {
-                            include '**'
-                            // remove publishing version
-                            exclude "${extension.resolveDocPath()}/**"
-                            // remove publishing version aliases
-                            publish.versionAliases?.each {
-                                exclude "$it/**"
-                            }
-                        }
-                    }
-
-                    commitMessage = extension.resolveComment()
                 }
             }
         }
-
-        configurePublishTasks(project, extension, gitExt)
     }
 
-    @SuppressWarnings(['AbcMetric', 'MethodSize'])
     private void configurePublishTasks(Project project, MkdocsExtension extension, GitPublishExtension gitExt) {
         // mkdocsBuild <- gitPublishReset <- generateMkdocsVersionsFile <- gitPublishCopy <- gitPublishCommit
         // <- gitPublishPush <- mkdocsPublish
@@ -123,46 +112,16 @@ abstract class MkdocsPlugin implements Plugin<Project> {
         Provider<GrgitService> service = createService(project)
 
         TaskProvider<GitPublishReset> reset = createResetTask(project, gitExt, service)
-        TaskProvider copy = createCopyTask(project, gitExt)
-        TaskProvider commit = createCommitTask(project, gitExt, service)
-        TaskProvider push = createPushTask(project, gitExt, service)
-        push.configure { it.dependsOn(commit) }
-        commit.configure { it.dependsOn(copy) }
-        copy.configure { it.dependsOn(reset) }
-
-        project.tasks.named(GIT_RESET_TASK).configure {
-            it.with {
-                dependsOn MKDOCS_BUILD_TASK
-                applyGitCredentials((GitPublishReset) it)
-            }
-        }
-
-        TaskProvider versionsTask = project.tasks.register('mkdocsVersionsFile', GitVersionsTask) { task ->
-            task.group = DOCUMENTATION_GROUP
-            task.description = 'Generate/actualize versions.json file from publish repository'
-            task.dependsOn GIT_RESET_TASK
-
-            task.versionPath.convention(extension.resolveDocPath())
-            task.versionName.convention(extension.resolveVersionTitle())
-            task.generateVersionsFile.convention(extension.publish.generateVersionsFile)
-            task.repoDir.convention(project.file(extension.publish.repoDir))
-            task.rootRedirectPath
-                    .convention(extension.publish.rootRedirect ? extension.resolveRootRedirectionPath() : null)
-            task.versionAliases.convention(extension.publish.versionAliases
-                    ? extension.publish.versionAliases as List : [])
-            task.buildDir.convention(project.file(extension.buildDir))
-        }
-
-        // versions generation before copy because all updated files must be correctly registered in git (by copy task)
-        project.tasks.named(GIT_COPY_TASK).configure {
-            it.dependsOn versionsTask
-        }
+        TaskProvider<GitVersionsTask> versionsTask = createVersionsTask(project, extension, reset)
+        TaskProvider copy = createCopyTask(project, gitExt, versionsTask, reset)
+        TaskProvider commit = createCommitTask(project, gitExt, service, copy)
+        TaskProvider push = createPushTask(project, gitExt, service, commit)
 
         // create dummy task to simplify usage
         project.tasks.register('mkdocsPublish') { task ->
             task.group = DOCUMENTATION_GROUP
             task.description = 'Publish documentation'
-            task.dependsOn GIT_PUSH_TASK
+            task.dependsOn push
         }
     }
 
@@ -198,42 +157,72 @@ abstract class MkdocsPlugin implements Plugin<Project> {
             task.branch.set(extension.branch)
             task.grgit.set(service)
             task.preserve = extension.preserve
+
+            task.dependsOn MKDOCS_BUILD_TASK
+            applyGitCredentials(task)
         }
     }
 
-    private TaskProvider<Copy> createCopyTask(Project project, GitPublishExtension extension) {
+    private TaskProvider<Copy> createCopyTask(Project project, GitPublishExtension extension,
+                                              TaskProvider<GitVersionsTask> versionsTask,
+                                              TaskProvider<GitPublishReset> resetTask) {
         return project.tasks.register(GIT_COPY_TASK, Copy) { task ->
             task.group = GROUP_PUBLISHING
             task.description = 'Copy contents to be published to git.'
             task.with(extension.contents)
             task.into(extension.repoDir)
+            task.dependsOn versionsTask, resetTask
         }
     }
 
     private TaskProvider<GitPublishCommit> createCommitTask(Project project,
                                                             GitPublishExtension extension,
-                                                            Provider<GrgitService> service) {
+                                                            Provider<GrgitService> service,
+                                                            TaskProvider copyTask) {
         return project.tasks.register(GIT_COMMIT_TASK, GitPublishCommit) { task ->
             task.group = GROUP_PUBLISHING
             task.description = 'Commits changes to be published to git.'
             task.grgit.set(service)
             task.message.set(extension.commitMessage)
             task.sign.set(extension.sign)
+            task.dependsOn(copyTask)
         }
     }
 
     private TaskProvider<GitPublishPush> createPushTask(Project project,
                                                         GitPublishExtension extension,
-                                                        Provider<GrgitService> service) {
+                                                        Provider<GrgitService> service,
+                                                        TaskProvider<GitPublishCommit> commitTask) {
         return project.tasks.register(GIT_PUSH_TASK, GitPublishPush) { task ->
             task.group = GROUP_PUBLISHING
             task.description = 'Pushes changes to git.'
             task.grgit.set(service)
             task.branch.set(extension.branch)
+            task.dependsOn commitTask
         }
     }
 
-    private void applyGitCredentials(GitPublishReset task) {
+    private TaskProvider<GitVersionsTask> createVersionsTask(Project project,
+                                                             MkdocsExtension extension,
+                                                             TaskProvider<GitPublishReset> reset) {
+        return project.tasks.register('mkdocsVersionsFile', GitVersionsTask) { task ->
+            task.group = DOCUMENTATION_GROUP
+            task.description = 'Generate/actualize versions.json file from publish repository'
+            task.dependsOn reset
+
+            task.versionPath.convention(extension.resolveDocPath())
+            task.versionName.convention(extension.resolveVersionTitle())
+            task.generateVersionsFile.convention(extension.publish.generateVersionsFile)
+            task.repoDir.convention(project.file(extension.publish.repoDir))
+            task.rootRedirectPath
+                    .convention(extension.publish.rootRedirect ? extension.resolveRootRedirectionPath() : null)
+            task.versionAliases.convention(extension.publish.versionAliases
+                    ? extension.publish.versionAliases as List : [])
+            task.buildDir.convention(project.file(extension.buildDir))
+        }
+    }
+
+    protected void applyGitCredentials(GitPublishReset task) {
         // allow to configure git auth with global gradle properties (instead of swing popup)
         // http://ajoberstar.org/grgit/grgit-authentication.html
         task.doFirst {
@@ -241,7 +230,7 @@ abstract class MkdocsPlugin implements Plugin<Project> {
                 String key = "org.ajoberstar.grgit.auth.$it"
                 String value = task.project.findProperty(key)
                 if (value) {
-                    task.project.logger.lifecycle("Git auth gradle property detected: $key")
+                    task.logger.lifecycle("Git auth gradle property detected: $key")
                     System.setProperty(key, value)
                 }
             }

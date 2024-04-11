@@ -92,8 +92,12 @@ abstract class MkdocsPlugin implements Plugin<Project> {
             // allow to configure git auth with global gradle properties (instead of swing popup)
             // https://ajoberstar.org/grgit/main/grgit-authentication.html
             // Alternatively, custom credentials could be specified directly in git reset task
-            gitExt.username.convention(project.provider { project.findProperty('org.ajoberstar.grgit.auth.username') })
-            gitExt.password.convention(project.provider { project.findProperty('org.ajoberstar.grgit.auth.password') })
+            gitExt.username.convention(project.provider {
+                (String) project.findProperty('org.ajoberstar.grgit.auth.username')
+            })
+            gitExt.password.convention(project.provider {
+                (String) project.findProperty('org.ajoberstar.grgit.auth.password')
+            })
 
             gitExt.contents {
                 it.from("${extension.buildDir}")
@@ -220,6 +224,8 @@ abstract class MkdocsPlugin implements Plugin<Project> {
             task.versionAliases.convention(extension.publish.versionAliases
                     ? extension.publish.versionAliases as List : [])
             task.buildDir.convention(project.file(extension.buildDir))
+            task.hideVersions.convention(extension.publish.hideVersions)
+            task.hideOldBugfixVersions.convention(extension.publish.hideOldBugfixVersions)
         }
     }
 }

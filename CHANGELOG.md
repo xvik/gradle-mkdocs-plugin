@@ -11,6 +11,9 @@
   - mkdocs-material 8.5.7 -> 9.5.17
   - pygments 2.13.0 -> 2.17.2
   - pymdown-extensions 9.7 -> 10.7.1
+* Support hiding versions in versions file:
+  - mkdocs.publish.hideVersions - set versions to hide 
+  - mkdocs.publish.hideOldBugfixVersions - automatically hide bugfix versions (disabled by default)
 
 ### 3.0.0 (2022-11-01)
 * (breaking) Drop gradle 5.0-5.2 support (minimum required gradle is 5.3)

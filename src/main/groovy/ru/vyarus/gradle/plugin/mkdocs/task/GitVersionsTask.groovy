@@ -34,6 +34,7 @@ abstract class GitVersionsTask extends DefaultTask {
     // assume version must start with a digit, followed by dot (no matter what ending)
     private static final Pattern VERSION_FOLDER = Pattern.compile('\\d+(\\..+)?')
     private static final Comparator<String> VERSIONS_COMPARATOR = VersionsComparator.comparingVersions(false)
+    private static final String DOT = '.'
 
     /**
      * Version directory path. "." if no version directories used.
@@ -55,6 +56,19 @@ abstract class GitVersionsTask extends DefaultTask {
      */
     @Input
     abstract Property<Boolean> getGenerateVersionsFile()
+
+    /**
+     * Versions to hide in versions file (e.g. old bugfix releases).
+     */
+    @Input
+    @Optional
+    abstract ListProperty<String> getHideVersions()
+
+    /**
+     * Automatically hide old bugfix versions (for bugfix versions docs are always the same).
+     */
+    @Input
+    abstract Property<Boolean> getHideOldBugfixVersions()
 
     /**
      * Repository location.
@@ -110,7 +124,7 @@ abstract class GitVersionsTask extends DefaultTask {
         List<String> versions = []
         int start = repo.absolutePath.length() + 1
         repo.listFiles()
-                .findAll { it.directory && !it.name.startsWith('.') }
+                .findAll { it.directory && !it.name.startsWith(DOT) }
                 .each { File it ->
                     List<File> roots = []
                     findRoots(roots, it)
@@ -149,8 +163,7 @@ abstract class GitVersionsTask extends DefaultTask {
      * @param file current versions file content
      * @param actual version folders found in repo
      */
-    private void cleanupAliases(Map<String, Map<String, Object>> file,
-                                List<String> actual) {
+    private void cleanupAliases(Map<String, Map<String, Object>> file, List<String> actual) {
         List<String> currentAliases = versionAliases.get()
         file.values().each {
             List aliases = it[ALIASES] as List
@@ -172,8 +185,7 @@ abstract class GitVersionsTask extends DefaultTask {
      * @param actual version folders found in repo
      * @return report of versions file modifications
      */
-    private Report updateVersions(Map<String, Map<String, Object>> file,
-                                  List<String> actual) {
+    private Report updateVersions(Map<String, Map<String, Object>> file, List<String> actual) {
         Report report = new Report()
         report.removed.addAll(file.keySet())
 
@@ -200,7 +212,47 @@ abstract class GitVersionsTask extends DefaultTask {
 
         report.survived.addAll(actual)
         report.survived.removeAll(report.added)
+
+        hideVersions(file, report)
         return report
+    }
+
+    /**
+     * Hiding some existing versions (for example, hiding old bugfix versions).
+     *
+     * @param file versions file
+     * @param report actual modifications report
+     */
+    private void hideVersions(Map<String, Map<String, Object>> file, Report report) {
+        List<String> hide = new ArrayList<>(hideVersions.get())
+        if (hideOldBugfixVersions.get()) {
+            List<String> versions = new ArrayList<>(file.keySet())
+            versions.sort(VERSIONS_COMPARATOR)
+            String prev = null
+            long prevCnt
+            versions.each {
+                // count only versions with 3 or more parts and ends with number
+                long cnt = it.chars().filter(ch -> ch == DOT).count()
+                if (cnt < 2 || !it.matches('.*\\.\\d+$')) {
+                    return
+                }
+                // same amount of dots and same "base" (e.g. 1.1-rc.1 and 1.2-rc.2 shouldn't match)
+                if (prevCnt == cnt && prev.startsWith(it.substring(0, it.lastIndexOf(DOT)))) {
+                    // old version detected
+                    hide.add(prev)
+                } else {
+                    prevCnt = cnt
+                    prev = it
+                }
+            }
+        }
+        if (!hide.empty) {
+            hide.each {
+                if (file.remove(it)) {
+                    report.hide(it)
+                }
+            }
+        }
     }
 
     /**
@@ -212,8 +264,7 @@ abstract class GitVersionsTask extends DefaultTask {
      * <p>
      * NOTE: this validation will not be performed if versions file creation is disabled.
      */
-    private void validateUpdate(Map<String, Map<String, Object>> file,
-                                File repo) {
+    private void validateUpdate(Map<String, Map<String, Object>> file, File repo) {
         String lastVersion = file.keySet().iterator().next()
         String currentVersion = versionPath.get()
         if (lastVersion != currentVersion) {
@@ -239,6 +290,7 @@ abstract class GitVersionsTask extends DefaultTask {
         appendReportLine(out, report.added, 'new versions')
         appendReportLine(out, report.removed, 'removed from file')
         appendReportLine(out, report.survived, 'remains the same')
+        appendReportLine(out, report.hidden, 'hidden')
         // new version section would always contain at least just published version
         return out.toString()
     }
@@ -254,6 +306,13 @@ abstract class GitVersionsTask extends DefaultTask {
         List<String> added = []
         List<String> removed = []
         List<String> survived = []
+        List<String> hidden = []
+
+        void hide(String ver) {
+            added.remove(ver)
+            survived.remove(ver)
+            hidden.add(ver)
+        }
     }
 }
 

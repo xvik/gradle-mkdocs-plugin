@@ -252,6 +252,26 @@ class MkdocsExtension {
         String existingVersionsFile
 
         /**
+         * Versions to remove in versions file (to hide on ui). List might be populated automatically for old bugfix
+         * versions when {@link #hideOldBugfixVersions} enabled).
+         * <p>
+         * Note that hidden versions could still be accessed by direct link - they just got hidden in version dropdown
+         * (versions file).
+         */
+        List<String> hideVersions = []
+
+        /**
+         * Automatically hide old bugfix versions in versions file (e.g. if we have 1.0.0 and 1.0.1 then 1.0.0 could be
+         * hidden).
+         * <p>
+         * Algorithm is intentionally very simple: it compares only versions with the same level (1.1.1 and 1.1.2,
+         * 1.1.1.1 and 1.1.1.2) and not tries to track correlation (e.g. if we have 1.0 and 1.0.1, 1.0 would not
+         * be removed, but for 1.0.0 and 1.0.1 - 1.0.0 removed). Extra simplicity requires to avoid potential
+         * mistakes. Edge cases could always be handled manually using {@link #hideVersions} configuration directly.
+         */
+        boolean hideOldBugfixVersions = false
+
+        /**
          * Sets version name in version switcher. The value would be used only for versions.json generation only and
          * may differ from actual version path ({@link #docPath}).
          * <p>
@@ -307,5 +327,12 @@ class MkdocsExtension {
          * publication.
          */
         String repoDir = '.gradle/gh-pages'
+
+        /**
+         * Shortcut for hiding versions by appending new versions into existing list.
+         */
+        void hideVersions(String... versions) {
+            this.hideVersions.addAll(versions)
+        }
     }
 }

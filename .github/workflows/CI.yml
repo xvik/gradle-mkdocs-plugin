@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Java ${{ matrix.java }}
+    name: Java ${{ matrix.java }}, python ${{ matrix.python }}
     strategy:
       matrix:
         java: [11, 17]

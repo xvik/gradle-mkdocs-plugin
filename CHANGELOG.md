@@ -1,5 +1,4 @@
 * (breaking) Drop gradle 5 and 6 support
-* (breaking) Drop java 8 support (java 11 required)
 * All tasks properties replaced with lazy properties
 * Remove git-publish plugin. Plugin functions added directly with required modifications
   so usage will be the same (compatible). The Author of the original plugin deprecated it

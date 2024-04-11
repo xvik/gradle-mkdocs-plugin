@@ -15,7 +15,7 @@ plugins {
 }
 
 java {
-    sourceCompatibility = 11
+    sourceCompatibility = 1.8
 }
 
 wrapper {
@@ -29,7 +29,10 @@ repositories { mavenLocal(); mavenCentral(); gradlePluginPortal(); maven { url '
 dependencies {
     implementation "ru.vyarus:gradle-use-python-plugin:$pythonPlugin"
 
-    implementation 'org.ajoberstar.grgit:grgit-core:5.2.2'
+    // jgit 5.x is still supported so no need to update to 6.x yet
+    // Also, no need to update to grgit 5.x as there are no important updates
+    implementation 'org.ajoberstar.grgit:grgit-core:4.1.1'
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.3.202401111512-r'
 
     testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'

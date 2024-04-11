@@ -10,10 +10,16 @@ jobs:
     name: Java ${{ matrix.java }}, python ${{ matrix.python }}
     strategy:
       matrix:
-        java: [11, 17]
+        java: [8, 11, 17]
         python: ['3.8', '3.11', '3.12']
 
         exclude:
+          - java: 8
+            python: '3.11'
+          - java: 8
+            python: '3.12'
+          - java: 11
+            python: '3.8'
           - java: 11
             python: '3.12'
           - java: 17

@@ -369,9 +369,9 @@ class VersionsFileTest extends AbstractKitTest {
         prjRepo.remote.add(name: 'origin', url: repoDir.canonicalPath, pushUrl: repoDir.canonicalPath)
         prjRepo.checkout(branch: 'gh-pages', orphan: true)
         paths.each {
-            File dir = new File(it, initDir)
+            File dir = new File(initDir, it)
             // marker file used for version directory detection
-            File file = new File('404.html', dir)
+            File file = new File(dir, '404.html')
             file.parentFile.mkdirs()
             file << "sample content"
         }

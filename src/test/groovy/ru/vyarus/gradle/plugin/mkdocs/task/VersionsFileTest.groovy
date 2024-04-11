@@ -395,7 +395,7 @@ class VersionsFileTest extends AbstractKitTest {
                     'aliases': []
             ])
         }
-        new File('versions.json', initDir).newWriter().withWriter { w ->
+        new File(initDir, 'versions.json').newWriter().withWriter { w ->
             w << JsonOutput.toJson(file)
         }
         prjRepo.add(patterns: ['versions.json'])

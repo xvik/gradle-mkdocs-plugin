@@ -23,7 +23,7 @@ wrapper {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-ext.pythonPlugin = 'master-SNAPSHOT'
+ext.pythonPlugin = '3.0.0'
 
 repositories { mavenLocal(); mavenCentral(); gradlePluginPortal(); maven { url 'https://jitpack.io' } }
 dependencies {

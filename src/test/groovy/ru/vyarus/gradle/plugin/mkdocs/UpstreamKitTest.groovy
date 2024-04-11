@@ -58,7 +58,7 @@ class UpstreamKitTest extends AbstractKitTest {
 
         then: "executed"
         result.task(':mkHelp').outcome == TaskOutcome.SUCCESS
-        result.output.contains('-V, --version  Show the version and exit.')
+        result.output.contains('-V, --version         Show the version and exit.')
     }
 
     def "Check extra props"() {
@@ -100,6 +100,6 @@ nav:
 
         then: "executed"
         result.task(':mkHelp').outcome == TaskOutcome.SUCCESS
-        result.output.contains('-V, --version  Show the version and exit.')
+        result.output.contains('-V, --version         Show the version and exit.')
     }
 }

@@ -7,6 +7,11 @@
   - Authorization properties support remains for backwards compatibility, but auth could
     be specified now directly in gitPublish.username (and password). 
 * Configuration cache compatibility
+* Update packages:
+  - mkdocs 1.4.1 -> 1.5.3
+  - mkdocs-material 8.5.7 -> 9.5.17
+  - pygments 2.13.0 -> 2.17.2
+  - pymdown-extensions 9.7 -> 10.7.1
 
 ### 3.0.0 (2022-11-01)
 * (breaking) Drop gradle 5.0-5.2 support (minimum required gradle is 5.3)

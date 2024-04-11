@@ -58,6 +58,6 @@ class LegacyKitTest extends AbstractKitTest {
 
         then: "executed"
         result.task(':mkHelp').outcome == TaskOutcome.SUCCESS
-        result.output.contains('-V, --version  Show the version and exit.')
+        result.output.contains('-V, --version         Show the version and exit.')
     }
 }

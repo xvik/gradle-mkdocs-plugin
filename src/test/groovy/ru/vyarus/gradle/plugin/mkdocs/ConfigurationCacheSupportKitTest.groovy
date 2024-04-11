@@ -122,7 +122,7 @@ class ConfigurationCacheSupportKitTest extends AbstractKitTest {
 
         then: "executed"
         result.task(':mkHelp').outcome == TaskOutcome.SUCCESS
-        result.output.contains('-V, --version  Show the version and exit.')
+        result.output.contains('-V, --version         Show the version and exit.')
 
 
         when: "run from cache"
@@ -132,7 +132,7 @@ class ConfigurationCacheSupportKitTest extends AbstractKitTest {
         then: "cache used"
         result.output.contains('Reusing configuration cache.')
         result.task(':mkHelp').outcome == TaskOutcome.SUCCESS
-        result.output.contains('-V, --version  Show the version and exit.')
+        result.output.contains('-V, --version         Show the version and exit.')
     }
 
     def "Check versions file update"() {

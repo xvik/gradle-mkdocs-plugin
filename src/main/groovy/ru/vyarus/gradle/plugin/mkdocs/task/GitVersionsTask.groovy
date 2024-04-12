@@ -240,10 +240,9 @@ abstract class GitVersionsTask extends DefaultTask {
                 if (prevCnt == cnt && prev.startsWith(it.substring(0, it.lastIndexOf(DOT)))) {
                     // old version detected
                     hide.add(prev)
-                } else {
-                    prevCnt = cnt
-                    prev = it
                 }
+                prevCnt = cnt
+                prev = it
             }
         }
         if (!hide.empty) {

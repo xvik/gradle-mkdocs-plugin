@@ -444,6 +444,47 @@ class VersionsFileTest extends AbstractKitTest {
         }
     }
 
+
+    def "Check auto bugfix versions hiding 2"() {
+
+        setup:
+        initVersions('7.1.2', '7.1.1', '7.1.0', '7.0.2', '7.0.1', '7.0.0',
+                '6.2.3', '6.2.2', '6.2.1', '6.2.0', '6.1.2', '6.1.1', '6.1.0', '6.0.1', '6.0.0')
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                
+            }
+            
+            version = '7.2.0'
+            
+            mkdocs.publish.hideOldBugfixVersions = true
+            
+            python.scope = USER           
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+        file('src/doc/mkdocs.yml').exists()
+
+        when: "build versions"
+        result = run('mkdocsVersionsFile')
+        println 'project repo copy: ' + file('/.gradle/gh-pages/').list()
+
+        then: "published"
+        result.task(':mkdocsVersionsFile').outcome == TaskOutcome.SUCCESS
+        result.output.contains('hidden: 7.1.1, 7.1.0, 7.0.1, 7.0.0, 6.2.2, 6.2.1, 6.2.0, 6.1.1, 6.1.0, 6.0.0')
+
+        then: "versions file correct"
+        file('/build/mkdocs/versions.json').exists()
+        with(new JsonSlurper().parse(file('/build/mkdocs/versions.json')) as List) {
+            // yes, snapshots and rc go before released version - it's OK (because version format is unknown)
+            it.collect {it['version']} == ['7.2.0', '7.1.2', '7.0.2', '6.2.3', '6.1.2', '6.0.1']
+        }
+    }
+
     private void initVersions(String... paths) {
         Grgit prjRepo = Grgit.init(dir: initDir)
         prjRepo.remote.add(name: 'origin', url: repoDir.canonicalPath, pushUrl: repoDir.canonicalPath)

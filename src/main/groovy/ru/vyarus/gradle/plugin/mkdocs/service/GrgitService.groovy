@@ -18,6 +18,9 @@ import org.gradle.tooling.events.OperationCompletionListener
 abstract class GrgitService implements BuildService<BuildServiceParameters.None>,
         OperationCompletionListener, AutoCloseable {
 
+    /**
+     * Grgit instance. Initiated by gitReset task and used by other git tasks.
+     */
     Grgit grgit
 
     @Override

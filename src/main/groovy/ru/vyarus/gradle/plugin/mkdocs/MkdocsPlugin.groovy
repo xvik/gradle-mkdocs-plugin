@@ -119,7 +119,7 @@ abstract class MkdocsPlugin implements Plugin<Project> {
     }
 
     private void configurePublishTasks(Project project, MkdocsExtension extension, GitPublishExtension gitExt) {
-        // mkdocsBuild <- gitPublishReset <- generateMkdocsVersionsFile <- gitPublishCopy <- gitPublishCommit
+        // mkdocsBuild <- gitPublishReset <- mkdocsVersionsFile <- gitPublishCopy <- gitPublishCommit
         // <- gitPublishPush <- mkdocsPublish
 
         // service per project (no sharing)

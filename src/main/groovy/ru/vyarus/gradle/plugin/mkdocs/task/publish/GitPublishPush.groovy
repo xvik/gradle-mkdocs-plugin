@@ -26,11 +26,16 @@ import ru.vyarus.gradle.plugin.mkdocs.service.GrgitService
 @CompileStatic
 @SuppressWarnings('AbstractClassWithPublicConstructor')
 abstract class GitPublishPush extends DefaultTask {
-    @Internal
-    abstract Property<GrgitService> getGrgit()
 
+    /**
+     * Target branch (would be created if doesn't exists).
+     */
     @Input
     abstract Property<String> getBranch()
+
+    // grgit instance initiated under reset task
+    @Internal
+    abstract Property<GrgitService> getGrgit()
 
     GitPublishPush() {
         // always consider this task out of date

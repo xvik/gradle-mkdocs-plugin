@@ -24,15 +24,23 @@ import java.util.stream.Stream
 @CompileStatic
 @SuppressWarnings('AbstractClassWithPublicConstructor')
 abstract class GitPublishCommit extends DefaultTask {
-    @Internal
-    abstract Property<GrgitService> getGrgit()
 
+    /**
+     * Commit message.
+     */
     @Input
     abstract Property<String> getMessage()
 
+    /**
+     * Signing commits. Omit to use the default from your gitconfig.
+     */
     @Input
     @Optional
     abstract Property<Boolean> getSign()
+
+    // grgit instance initiated under reset task
+    @Internal
+    abstract Property<GrgitService> getGrgit()
 
     GitPublishCommit() {
         // always consider this task out of date

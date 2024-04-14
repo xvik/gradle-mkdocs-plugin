@@ -40,29 +40,49 @@ abstract class GitPublishReset extends DefaultTask {
     public static final String NONE = 'none'
     public static final String ORIGIN_ = 'origin/'
 
-    @Internal
-    abstract Property<GrgitService> getGrgit()
-
+    /**
+     * Directory to checkout repository.
+     */
     @OutputDirectory
     abstract DirectoryProperty getRepoDirectory()
 
+    /**
+     * Repository to publish into (must exists).
+     */
     @Input
     abstract Property<String> getRepoUri()
 
+    /**
+     * (Optional) Where to fetch from prior to fetching from the remote (i.e. a local repo to save time).
+     */
     @Input
     @Optional
     abstract Property<String> getReferenceRepoUri()
 
+    /**
+     * Target branch (would be created if does not exists).
+     */
     @Input
     abstract Property<String> getBranch()
 
+    /**
+     * Repository user name (for authorization). See "org.ajoberstar.grgit.auth.username" property
+     * https://ajoberstar.org/grgit/main/grgit-authentication.html
+     */
     @Input
     @Optional
     abstract Property<String> getUsername()
 
+    /**
+     * Repository password or github token. See "org.ajoberstar.grgit.auth.password" property
+     * https://ajoberstar.org/grgit/main/grgit-authentication.html
+     */
     @Input
     @Optional
     abstract Property<String> getPassword()
+
+    @Internal
+    abstract Property<GrgitService> getGrgit()
 
     @Inject
     abstract FileOperations getFs()

@@ -31,7 +31,7 @@ Ideal for open source projects:
 ##### Summary
 
 * `mkdocs-build` plugin:
-  - Configuration: `mkdocs`, `gitPublish`
+  - Configuration: `mkdocs`
   - Tasks:
       - `mkdocsInit` - generate initial site 
       - `mkdocsServe` - livereload server (dev)

@@ -23,9 +23,9 @@ wrapper {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-ext.pythonPlugin = 'master-SNAPSHOT'
+ext.pythonPlugin = '4.0.0'
 
-repositories { mavenLocal(); mavenCentral(); gradlePluginPortal(); maven { url 'https://jitpack.io' } }
+repositories { mavenLocal(); mavenCentral(); gradlePluginPortal() }
 dependencies {
     implementation "ru.vyarus:gradle-use-python-plugin:$pythonPlugin"
 

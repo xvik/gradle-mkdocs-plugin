@@ -26,19 +26,29 @@ Ideal for open source projects:
 * Variables support
 * Could work with direct python or docker.
 * Could use requirements.txt file
+* Compatible with gradle configuration cache
 
 ##### Summary
 
-* Configuration: `mkdocs`
-* Tasks:
-    - `mkdocsInit` - generate initial site 
-    - `mkdocsServe` - livereload server (dev)
-    - `mkdocsBuild` - build documentation
-    - `mkdocsPublish` - publish to github pages
-    - `mkdocsVersionsFile` - generate versions.json file for version switcher
-    - `type:MkdocsTask` to call custom mdocs commands   
-* Enable plugins: [git-publish](https://github.com/ajoberstar/gradle-git-publish),
-[use-python](https://github.com/xvik/gradle-use-python-plugin)
+* `mkdocs-build` plugin:
+  - Configuration: `mkdocs`, `gitPublish`
+  - Tasks:
+      - `mkdocsInit` - generate initial site 
+      - `mkdocsServe` - livereload server (dev)
+      - `mkdocsBuild` - build documentation  
+      - `type:MkdocsTask` to call custom mkdocs commands
+    
+* `mkdocs` plugin adds:
+  - Configuration: `gitPublish`
+  - Tasks:
+      - `gitPublishReset` - checkout repository
+      - `mkdocsVersionsFile` - generate versions.json file for version switcher
+      - `gitPublishCopy` - copy (and add) files into repository
+      - `gitPublishCommit` - commit updates into repository
+      - `gitPublishPush` - push commit
+      - `mkdocsPublish` - publish to github pages (main task)
+    
+* Enable plugins: [use-python](https://github.com/xvik/gradle-use-python-plugin)
 
 NOTE: plugin is based on [use-python plugin](https://github.com/xvik/gradle-use-python-plugin) see python-specific 
 tasks there.  
@@ -54,7 +64,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:3.0.0'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:4.0.0'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -64,17 +74,17 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '3.0.0'
+    id 'ru.vyarus.mkdocs' version '4.0.0'
 }
 ```
 
 #### Lightweight setup
 
-There is also a lightweight plugin version without publication task and git-publish plugin enabling:
+There is also a lightweight plugin version without publication tasks:
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs-build' version '3.0.0'
+    id 'ru.vyarus.mkdocs-build' version '4.0.0'
 }
 ```
 
@@ -87,8 +97,9 @@ Plugin compiled for java 8, compatible with java 11.
 
 Gradle | Version
 --------|-------
-5.3-8   | 3.0.0
-5-5.2   | 2.3.0
+7.0     | 4.0.0
+5.3     | [3.0.0](https://xvik.github.io/gradle-mkdocs-plugin/3.0.0/)
+5-5.2   | [2.3.0](https://xvik.github.io/gradle-mkdocs-plugin/2.3.0/)
 4.x     | [1.1.0](https://github.com/xvik/gradle-mkdocs-plugin/tree/1.1.0)
 
 **Requires installed python** 3.8 and above with pip.

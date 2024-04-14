@@ -21,6 +21,7 @@
 * Variables support
 * Could work with direct python or docker. 
 * Could use requirements.txt file  
+* Compatible with gradle configuration cache
 
 **[Common configurations](examples.md)** (cheat sheet)
 

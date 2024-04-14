@@ -66,7 +66,7 @@ abstract class GitPublishReset extends DefaultTask {
     abstract Property<String> getBranch()
 
     /**
-     * Repository user name (for authorization). See "org.ajoberstar.grgit.auth.username" property
+     * Repository user name (for authorization) or github token. See "org.ajoberstar.grgit.auth.username" property
      * https://ajoberstar.org/grgit/main/grgit-authentication.html
      */
     @Input
@@ -74,7 +74,7 @@ abstract class GitPublishReset extends DefaultTask {
     abstract Property<String> getUsername()
 
     /**
-     * Repository password or github token. See "org.ajoberstar.grgit.auth.password" property
+     * Repository password. See "org.ajoberstar.grgit.auth.password" property
      * https://ajoberstar.org/grgit/main/grgit-authentication.html
      */
     @Input

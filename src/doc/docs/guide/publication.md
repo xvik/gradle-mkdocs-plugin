@@ -2,7 +2,7 @@
 
 !!! note
     Plugin does not use [mkdocs publication](http://www.mkdocs.org/#deploying), because it does not support
-    multi-versioning. Instead, [git-publish](https://github.com/ajoberstar/gradle-git-publish) plugin is used for publication.
+    multi-versioning. Instead, custom git publication tasks used for publication (based on [grgit](https://github.com/ajoberstar/grgit)).
 
 !!! note
     Mkdocs-material [suggests mike tool usage](https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/) for publication.
@@ -31,16 +31,17 @@ and there is no need to checkout all of them each time (folder could be changed 
 
 ## Authentication
 
-By default, git-publish will ask credentials with a popup (swing). Even if github pages are published on the same repo,
+By default, grgit will ask credentials with a popup (swing). Even if github pages are published on the same repo,
 the repo is checked out into different folder and so current repository credentials can't be used automatically.  
 
 You can specify credentials as:
 
 * Environment variables: `GRGIT_USER` (could be [github token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)), `GRGIT_PASS`
 * System properties: `org.ajoberstar.grgit.auth.username` (could be github token), `org.ajoberstar.grgit.auth.password`
-* Ssh key properties: `org.ajoberstar.grgit.auth.ssh.private` (path to key), `org.ajoberstar.grgit.auth.ssh.passphrase`
+* Directly in `gitPublish.username` (could be github token) and  `gitPublish.password` 
+  (which would be set as system properties from point 2)
 
-See details in [grgit docs](http://ajoberstar.org/grgit/grgit-authentication.html).
+See details in [grgit docs](https://ajoberstar.org/grgit/main/grgit-authentication.html).
 
 Plugin will automatically bind gradle properties `org.ajoberstar.grgit.auth.*` to system properties (just before `gitPublishReset`).
 This allows you to define credentials as global gradle properties in `~/.gradle/gradle.properties`:
@@ -60,7 +61,7 @@ ext['org.ajoberstar.grgit.auth.password'] = 'pass'
 ## Publish additional resources
 
 If you want to publish not only generated site, but something else too then configure
-[git-publish](https://github.com/ajoberstar/gradle-git-publish) plugin to include additional content.
+plugin to include additional content.
 
 Examples:
 <details open>
@@ -124,36 +125,79 @@ To publish
 With this configuration, calling `mkdocsPublish` will publish generated mkdocs site
 with extra `javadoc` folder inside (you can put relative link to it inside documentation).
 
-## Advanced publishing configuration
+## Publication tasks
 
-To be able to configure advanced cases, you need to understand how everything works in detail.
+Originally, plugin was using [git-publish plugin](https://github.com/ajoberstar/gradle-git-publish),
+but it was retired. Currently, git-publish tasks added directly into this plugin (with modifications).
+To avoid compatibility problems, extra configuration and publication tasks preserved the same:
 
-Here is how [git-publish](https://github.com/ajoberstar/gradle-git-publish) plugin is configured by default:
+* `gitPublish` configuration for git publication configurations. For most cases, plugin configures it itself.
+  Still, it may be useful for merging configuration with [other files](#publish-additional-resources).
+* Tasks:
+    - `gitPublishReset` - checkout repository
+    - `mkdocsVersionsFile` - generate versions.json file for version switcher
+    - `gitPublishCopy` - copy (and add) files into repository
+    - `gitPublishCommit` - commit updates into repository
+    - `gitPublishPush` - push commit
+    - `mkdocsPublish` - publish to github pages (main task)
+
+Normally, you just need to call `mkdocsPublish` to perform publication
+ and `mkdocsVersionsFile` could be called directly to verify versions file update correctness.
+Other tasks could just simplify customizations
+
+Tasks dependency chain:
+```
+mkdocsBuild <- gitPublishReset <- mkdocsVersionsFile <- gitPublishCopy <- gitPublishCommit <- gitPublishPush <- mkdocsPublish
+```
+
+`gitPublish` configuration reference:
 
 ```groovy
 gitPublish {
-
-    repoUri = mkdocs.publish.repoUri
-    branch = mkdocs.publish.branch
+    // Repository directory. For example:  file("$buildDir/something")
     repoDir = file(mkdocs.publish.repoDir)
+    // Repository to publish into (must exists). For example, 'git@github.com:user/test-repo.git'
+    repoUri = mkdocs.publish.repoUri
+    // (Optional) Where to fetch from prior to fetching from the remote (i.e. a local repo to save time).
+    referenceRepoUri
+    // Target branch (would be created if does not exists).
+    branch = mkdocs.publish.branch 
+    // commit message
     commitMessage = mkdocs.publish.comment
+    // Signing commits. Omit to use the default from your gitconfig.
+    sign = false
+    // Repository user name (for authorization). See "org.ajoberstar.grgit.auth.username" property
+    // https://ajoberstar.org/grgit/main/grgit-authentication.html
+    username // could be auto filled from gradle property "org.ajoberstar.grgit.auth.username"
+    // Repository password or github token. See "org.ajoberstar.grgit.auth.password" property
+    password // could be auto filled from gradle property "org.ajoberstar.grgit.auth.password"
 
+    //  Content to add into repository (gradle CopySpec). For example:
+    //  contents {
+    //    from 'src/pages'
+    //    from(javadoc) {
+    //      into 'api'
+    //    }
+    //  }
+    // https://docs.gradle.org/current/dsl/org.gradle.api.tasks.Copy.html
     contents {
         from("${mkdocs.buildDir}")
     }
 
+    // What to keep (or remote) in existing branch. For example:
+    // preserve {
+    //    include '1.0.0/**'
+    //    exclude '1.0.0/temp.txt'
+    // }
+    // https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/util/PatternFilterable.html
     if (multi_version_publish) {
+        // preserve everything except currently published version (in case of re-publish)
         preserve {
             include '**'
             exclude "${mkdocs.publish.docPath}/**"
         }
-    }    
+    }
 }
-```
-
-Customized tasks dependency chain:
-```
-mkdocsBuild <- gitPublishReset <- gitPublishCopy <- gitPublishCommit <- gitPublishPush <- mkdocsPublish
 ```
 
 Publication process:

@@ -25,7 +25,7 @@ abstract class GitPublishExtension {
      */
     abstract DirectoryProperty getRepoDir()
     /**
-     * Repository to publish into (must exists).
+     * Repository to publish into (must exists). For example, {@code 'git@github.com:user/test-repo.git'}
      */
     abstract Property<String> getRepoUri()
     /**
@@ -46,12 +46,12 @@ abstract class GitPublishExtension {
     abstract Property<Boolean> getSign()
 
     /**
-     * Repository user name (for authorization). See "org.ajoberstar.grgit.auth.username" property
+     * Repository user name (for authorization) or github token. See "org.ajoberstar.grgit.auth.username" property
      * https://ajoberstar.org/grgit/main/grgit-authentication.html
      */
     abstract Property<String> getUsername()
     /**
-     * Repository password or github token. See "org.ajoberstar.grgit.auth.password" property
+     * Repository password. See "org.ajoberstar.grgit.auth.password" property
      * https://ajoberstar.org/grgit/main/grgit-authentication.html
      */
     abstract Property<String> getPassword()

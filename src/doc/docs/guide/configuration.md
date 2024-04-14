@@ -2,7 +2,7 @@
 
 !!! important
     Plugin based on [python plugin](https://github.com/xvik/gradle-use-python-plugin) which manage all 
-    python-relates staff like virtualenv creation, pip installation and python executions.
+    python-related staff like virtualenv creation, pip installation and python executions.
     For python-related configurations refer to [python plugin documentation](https://xvik.github.io/gradle-use-python-plugin/{{ gradle.pythonPlugin }}/) 
 
 !!! tip
@@ -46,6 +46,13 @@ mkdocs {
         versionTitle = '$docPath'
         // one or more alias folders to copy generated docs to (e.g. 'latest' or 'dev')
         versionAliases = []
+        // specify versions to hide in version switcher without removing actual version folders
+        hideVersions = []
+        // when enabled it would automatically detect old bugfix versions and hide them 
+        // (because documentation for bugfix versions usually the same)
+        // e.g. for versions 1.1.0, 1.1.1, 1.2.0, 1.2.0.1, 1.2.0.2 
+        // it would hide 1.1.0 and 1.2.0.1 
+        hideOldBugfixVersions = false
         // generate index.html' for root redirection to the last published version 
         rootRedirect = true
         // allows changing root redirection to alias folder instead of exact version 

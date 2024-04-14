@@ -1,3 +1,4 @@
+### 4.0.0 (2024-04-14)
 * (breaking) Drop gradle 5 and 6 support
 * All tasks properties replaced with lazy properties
 * Remove git-publish plugin. Plugin functions added directly with required modifications

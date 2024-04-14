@@ -4,6 +4,10 @@
     This section mostly describes main changes in updated mkdocs and material
     versions, assuming you'll use default versions (provided by plugin).
 
+## 4.0.0
+
+Gradle 5-6 not supported anymore.
+
 ## 3.0.0
 
 Gradle 5.0-5.2 is not supported anymore.

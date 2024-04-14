@@ -78,6 +78,8 @@ build/mkdocs/
 `mkdocsPublish` calls `mkdocsBuild` and publish contents of `build/mkdocs/` into git repo
 (by default, `gh-pages` branch in current repo).
 
+Also `mkdocsVersionsFile` task could be called to verify versions.json generation correctness.
+
 See [publication](publication.md) for more details.
 
 ## Custom Mkdocs task
@@ -91,7 +93,7 @@ task doSomething(type: MkdocsTask) {
 ```
 
 !!! note
-    Full task package is not required because `MkdocsTask` is actually a property, regustered
+    Full task package is not required because `MkdocsTask` is actually a property, registered
     by plugin with the full class name in value. 
     
 `:doSomething` task call will do: `python -m mkdocs --help`.  

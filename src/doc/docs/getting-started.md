@@ -51,7 +51,7 @@ plugins {
 
 !!! tip
     It is completely normal to manually remove virtualenv folder (`.gradle/python`) in case of problems
-    to re-create environment.
+    to re-create environment. There is also a `cleanPython` task for this.
 
 #### Docker
 

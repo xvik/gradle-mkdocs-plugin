@@ -64,7 +64,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:4.0.0'
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:4.0.1'
     }
 }
 apply plugin: 'ru.vyarus.mkdocs'
@@ -74,7 +74,7 @@ OR
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs' version '4.0.0'
+    id 'ru.vyarus.mkdocs' version '4.0.1'
 }
 ```
 
@@ -84,7 +84,7 @@ There is also a lightweight plugin version without publication tasks:
 
 ```groovy
 plugins {
-    id 'ru.vyarus.mkdocs-build' version '4.0.0'
+    id 'ru.vyarus.mkdocs-build' version '4.0.1'
 }
 ```
 
@@ -97,7 +97,7 @@ Plugin compiled for java 8, compatible with java 11.
 
 Gradle | Version
 --------|-------
-7.0     | 4.0.0
+7.0     | 4.0.1
 5.3     | [3.0.0](https://xvik.github.io/gradle-mkdocs-plugin/3.0.0/)
 5-5.2   | [2.3.0](https://xvik.github.io/gradle-mkdocs-plugin/2.3.0/)
 4.x     | [1.1.0](https://github.com/xvik/gradle-mkdocs-plugin/tree/1.1.0)

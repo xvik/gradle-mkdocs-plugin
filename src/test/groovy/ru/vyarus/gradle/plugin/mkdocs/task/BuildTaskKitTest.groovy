@@ -51,6 +51,50 @@ class BuildTaskKitTest extends AbstractKitTest {
 
     }
 
+    def "Check non strict build"() {
+        setup:
+        build """
+            plugins {
+                id 'ru.vyarus.mkdocs'                                                              
+            }
+            
+            version = '1.0'  
+            
+            python.scope = USER
+            
+            mkdocs.strict = false
+        """
+
+        when: "run init"
+        BuildResult result = run('mkdocsInit')
+
+        then: "docs created"
+        result.task(':mkdocsInit').outcome == TaskOutcome.SUCCESS
+
+        when: "build site"
+        File conf = file('src/doc/mkdocs.yml')
+        conf.text = conf.text.replaceAll(/(?m)^site_url:.*/, "site_url: http://localhost")
+        result = run('mkdocsBuild')
+
+        then: "built"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.SUCCESS
+        result.output =~ /\[python] python(3)? -m mkdocs build -c -d ${isWin ? '"[^"]+"' : '[^(-)]+'}/
+
+        file('build/mkdocs/1.0/index.html').exists()
+        // site_url wasn't modified
+        file('build/mkdocs/1.0/sitemap.xml').text.contains('<loc>http://localhost/1.0/guide/installation/</loc>')
+        file('build/mkdocs/index.html').exists()
+        file('build/mkdocs/index.html').text.contains('URL=\'1.0\'')
+
+        when: "up to date check"
+        result = run('mkdocsBuild')
+
+        then: "ok"
+        result.task(':mkdocsBuild').outcome == TaskOutcome.UP_TO_DATE
+
+    }
+
+
     def "Check build path with space"() {
         setup:
         build """

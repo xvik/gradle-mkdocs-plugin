@@ -59,7 +59,7 @@ class MkdocsBuildPlugin implements Plugin<Project> {
         project.tasks.register(MKDOCS_BUILD_TASK, MkdocsBuildTask) { task ->
             task.description = 'Build mkdocs documentation'
             task.group = DOCUMENTATION_GROUP
-            task.extraArgs.convention project.provider { extension.strict ? STRICT : null }
+            task.extraArgs.convention project.provider { extension.strict ? STRICT : [] }
             task.outputDir.convention(project.file("${getBuildOutputDir(extension)}"))
             task.updateSiteUrl.convention(extension.updateSiteUrl)
             task.versionPath.convention(extension.resolveDocPath())

@@ -1,3 +1,5 @@
+* Fix non-strict build (#88)
+
 ### 4.0.0 (2024-04-14)
 * (breaking) Drop gradle 5 and 6 support
 * All tasks properties replaced with lazy properties

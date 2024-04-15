@@ -8,6 +8,23 @@
 
 Gradle 5-6 not supported anymore.
 
+[material-mkdocs-extensions](https://pypi.org/project/mkdocs-material-extensions/) module was deprecated because
+emoji support was added directly into mkdocs. So, you need to change in your mkdocs.yml this:
+
+```yaml
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+```
+
+into this:
+
+```yaml
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+```
+
 ## 3.0.0
 
 Gradle 5.0-5.2 is not supported anymore.

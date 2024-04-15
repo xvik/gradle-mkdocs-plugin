@@ -1,5 +1,6 @@
 ### [4.0.1](http://xvik.github.io/gradle-mkdocs-plugin/4.0.1) (2024-04-15)
 * Fix non-strict build (#88)
+* Fix emoji plugin in default mkdocs.yml (emoji support moved from material extensions to mkdocs directly)
 
 ### [4.0.0](http://xvik.github.io/gradle-mkdocs-plugin/4.0.0) (2024-04-14)
 * (breaking) Drop gradle 5 and 6 support

@@ -31,7 +31,7 @@ dependencies {
 
     // jgit 5.x is still supported so no need to update to 6.x yet
     // Also, no need to update to grgit 5.x as there are no important updates
-    implementation 'org.ajoberstar.grgit:grgit-core:4.1.1'
+    implementation 'org.ajoberstar.grgit:grgit-core:5.3.2'
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.3.202401111512-r'
 
     testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {

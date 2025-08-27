@@ -34,17 +34,19 @@ dependencies {
     implementation 'org.ajoberstar.grgit:grgit-core:4.1.1'
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.3.202401111512-r'
 
-    testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {
+    testImplementation('org.spockframework:spock-core:2.4-M6-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 group = 'ru.vyarus'
 description = 'Mkdocs documentation plugin'
 
 github {
-    user 'xvik'
-    license 'MIT'
+    user = 'xvik'
+    license = 'MIT'
 }
 
 mkdocs {
@@ -80,6 +82,8 @@ maven.pom {
 nexusPublishing {
     repositories {
         sonatype {
+            nexusUrl = uri("https://ossrh-staging-api.central.sonatype.com/service/local/")
+            snapshotRepositoryUrl = uri("https://central.sonatype.com/repository/maven-snapshots/")
             username = findProperty('sonatypeUser')
             password = findProperty('sonatypePassword')
         }
@@ -87,7 +91,7 @@ nexusPublishing {
 }
 
 // skip signing for jitpack (snapshots)
-tasks.withType(Sign) {onlyIf { !System.getenv('JITPACK') }}
+tasks.withType(Sign).configureEach { onlyIf { !System.getenv('JITPACK') } }
 
 // Required signing properties for release: signing.keyId, signing.password and signing.secretKeyRingFile
 // (https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials)
@@ -133,9 +137,9 @@ test {
     useJUnitPlatform()
     testLogging {
         events 'skipped', 'failed'
-        exceptionFormat 'full'
+        exceptionFormat = 'full'
     }
-    maxHeapSize = '512m'
+    maxHeapSize = '2g'
     doLast {
         sleep(1000)
     }

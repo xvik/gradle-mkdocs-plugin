@@ -222,7 +222,7 @@ abstract class MkdocsPlugin implements Plugin<Project> {
             task.rootRedirectPath
                     .convention(extension.publish.rootRedirect ? extension.resolveRootRedirectionPath() : null)
             task.versionAliases.convention(extension.publish.versionAliases
-                    ? extension.publish.versionAliases as List : [])
+                    ? extension.publish.versionAliases as Iterable : [])
             task.buildDir.convention(project.file(extension.buildDir))
             task.hideVersions.convention(extension.publish.hideVersions)
             task.hideOldBugfixVersions.convention(extension.publish.hideOldBugfixVersions)

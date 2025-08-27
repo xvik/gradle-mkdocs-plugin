@@ -33,6 +33,8 @@ theme:
     #- navigation.instant
     - navigation.tracking
     - navigation.top
+    # edit icon on pages (opening github)
+    - content.action.edit
 
 #plugins:
 #  - search

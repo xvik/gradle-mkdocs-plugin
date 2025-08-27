@@ -2,14 +2,16 @@ package ru.vyarus.gradle.plugin.mkdocs
 
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.Requires
 
 /**
  * @author Vyacheslav Rusakov
  * @since 13.03.2020
  */
+@Requires({jvm.java17Compatible})
 class UpstreamKitTest extends AbstractKitTest {
 
-    String GRADLE_VERSION = '8.7'
+    String GRADLE_VERSION = '9.0.0'
 
     def "Check workflow"() {
         setup:

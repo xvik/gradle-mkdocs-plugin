@@ -3,12 +3,14 @@ package ru.vyarus.gradle.plugin.mkdocs
 import org.ajoberstar.grgit.Grgit
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.Requires
 import spock.lang.TempDir
 
 /**
  * @author Vyacheslav Rusakov
  * @since 02.03.2021
  */
+@Requires({jvm.java17Compatible})
 class UpstreamPublishKitTest extends AbstractKitTest {
 
     String GRADLE_VERSION = '9.0.0'

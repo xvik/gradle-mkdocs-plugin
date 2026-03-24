@@ -42,7 +42,7 @@ jobs:
           python-version: ${{matrix.python}}
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Build
         run: |

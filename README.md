@@ -8,37 +8,17 @@
 
 ### MkDocs state (2026)
 
-[Mkdocs](https://www.mkdocs.org/) developer stopped mkdocs 1.x maintenance ([one](https://github.com/mkdocs/mkdocs/discussions/3621), [two](https://github.com/mkdocs/mkdocs/discussions/4010))
+[Mkdocs](https://www.mkdocs.org/) developer stopped mkdocs 1.x [maintenance](https://github.com/mkdocs/mkdocs/discussions/3621)
 and did a complete rewrite: [mkdocs 2.0 (pre-release)](https://github.com/mkdocs/mkdocs/discussions/4077)
-is not backwards compatible and [completely breaks ecosystem](https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/#whats-changing-in-mkdocs-20) (plugins).
+ [completely breaking the ecosystem](https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/#whats-changing-in-mkdocs-20).
 
-Because of this, [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) developers [stopped development](https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/)
-(only critical bug fixes until November 2026). In short, forking was not an option because plugins
-depend on `mkdocs` dependency, so they decided to create a completely new tool [Zensical](https://squidfunk.github.io/mkdocs-material/blog/2025/11/05/zensical/)
-(alpha state; compatibility with mkdocs-material is a [top priority](https://squidfunk.github.io/mkdocs-material/blog/2025/11/05/zensical/#maximum-compatibility)).
+[Mkdocs-material](https://squidfunk.github.io/mkdocs-material/) developers also [stopped development](https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/)
+and started a completely new tool [Zensical](https://squidfunk.github.io/mkdocs-material/blog/2025/11/05/zensical/).
 
-But the mkdocs community is strong, so we also have two maintained forks for mkdocs and mkdocs-material:
+Don't worry, we already have maintained forks. Also, we would still be able to use the official version
+for years.
 
-* [ProperDocs](https://github.com/ProperDocs/properdocs) with [materialx](https://github.com/jaywhj/mkdocs-materialx)
-* [mkdocs-ng](https://github.com/mkdocs/mkdocs/discussions/4010#discussioncomment-16745804) ([material inside](https://github.com/mkdocs-ng/mkdocs-material)) ([why another fork](https://github.com/mkdocs/mkdocs/discussions/4010#discussioncomment-16751778))
-
-*No need to panic*. As you can see, **we have options** to migrate. Also, the current
-mkdocs release could be used for years ahead.
-
-#### The plugin state
-
-I'm going to release the plugin with updated defaults (latest mkdocs and material) which could
-be used for years (python backwards compatibility is quite good).
-
-Also, I'm going to add an option to switch to [materialx](https://github.com/jaywhj/mkdocs-materialx)
-(two sets of defaults and, probably, initial templates), so we could have an
-easy migration, if required. The migration process would be documented.
-
-[Zensical](https://zensical.org/) is in too early stage, so just waiting for its evolution. When it matures and
-becomes a good enough alternative, a new plugin could be created (we'll see).
-
-No panic, no worries! Beautiful documentation is still with us.
-
+[More info about the situation and the plugin development plans](https://github.com/xvik/gradle-mkdocs-plugin/discussions/119)
 
 ### About
 
